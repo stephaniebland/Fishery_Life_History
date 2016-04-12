@@ -11,7 +11,6 @@
 
 
 
-
 %%-------------------------------------------------------------------------
 %%  PARAMETERS
 %%-------------------------------------------------------------------------
@@ -68,13 +67,13 @@
 %to construct niche web, uncomment the following lines.
     S_0=30;
     connectance=0.15;
-    [nicheweb] = NicheModel(S_0, connectance);
+    [nicheweb] = NicheModel(S_0, connectance);%Create a connected (no infinite degrees of separation) foodweb with realistic species (eg. no predators without prey), and no isolated species.
 
 %or enter custom web (rows eats column)
     %nicheweb = [0 0 0; 1 0 0; 0 1 0];
 
-nichewebsize = length(nicheweb);
-basalsp = find(sum(nicheweb,2)==0);
+nichewebsize = length(nicheweb);%Steph: Find number of species (not sure why, already have S_0)
+basalsp = find(sum(nicheweb,2)==0);%List the autotrophs (So whatever doesn't have prey)  Hidden assumption - can't assign negative prey values (but why would you?)
 
 
 
@@ -127,7 +126,7 @@ basalsp = find(sum(nicheweb,2)==0);
 
 %set the extinction threshold
 %----------------------------
-    ext_thresh = 10^-6; %set to zero to work without extinction threshold
+    ext_thresh = 10^-6; %set to zero to work without extinction threshold  (=reality check --> biomass set to zero if it goes under this value)
     
     
     
@@ -140,9 +139,9 @@ basalsp = find(sum(nicheweb,2)==0);
 %-----------------------------
 %  base-case set from Conrad(1999)
 %  set mu to 0 to fix the harvest
-    mu=0; 
-    ca=0.01; 
-    co=1;
+    mu=0; % stiffness parameter
+    ca=0.01; % catchability coefficient
+    co=1; % cost per unit effort
 
 %price parameters
 %----------------

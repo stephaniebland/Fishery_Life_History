@@ -13,7 +13,7 @@
 function [xout, tout] =  dynamic_fn(K,int_growth,meta,max_assim,effic,Bsd,q,c,f_a,f_m, ...
                    ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,t_final,ext_thresh)
 
-x0=[B0; E0;];
+x0=[B0; E0;];%Initial Biomass, initial Effort
 b_size=length(B0);
 
 %--------------------------------------------------------------------------
@@ -30,7 +30,7 @@ b_size=length(B0);
 % Takes into account the extinction threshold
 
     refine  = 4;
-    options = odeset('Events',@events,'NonNegative',1:2*b_size,'Refine',refine);
+    options = odeset('Events',@events,'NonNegative',1:2*b_size,'Refine',refine);%StephHWK:  Figure out what @events does.
     tout  = t_init;
     xout  = x0';
 

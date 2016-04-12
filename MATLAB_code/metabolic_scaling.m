@@ -60,7 +60,8 @@ function [meta, T, T1, isfish, Z]= metabolic_scaling(nichewebsize,nicheweb,basal
     %Add up how many prey items each species has.
     prey=sum(nicheweb1,2); %sum of each row
 
-    %Create unweighted Q matrix.
+    %Create unweighted Q matrix. So a matrix that gives proportion of the
+    %diet given by each prey species.
     a=nicheweb1';
     Q = zeros(nichewebsize);
     for i=1:nichewebsize
@@ -71,13 +72,15 @@ function [meta, T, T1, isfish, Z]= metabolic_scaling(nichewebsize,nicheweb,basal
         end
     end
     
-    %Calculate trophic levels as T2=(I-Q)^-1 * 1
-    T2=(inv(eye(nichewebsize)-Q'))*ones(nichewebsize,1);
+    %Calculate trophic levels as T2=(I-Q)^-1 * 1  %StephHWK: I may need to come back to this one...
+    T2=(inv(eye(nichewebsize)-Q'))*ones(nichewebsize,1);%"ones(nichewebsize,1)" or could just sum over the rows like you did everywhere else "sum(A,2)"
     
 %--------------------------------------------------------------------------
-%Average T1 and T2
+%Average T1 and T2  %And how is using the average even a good idea?  Why
+%not just choose favourite instead saying "both are equally valid, so we'll
+%take the most moderate approach."
 %--------------------------------------------------------------------------
-    T=((T1+T2')/2)';
+    T=((T1+T2')/2)';%So after looking into this a bit, I think that T2 is the way to go.  It's more consistent with the defn' for trophic level used by fishbase.org It might be useful to calculate the trophic levels again at the end once you know equilibrium densities. 
 
 %--------------------------------------------------------------------------
 %Fish or invertebrate
@@ -87,7 +90,7 @@ function [meta, T, T1, isfish, Z]= metabolic_scaling(nichewebsize,nicheweb,basal
     possibfish=find(T>=3);                % species with TL<3 are always invertebrates
     bernoulli=rand(length(possibfish),1);
     bernoulli=logical(bernoulli<=.6);     % for species with TL>=3, probability of 60% of being a fish
-    isfish(possibfish)=bernoulli;
+    isfish(possibfish)=bernoulli; %That's clever...
     
 %--------------------------------------------------------------------------
 %Constant consumer-resource body size
@@ -101,7 +104,7 @@ function [meta, T, T1, isfish, Z]= metabolic_scaling(nichewebsize,nicheweb,basal
     m_invert =100;   % mean for invertebrates
     v_invert =100;   % standart deviation for invertebrates
     
-    % mean and standart deviation of the ssociated normal distributions
+    % mean and standard deviation of the associated normal distributions
     mu_fish=log(m_fish^2/sqrt(v_fish+m_fish^2));
     mu_invert=log(m_invert^2/sqrt(v_invert+m_invert^2));
     sigma_fish=sqrt(log(v_fish/m_fish^2+1));
@@ -110,7 +113,7 @@ function [meta, T, T1, isfish, Z]= metabolic_scaling(nichewebsize,nicheweb,basal
     %Consumer-resource body-size
     Z=lognrnd(mu_invert,sigma_invert,nichewebsize,1);
     Z(find(isfish==1))=lognrnd(mu_fish,sigma_fish,length(find(isfish==1)),1);
-           
+
 %--------------------------------------------------------------------------
 %Set body size based on trophic level and calculate metabolic rates
 %--------------------------------------------------------------------------
