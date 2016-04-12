@@ -17,16 +17,13 @@ function [meta, T, T1, isfish, Z]= metabolic_scaling(nichewebsize,nicheweb,basal
 
 
 %--------------------------------------------------------------------------
-%Convert nicheweb to a numeric array and eliminate self-loops.
+%Convert nicheweb to a numeric array and eliminate self-loops. (Eliminating
+%Cannibalism within life stages, so cannibalism is allowed between
+%different life stages).
 %--------------------------------------------------------------------------
-    nicheweb1=+nicheweb;
-    for i=1:nichewebsize
-        for j=1:nichewebsize
-            if i==j && nicheweb1(i,j)~=0
-                nicheweb1(i,j)=0;
-            end
-        end
-    end
+    nicheweb1=+nicheweb;  %I really don't know why I'm including this line (except they seemed to like it up there...  does that do something special to matrices, am I missing something....?)  Possibly vestigial line from C++
+    nicheweb1=nicheweb1-diag(diag(nicheweb1));%Set the diagonal to 0.
+
 
 %--------------------------------------------------------------------------
 %Compute shortest path to basal species for each species.
