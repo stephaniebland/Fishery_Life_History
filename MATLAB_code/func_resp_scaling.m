@@ -22,8 +22,7 @@ for i=1:nichewebsize
             %--------------------------------------------------------------
             if IsFish(i)==0   
                 Bsd(i,j) = 1.5;            % low half saturation density
-                c(i,j)   = exprnd(.2);     % exponential distribution with mu=0.2 (i.e. lambda=5)
-                c(i,j)   = min(c(i,j),.5); % limit the competition coefficient to 0.5
+                c(i,j)=min(exprnd(.2),.5); % competition  coefficient is exponential distribution with mu=0.2 (i.e. lambda=5), limited to 0.5
                 
             %--------------------------------------------------------------
             % if i is a fish 
