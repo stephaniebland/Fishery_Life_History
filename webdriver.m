@@ -4,6 +4,7 @@
 % modified by Barbara Bauer Apr, 2011
 % modified by Perrine Tonin March, 2012
 % modified by Stephanie Bland 2015-2017
+% Version 1.0
 %--------------------------------------------------------------------------
 % This script runs setup.m to set model parameters, then 
 % dynamic_fn.m to integrate the bioenergetic model.
