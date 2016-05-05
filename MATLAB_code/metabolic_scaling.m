@@ -117,10 +117,10 @@ function [meta, T, T1, isfish, Z]= metabolic_scaling(nichewebsize,nicheweb,basal
     Mvec = zeros(nichewebsize,1); %mass per individual
     Mvec=Z.^(T-1);  %T-1 used since basal level is 1.
 
-    %%Metabolic scaling constants
-    a_r = 1;
-    a_x= 0.314; %Berlow et al. 2009
-    a_y = 8*a_x;  %% note 8 is the y_ij
+%     %%Metabolic scaling constants  %%%No longer used
+%     a_r = 1;
+%     a_x= 0.314; %Berlow et al. 2009
+%     a_y = 8*a_x;  %% note 8 is the y_ij
 
     % Allometric scaling exponent (Boit et al. in prep.)
     A_fish=0.11;
