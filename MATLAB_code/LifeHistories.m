@@ -11,6 +11,7 @@
 %  Assigns Lif History Stages
 %  Reference: 
 %  Uses the following parameters:
+%  nicheweb,nichewebsize,connectance,basalsp,IsFish
 %--------------------------------------------------------------------------
 %This function is dependent on the weight of each fish, since weight is
 %proportional to life history structure and number of stages (lifespan)...
@@ -21,12 +22,23 @@
 %basically just adding rows and columns for your new life stages).
 
 %function [output]= LifeHistories(input)
-function [nicheweb_new,lifehistory_table]= LifeHistories(isfish,Mvec,nichewebsize,connectance,nicheweb)
+function [nicheweb_new,lifehistory_table]= LifeHistories(nicheweb,nichewebsize,connectance,basalsp,IsFish)
+
+%%-------------------------------------------------------------------------
+%%  FIRST: SET DYNAMICS PARAMETERS
+%%-------------------------------------------------------------------------
+%Calculates species weight -> so you know how many life stages it needs
+%"meta", "TrophLevel" & "T1", "IsFish" and "Z"
+    [meta, TrophLevel, T1, IsFish, Z]=metabolic_scaling(nichewebsize,nicheweb,basalsp);
+
+
+%%-------------------------------------------------------------------------
+%%  NUMBER OF LIFESTAGES
+%%-------------------------------------------------------------------------
 %Calculate Life history mass for all fish species
 %Assume all fish start as eggs, which are no bigger than Max_egg_size
 %Can change Max_egg_size later to random variable or set fixed number of
 %fish stages instead...
-
 Max_egg_size=100;%I don't have any justification for this number yet.
 % Max_egg_length=10;%I don't have any justification for this number yet.
 lifestage_mass=Mvec.*isfish;% You only want to add lifestages to fish

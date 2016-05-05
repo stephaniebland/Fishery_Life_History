@@ -76,9 +76,11 @@ nichewebsize = length(nicheweb);%Steph: Find number of species (not sure why, al
 basalsp = find(sum(nicheweb,2)==0);%List the autotrophs (So whatever doesn't have prey)  Hidden assumption - can't assign negative prey values (but why would you?)
 
 
-%%%%%%%%%%%%%INSERT LIFEHISTORIES.M LINK HERE
+%%-------------------------------------------------------------------------
+%%  LIFE HISTORY
+%%-------------------------------------------------------------------------
 nicheweb_old=nicheweb;%Save the old nicheweb just incase.
-[nicheweb_new,lifehistory_table]= LifeHistories(isfish,Mvec,nichewebsize,connectance,nicheweb);
+[nicheweb_new,lifehistory_table]= LifeHistories(nicheweb,nichewebsize,connectance,basalsp,IsFish);
 
 
 %%-------------------------------------------------------------------------
@@ -90,7 +92,8 @@ nicheweb_old=nicheweb;%Save the old nicheweb just incase.
 %1) set manually
     %meta = [0; .15; .02];    
 %2) Can be scaled with body size
-    [meta, TrophLevel, T1, IsFish, Z]=metabolic_scaling(nichewebsize,nicheweb,basalsp);
+    [TrophLevel,T1,IsFish]= TrophicLevels(nichewebsize,nicheweb,basalsp);
+    [meta,Z,Mass]=metabolic_scaling(nichewebsize,basalsp,IsFish,TrophLevel);
     
 
 %Intrinsic growth parameter "r" for basal species only
