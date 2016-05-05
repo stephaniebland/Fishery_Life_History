@@ -89,6 +89,10 @@ basalsp = find(sum(nicheweb,2)==0);%List the autotrophs (So whatever doesn't hav
 %2) Can be scaled with body size
     [meta, TrophLevel, T1, IsFish, Z]=metabolic_scaling(nichewebsize,nicheweb,basalsp);
 
+%%%%%%%%%%%%%INSERT LIFEHISTORIES.M LINK HERE
+[nicheweb_new,lifehistory_table]= LifeHistories(isfish,Mvec,nichewebsize,connectance,nicheweb);
+    
+
 %Intrinsic growth parameter "r" for basal species only
 %-----------------------------------------------------
     int_growth = zeros(nichewebsize,1);
