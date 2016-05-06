@@ -29,8 +29,8 @@ function [nicheweb_new,lifehistory_table]= LifeHistories(nicheweb,nichewebsize,c
 %%-------------------------------------------------------------------------
 %Calculates species weight -> so you know how many life stages it needs
 %"meta", "TrophLevel" & "T1", "IsFish" and "Z"
-    [meta, TrophLevel, T1, IsFish, Z]=metabolic_scaling(nichewebsize,nicheweb,basalsp);
-
+    [TrophLevel,T1,IsFish]= TrophicLevels(nichewebsize,nicheweb,basalsp);
+    [meta,Z,Mass]=metabolic_scaling(nichewebsize,basalsp,IsFish,TrophLevel);
 
 %%-------------------------------------------------------------------------
 %%  NUMBER OF LIFESTAGES

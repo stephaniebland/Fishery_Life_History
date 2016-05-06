@@ -13,35 +13,14 @@
 %--------------------------------------------------------------------------
 
 % uncomment if to use as a function
-function [meta,Z,Mvec]= metabolic_scaling(nichewebsize,basalsp,isfish,T)
-    
+function [meta,Z]= metabolic_scaling(nichewebsize,basalsp,isfish,T,Mvec)
 %--------------------------------------------------------------------------
-%Constant consumer-resource body size
+% Find remaining consumer-resource body size ratios (for new life stages)
+% and calculate metabolic rates
 %--------------------------------------------------------------------------
-    % Follows a lognormal distribution with different means and standart
-    % deviation for invertebrates and fishes (Brose et al, 2006)
-    
-    m_fish   =5000;  % mean for fishes
-    v_fish   =100;   % standart deviation for fishes
-    
-    m_invert =100;   % mean for invertebrates
-    v_invert =100;   % standart deviation for invertebrates
-    
-    % mean and standard deviation of the associated normal distributions
-    mu_fish=log(m_fish^2/sqrt(v_fish+m_fish^2));
-    mu_invert=log(m_invert^2/sqrt(v_invert+m_invert^2));
-    sigma_fish=sqrt(log(v_fish/m_fish^2+1));
-    sigma_invert=sqrt(log(v_invert/m_invert^2+1));
-    
-    %Consumer-resource body-size
-    Z=lognrnd(mu_invert,sigma_invert,nichewebsize,1);
-    Z(find(isfish==1))=lognrnd(mu_fish,sigma_fish,length(find(isfish==1)),1);
-
-%--------------------------------------------------------------------------
-%Set body size based on trophic level and calculate metabolic rates
-%--------------------------------------------------------------------------
-    Mvec = zeros(nichewebsize,1); %mass per individual
-    Mvec=Z.^(T-1);  %T-1 used since basal level is 1.
+    Z=Mvec.^(1/(T-1)); %Consumer-resource body-size
+    %IMPORTANT, FILL IN OLD Z, IN CASE YOU LOSE ACCURACY FOR NEW THINGS
+    %(ALTERNATIVELY GET FUNCTION TO ONLY CALCULATE FOR J>NICHEWEBSIZE)
 
     %%Metabolic scaling constants
     a_r = 1;
