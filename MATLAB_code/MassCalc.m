@@ -13,8 +13,18 @@
 %--------------------------------------------------------------------------
 
 % uncomment if to use as a function
-function [Z,Mvec]= metabolic_scaling(nichewebsize,basalsp,isfish,T)
-    
+function [Z,Mvec,isfish]= MassCalc(nichewebsize,basalsp,T)
+
+%--------------------------------------------------------------------------
+%Fish or invertebrate
+%--------------------------------------------------------------------------
+    % distinction between invertebrates and fishes
+    isfish=zeros(nichewebsize,1);
+    possibfish=find(T>=3);                % species with TL<3 are always invertebrates
+    bernoulli=rand(length(possibfish),1);
+    bernoulli=logical(bernoulli<=.6);     % for species with TL>=3, probability of 60% of being a fish
+    isfish(possibfish)=bernoulli; %That's clever...
+        
 %--------------------------------------------------------------------------
 %Constant consumer-resource body size
 %--------------------------------------------------------------------------

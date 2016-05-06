@@ -22,15 +22,15 @@
 %basically just adding rows and columns for your new life stages).
 
 %function [output]= LifeHistories(input)
-function [nicheweb_new,lifehistory_table]= LifeHistories(nicheweb,nichewebsize,connectance,basalsp,IsFish)
+function [nicheweb_new,lifehistory_table,Mvec,IsFish]= LifeHistories(nicheweb,nichewebsize,connectance,basalsp)
 
 %%-------------------------------------------------------------------------
 %%  FIRST: SET DYNAMICS PARAMETERS
 %%-------------------------------------------------------------------------
 %Calculates species weight -> so you know how many life stages it needs
 %"meta", "TrophLevel" & "T1", "IsFish" and "Z"
-    [TrophLevel,T1,IsFish]= TrophicLevels(nichewebsize,nicheweb,basalsp);
-    [meta,Z,Mass]=metabolic_scaling(nichewebsize,basalsp,IsFish,TrophLevel);
+    [TrophLevel,T1]= TrophicLevels(nichewebsize,nicheweb,basalsp);
+    [Z,Mvec,IsFish]= metabolic_scaling(nichewebsize,basalsp,TrophLevel);
 
 %%-------------------------------------------------------------------------
 %%  NUMBER OF LIFESTAGES

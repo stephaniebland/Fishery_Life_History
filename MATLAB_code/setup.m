@@ -80,7 +80,9 @@ basalsp = find(sum(nicheweb,2)==0);%List the autotrophs (So whatever doesn't hav
 %%  LIFE HISTORY
 %%-------------------------------------------------------------------------
 nicheweb_old=nicheweb;%Save the old nicheweb just incase.
-[nicheweb_new,lifehistory_table]= LifeHistories(nicheweb,nichewebsize,connectance,basalsp,IsFish);
+[nicheweb_new,lifehistory_table,Mvec,IsFish]= LifeHistories(nicheweb,nichewebsize,connectance,basalsp);
+nicheweb=nicheweb_new;%Update nicheweb.  This looks really messy, but I'll clean it up later
+nichewebsize = length(nicheweb);%Steph: Find number of species (not sure why, already have S_0)
 
 
 %%-------------------------------------------------------------------------
@@ -92,8 +94,8 @@ nicheweb_old=nicheweb;%Save the old nicheweb just incase.
 %1) set manually
     %meta = [0; .15; .02];    
 %2) Can be scaled with body size
-    [TrophLevel,T1,IsFish]= TrophicLevels(nichewebsize,nicheweb,basalsp);
-    [meta,Z,Mass]=metabolic_scaling(nichewebsize,basalsp,IsFish,TrophLevel);
+    [TrophLevel,T1]= TrophicLevels(nichewebsize,nicheweb,basalsp);
+    [meta,Z]=metabolic_scaling(nichewebsize,basalsp,IsFish,TrophLevel,Mvec);
     
 
 %Intrinsic growth parameter "r" for basal species only

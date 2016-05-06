@@ -13,7 +13,7 @@
 %--------------------------------------------------------------------------
 
 % uncomment if to use as a function
-function [T, T1, isfish]= TrophicLevels(nichewebsize,nicheweb,basalsp)
+function [T, T1]= TrophicLevels(nichewebsize,nicheweb,basalsp)
 
 
 %--------------------------------------------------------------------------
@@ -79,14 +79,4 @@ function [T, T1, isfish]= TrophicLevels(nichewebsize,nicheweb,basalsp)
 %--------------------------------------------------------------------------
     T=((T1+T2')/2)';%So after looking into this a bit, I think that T2 is the way to go.  It's more consistent with the defn' for trophic level used by fishbase.org It might be useful to calculate the trophic levels again at the end once you know equilibrium densities. 
 
-%--------------------------------------------------------------------------
-%Fish or invertebrate
-%--------------------------------------------------------------------------
-    % distinction between invertebrates and fishes
-    isfish=zeros(nichewebsize,1);
-    possibfish=find(T>=3);                % species with TL<3 are always invertebrates
-    bernoulli=rand(length(possibfish),1);
-    bernoulli=logical(bernoulli<=.6);     % for species with TL>=3, probability of 60% of being a fish
-    isfish(possibfish)=bernoulli; %That's clever...
-    
     end
