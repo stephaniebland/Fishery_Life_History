@@ -11,12 +11,23 @@ I mean, technically all *species* are already guaranteed to fufill requirements,
 One way of doing this is when you recreate your food web, you can temporarily set all the intraspecific links to 0 (so no cannibalism), and then check for the basalsp and connectivity.  This takes care of 3+4.  
 - Depending on how strong you want the requirement to be, you might want to also set all the links between any lifestages (even between different fish species!) as 0 -> so that if one species goes extinct you won't be stuck with species that don't lead to basal. Sure, this can still happen with the normal food web, but taking out an entire species will remove several nodes. [I think I might be going crazy here, is this overthinking it or making it overly complicated? I think so.]
 
+###Solution?###
+So there's a question of how one should assign diet for the new life stages.  We could either A) use mass to come up with an approximate niche value and assign them using the old nichemodel.m script as Neo's Nature 2000 paper says, or B) you could assign them trophic levels and choose their diet based on that.  If we choose to use B), there are two methods for doing that:  1) just make sure that the average of their prey has the right trophic level, or 2) try to solve for the vector y, where y_i is the average of the shortest route and another vector x, where x=(I-Q)^(-1)*1.  Alternatively you could use method C), which is to add a few more nodes to the model and then rank them by trophic level to assign them to a species and a life stage after the fact. 
+
+My gut feeling is that B1) will work well enough, because you might be able to assume that you aren't adding enough new nodes to drastically change the rest of the food web or trophic levels.  Also, it's probably alright to use it since you only need the trophic levels of the new life stages to be *roughly* accurate. B2) would be ideal, but I'm not sure how that would work. Maybe I could use eigenvectors?  C) is a little bit messy, since there's no guarantee that you won't end up with a bunch of autotrophs or juveniles that prey on adults of their own species.  
+
+Ok so here is my solution:  create a new food web generator based off of this and have it assign diet so that the average trophic level of it's prey species is T-1.
+
 
 ##########CONFIRM WHETHER MODEL ALLOWS LOOPS##########
 - Re-read papers (because each species prey is centered at c, and c is assigned a value in [r/2,n])
 - This means that each species can eat prey larger than it!
 - This also implies cannibalism (that sentence in Williams and Martinez 2000 Nature "Computational considerations require that chains with loops be ignored" is *really* confusing me right now, I probably took it out of context or don't understand it *at all*.)
 - Also, it looks like species eat *every* prey that fall in their range [c-r/2,c+r/2].  So no randomness. 
+
+
+##########FIX METABOLIC_SCALING.M Z##########
+- Quick fix, as soon as I have a steady value for number of species
 
 
 ##########TIME SCALES##########
