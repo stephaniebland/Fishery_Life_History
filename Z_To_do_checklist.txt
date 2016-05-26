@@ -27,6 +27,7 @@ Neo Martinez also confirmed that each fish species is assigned food according to
 	[Alternatively, you could just use a function that gradually introduces each new prey species into the diet, while replacing old prey species, until they go through all of them)
 	Ultimately though, you can always use that function to determine what fills in your matrix anyhow, and matrices are preferable anyhow for maturation (wait, really?  *Are they*???  I'm not sure anymore.  Because with a matrix, you can have discrete life stages where the diet changes overnight while they age, whereas functions on their own could make the diet more continuous and natural.  Additionally, maturation rates and fecundity will likely be determined by continuous functions as well.)  SO WHY ARE WE USING MATRICES AT ALL??? WHAT'S THE ADVANTAGE? I DON'T GET IT! I know it's probably faster to compute, but does it really take that much less time?
 	You still are left with a function problem though - how do you parameterize it in a realistic way.  I can easily put in place holders for now, but that seems like a moot point when I don't even know whether it should be continuous (functions) or discrete (matrix).
+	**OH SNAP, I think I figured out the issue.  You want to keep them as discrete nodes so you can track biomass.**  
 
 
 ##########CONFIRM WHETHER MODEL ALLOWS LOOPS##########
@@ -62,4 +63,4 @@ Neo Martinez also confirmed that each fish species is assigned food according to
 
 ##########FUTURE WORK (MAYBE)##########
 - Alternative life history strategies _within_ a species (ex:  Mature salmon parr)
-
+- If fish body weight does determine the trophic level to some extent (at least for N. Atlantic species), then maybe it would be important to let TL decline during fishing evolution simulations according to body mass decrease.  But this is something we can implement in the far future when the code is running. See Pauly et al. 2001, Can Fish Aquat Sci.
