@@ -18,8 +18,19 @@ My gut feeling is that B1) will work well enough, because you might be able to a
 
 Ok so here is my solution:  create a new food web generator based off of this and have it assign diet so that the average trophic level of it's prey species is T-1.
 
+###THE REAL SOLUTION###
+It turns out that many fish species don't have strictly increasing trophic levels as they age, some start of as omnivores and end up as planktivores.  For instance, in salt water species *Lagodon rhomboides* and *Diplodus holbrooki* the trophic levels decrease (Stoner and Livingston 1984 Table 6), in particular *L. rhomboides* reverts from omnivory to herbivory. 
+
+Hence, it makes sense to use niche level rather than trophic level to determine the diet.  Because it doesn't matter whether their trophic level is strictly increasing, just that it follows that pattern approximately.
+
+Neo Martinez also confirmed that each fish species is assigned food according to it's overall life history, it's not just the adult life stage's diet that's being represented.  Therefore, it makes sense to divide the diet between life stages.  Now there's just a question of *how* to do *that*.  Especially if you want an overlap in diet between lifestages.  I mean, technically you could just use a function to say what fish eat instead of using a matrix format. 	[For instance, fish will eat at least one species at each life stage, and the youngest will eat the first 20 percentile of fish represented, the second will eat species that fall in 10-40 percentile ranks of their prey's niches....  Here's a representation:  Suppose Pinfish eat species {5,6,7,8,9,10,11,12,13,14}, and niche value strictly increases with species number.  So the first life stage eats {5,6}, second lifestage eats {6,7,8}, etc.]
+	[Alternatively, you could just use a function that gradually introduces each new prey species into the diet, while replacing old prey species, until they go through all of them)
+	Ultimately though, you can always use that function to determine what fills in your matrix anyhow, and matrices are preferable anyhow for maturation (wait, really?  *Are they*???  I'm not sure anymore.  Because with a matrix, you can have discrete life stages where the diet changes overnight while they age, whereas functions on their own could make the diet more continuous and natural.  Additionally, maturation rates and fecundity will likely be determined by continuous functions as well.)  SO WHY ARE WE USING MATRICES AT ALL??? WHAT'S THE ADVANTAGE? I DON'T GET IT! I know it's probably faster to compute, but does it really take that much less time?
+	You still are left with a function problem though - how do you parameterize it in a realistic way.  I can easily put in place holders for now, but that seems like a moot point when I don't even know whether it should be continuous (functions) or discrete (matrix).
+
 
 ##########CONFIRM WHETHER MODEL ALLOWS LOOPS##########
+- YES IT DOES! They fixed the loop issue mentioned in Williams and Martinez Nature 2000.
 - Re-read papers (because each species prey is centered at c, and c is assigned a value in [r/2,n])
 - This means that each species can eat prey larger than it!
 - This also implies cannibalism (that sentence in Williams and Martinez 2000 Nature "Computational considerations require that chains with loops be ignored" is *really* confusing me right now, I probably took it out of context or don't understand it *at all*.)
