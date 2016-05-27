@@ -90,7 +90,7 @@ for i=1:nichewebsize
         %lifestage_length(i,j+1)=
         j=j+1;
     end
-    lifestage_N(i,1)=j;%Number of lifestages for each species
+    lifestage_N(i,1)=j;%Number of lifestages for each species i
 end
 
 
@@ -122,9 +122,10 @@ for i=1:nichewebsize
     end
 end
 
-[nicheweb_new] = NicheModel(sum(lifestage_N), connectance);
-%ERROR!!!!  Need to make sure NicheModel knows what to work with!  You
-%would like it to use the fish mass indirectly to determine food chain!
+%%-------------------------------------------------------------------------
+%%  NEW NICHEWEB
+%%-------------------------------------------------------------------------
+
 nicheweb_new(1:nichewebsize,1:nichewebsize)=nicheweb;
 
 end
