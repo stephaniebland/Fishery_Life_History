@@ -2,7 +2,7 @@
 \usepackage[capitalise]{cleveref} % when you reference a table or figure, automatically format as "Table 1" rather than "table 1" or "1".
 \usepackage{authblk} % allows pretty formatting of author lists
 \title{Fisheries Induced Life History Changes}
-\author[1,2]{Stephanie Bland}
+\author[2,1]{Stephanie Bland}
 \date{\today}
 \begin{document}
 \maketitle
@@ -16,7 +16,7 @@
 \item So we are looking for trends in a general ecosystem
 \end{itemize}
 \end{itemize}
-
+\section*{Methods (Overview)}
 \section*{Appendix:  Methods}
 \subsubsection*{Number of lifestages}
 I will modify the ATN model to include life histories for fish species. To determine the number of life stages and the mass at each stage, I will use a weight based von Bertalanffy growth model
@@ -30,15 +30,16 @@ W(t)=W_\infty(1-e^{-K(t-t_0)})^3
 \par Let the maximum number of lifestages in any of the species be $\Lambda=\max_{i=1}^S a_i$, we can store the weights for every lifestage and species in an $S\times \Lambda$ matrix $\Omega$, where element $\omega_{i,j}$ is the weight of species i in lifestage j.  
 \par We can store the life stage weights in a matrix where rows are species, and columns are life stages. So this will be an $S$
 \subsubsection*{FoodWeb: What it looks like}
-We need to store the new lifestages in the food web. There are two ways of approaching this problem:
-\begin{enumerate}
-\item Each new lifestage will be incorpated into an extended food web matrix as new nodes.  This will require keeping track of fish species by listing distinct species with a new vector. So if you start with $S$ species, and you augment the matrix by adding new rows and columns to represent the new life stages.
-\item Alternatively, we can use a four dimensional array to store the life history food web. This is convenient, because we already stored the weights in a matrix where rows are species, and columns are life stages.
-\end{enumerate}
+We need to store the new lifestages in the food web. Each new lifestage will be incorpated into an extended food web matrix as new nodes.  This will require keeping track of fish species by listing distinct species with a new vector. So if you start with $S$ species, and you augment the matrix by adding new rows and columns to represent the new life stages.
+
 \subsubsection*{Splitting the diet among lifestages}
 Since the diet assigned to fish species represents the full extent of their diet over their entire lifespan, we need to split their diet up among life stages.
-\par We want to be able to control a species diet over its lifespan. In particular, we want to be able to specify whether each life stage is a specialist or a generalist, and the size of their prey. 
-\par So to control the degree to which a lifestage specializes, we 
+\par We want to be able to control a species' diet over its lifespan. In particular, we want to be able to specify whether each life stage is a specialist or a generalist, and the size of their prey. 
+\par We also need to ensure that every prey species in the fish's original diet is consumed by at least one life stage. 
+\par It would also be ideal if we could constrain the lifestages diets so that they are always increasing.
+
+\subsubsection*{Splitting the diet among lifestages}
+To control the degree to which a lifestage specializes, we will specify the number of prey each lifestage eats using a matrix, where each element $\sigma_ij$ is the number of prey consumed by species i in lifestage j.  
 
 
 \end{document}
