@@ -8,7 +8,7 @@
 %  Modified May 2016 Stephanie Bland, added life history stages and rewrote
 %  some comments
 %--------------------------------------------------------------------------
-%  Assigns Lif History Stages
+%  Assigns Life History Stages
 %  Reference: 
 %  Uses the following parameters:
 %  nicheweb,nichewebsize,connectance,basalsp,IsFish
@@ -53,7 +53,7 @@ for i=1:nichewebsize
         lifestage_mass(i,j+1)=lifestage_mass(i,j)/16;%INSERT VON-BERT HERE!!!
         j=j+1;
     end
-    lifestage_N(i,1)=j;%Number of lifestages for each species
+    lifestage_N(i)=j;%Number of lifestages for each species
 end
 
 randm_var=1;
@@ -73,7 +73,7 @@ for i=1:nichewebsize
         mass_history(i,j+1)=mass_asympt(i)*(1-exp(-K(t-t0)))^3;%INSERT VON-BERT HERE!!!
         j=j+1;
     end
-    lifestage_N(i,1)=j;%Number of lifestages for each species
+    lifestage_N(i)=j;%Number of lifestages for each species
 end
 
 
@@ -90,7 +90,7 @@ for i=1:nichewebsize
         %lifestage_length(i,j+1)=
         j=j+1;
     end
-    lifestage_N(i,1)=j;%Number of lifestages for each species i
+    lifestage_N(i)=j;%Number of lifestages for each species i
 end
 
 
@@ -125,6 +125,60 @@ end
 %%-------------------------------------------------------------------------
 %%  NEW NICHEWEB
 %%-------------------------------------------------------------------------
+%Assign sigma, the degree of specialization or generalization
+maxStages=max(lifestage_N);
+NofPrey=sum(nicheweb,2);
+%The following way is extremely controlled, it will mimic any function in [0,1]:
+speci_fun=@(x) x.^2+1;%Important -> speci_fun(0)>0
+diet_redundancy=5;%A rough estimate of the amount of overlap in diet between life stages.
+if speci_fun(0)<=0
+    error('CHANGE THE SPECIALIST FUNCTION SO THAT IT IS ALWAYS GREATER THAN 0')
+end
+spec_gener=zeros(nichewebsize,maxStages);%preallocating variable size for speed.
+for i=1:nichewebsize
+    N=lifestage_N(i);%Number of lifestages in this species (1 for non-fish)
+    spec_i=speci_fun(0:1/(N-1):1); %Assigns the number of prey for each life stage from N different points in the chosen function in [0,1] interval.
+    spec_i=(spec_i/sum(spec_i)).*(NofPrey(i)+diet_redundancy);%Normalizes the number of prey so that the entire prey selection is covered by the different lifestages.
+    spec_gener(i,1:N)=ceil(spec_i);%Throws on a ceiling, so that each life stage has at least 1 prey item.
+end
+%Honestly, this function has its fair share of problems.  It might just be
+%the distribution I'm using, but it's always deterministic, and you might
+%end up with long strings of '1's.
+
+%Alternatively just use a random distribution instead:
+%Any degree of specialist is equally likely at any stage unless I use a
+%sort function
+for i=1:nichewebsize
+    spec_i=betarnd(1,1,1,lifestage_N(i))*10;%since beta distribution E[X]=a/(a+b)<=1, you'll never get the average high enough.  I mean, you might as well just use any regular distribution
+    spec_i=rand(1,lifestage_N(i))*10;%see, at least these values will be kind of normal.
+    %Now if I want to normalize it so that I can guarantee it covers the
+    %entire prey selection:
+    spec_gener(i,1:lifestage_N(i))=(spec_i/sum(spec_i)).*(NofPrey(i)+diet_redundancy);%Normalizes the number of prey so that the entire prey selection is covered by the different lifestages.
+end
+spec_gener=ceil(spec_gener);%Throws on a ceiling, so that each life stage has at least 1 prey item.
+%Here is the sort function:
+spec_gener=sort(spec_gener,2,'descend'); %I don't know how I feel about using this either. The idea is to make sure that the degree of specialism doesn't jump around, and continually increases.
+
+%%%%%%%%%%%%Rate of increase for niche values according to lifestage%%%%%%%%%%%%
+%Choose the rate at which niche values increases with lifestage.  By this I mean that the minimum niche values can increase quickly or slowly (so that fish either eat mainly small prey for most of their life, or they eat large prey most of their life - think about it as a curve with prey's niche value on the y axis and lifestage on the x axis.  You're changing the concavity of this function.
+min_niche_prey=zeros(nichewebsize,maxStages);%preallocating variable size for speed.
+for i=1:nichewebsize
+    if max(nicheweb(i,:)==0
+        min_niche_prey(i,:)=
+    Prey(i,:)=find(nicheweb(i,:));
+    
+    Juve_prey=min(Prey(i,:));
+    N_lifeshifts=1/(lifestage_N(i)-1);%Number of lifestage shifts this fish goes through, so that final sequence will be lifestage_N long (number of elements).
+    Adult_prey=max(Prey(i,:))-spec_gener(30,find(spec_gener(30,:),1,'last'));%This is the maximum prey minus the number of prey the last life stage consumes.  This problematic though, because it means that younger lifestages will *always* need to eat prey smaller than the smallest adult prey.  It would be much better to find a way to distribute this where each lifestage can eat anything in [min(Prey):max(Prey)], but since you're listing these by the smallest prey at each lifestage (the min of the range) you should use [min(Prey):(max(Prey)-number of prey that lifestage eats)]
+    min_niche_prey(i,:)=round(Juve_prey:N_lifeshifts:Adult_prey); %Ideally you should be able to choose this however you would like to, and right now it doesn't guarantee perfect coverage. It's just a boring old straight line (second derivative =0)
+end
+%The problem with the above is that all lifestages' prey are limited by (max(Prey)-number of prey that lifestage eats), rather than a more natural range
+%Here I fix that by a more natural approach
+%But if I use this approach, it would still require a way to distribute the actual prey distribution
+for i=1:nichewebsize
+    min_niche_prey(i,1:lifestage_N(i))=min(Prey(i,:));
+    max_niche_prey(i,:)=max(Prey(i,:))-spec_gener(30,find(spec_gener(30,:),1,'last'));
+end
 
 nicheweb_new(1:nichewebsize,1:nichewebsize)=nicheweb;
 
