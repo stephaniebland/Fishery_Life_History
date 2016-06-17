@@ -1,4 +1,4 @@
-
+# ---- Lifestage_prey ----
 # first, your data
 lifestage=1:9
 min_niche=c(5,7,7,8,6,11,12,10,14)
@@ -10,9 +10,13 @@ library(reshape2)
 library(ggplot2)
 # Create the floating bar plot
 ggplot(Prey_niche_val, aes(x=lifestage,ymin = `min_niche`, 
-              ymax = `max_niche`,middle=`min_niche`,lower = `min_niche`, 
-              upper = `max_niche`)) + 
+                           ymax = `max_niche`,middle=`min_niche`,lower = `min_niche`, 
+                           upper = `max_niche`)) + 
   geom_boxplot(stat = 'identity') +
   xlab('Lifestage') + 
   ylab('Prey Niche Range') +
-scale_x_continuous(breaks=lifestage)+scale_y_continuous(breaks=0:30,limits = c(0,20))
+  scale_x_continuous(breaks=lifestage)+scale_y_continuous(breaks=0:30,limits = c(0,20))
+
+
+
+

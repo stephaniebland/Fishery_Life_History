@@ -5,15 +5,14 @@
 \author[2,1]{Stephanie Bland}
 \date{\today}
 \begin{document}
-\SweaveOpts{concordance=TRUE}
 \maketitle
 
-% <<include=FALSE>>=
-% library(knitr)
-% opts_chunk$set(
-% concordance=TRUE
-% )
-% @
+<<include=FALSE>>=
+library(knitr)
+opts_chunk$set(
+concordance=TRUE
+)
+@
 
 
 \section*{Introduction}
@@ -49,13 +48,16 @@ Since the diet assigned to fish species represents the full extent of their diet
 \subsubsection*{Splitting the diet among lifestages}
 To control the degree to which a lifestage specializes, we will specify the number of prey each lifestage eats using a matrix, where each element $\sigma_ij$ is the number of prey consumed by species i in lifestage j.  
 
-%latexR("Fig_lifestage_prey.R")
-
-<<boring-plots, fig.width=4, fig.height=4, out.width='.4\\linewidth'>>=
-## two plots side by side (option fig.show='hold')
-par(mar=c(4,4,.1,.1),cex.lab=.95,cex.axis=.9,mgp=c(2,.7,0),tcl=-.3,las=1)
-boxplot(x)
-hist(x,main='')
+<<external-code, cache=FALSE,echo=F>>=
+read_chunk('Fig_lifestage_prey.R')
 @
+
+\begin{figure}
+<<Lifestage_prey, cache=FALSE, echo=F>>=
+require(ggplot2)
+@
+\caption{An example of prey division among lifestages. This species eats prey in the niche value range of [5, 17], over 9 lifestages. Each lifestage i eats prey in the niche value range of $[a_i, b_i]$.} 
+\end{figure} 
+
 
 \end{document}
