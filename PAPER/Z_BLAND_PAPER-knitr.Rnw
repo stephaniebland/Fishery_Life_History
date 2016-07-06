@@ -28,7 +28,10 @@ read_chunk('Fig_lifestage_prey.R')
 \end{itemize}
 \end{itemize}
 \section*{Methods (Overview)}
-Figure \ref{fig:Lifestage_prey} shows how a species' prey will be assigned to lifestages. In this example, 
+Figure \ref{fig:Lifestage_prey} shows how a species' prey will be assigned to lifestages. In this example, \ref{fig:Lifestage_prey}An example of prey division among lifestages. This species eats prey in the niche value range of \ref$[\Sexpr{niche_range}]$ over
+\par Ideally, we would want the prey's niche values to be roughly increasing with lifestage.  More importantly though, we want to make sure that every prey item is consumed by at least one lifestage. So we can impose four requirements on $\{a_i\}, \{b_i\}$: 1. $a_i\leq b_i$ 2. $a_{i+1}\leq b_i+1$ 3. $a_0=\min{total niche range}$ 4. $b_m=\max{total niche range}$, where m is the oldest lifestage for species i.
+\par You may note that the above example breaks rule 2. for i=5.  I'm not sure if I want to allow this, because it doesn't look that ugly.  
+\par I might also consider including a new rule 5. $b_{i+1}\geq a_i$
 \section*{Appendix:  Methods}
 \subsubsection*{Number of lifestages}
 I will modify the ATN model to include life histories for fish species. To determine the number of life stages and the mass at each stage, I will use a weight based von Bertalanffy growth model
@@ -59,9 +62,7 @@ To control the degree to which a lifestage specializes, we will specify the numb
 <<Lifestage_prey, cache=FALSE, echo=F>>=
 require(ggplot2)
 @
-\caption{\label{fig:Lifestage_prey}An example of prey division among lifestages. This species eats prey in the niche value range of $[\Sexpr{niche_range}]$, over $\Sexpr{N_stages}$ lifestages. Each lifestage i eats prey in the niche value range of $[a_i, b_i]$. However, we can also think of each lifestage as having a diet range, starting from a smallest prey item, $a_i$, and continuing up to a largerst prey item, $b_i=a_i+\sigma_i$, where $\sigma_i$ is the number of prey that lifestage i consumes. This is how I chose to define my prey selection, because this way I can control the degree of specialisation for each lifestage, as well as the rate of prey size increase. 
-\par Ideally, we would want the prey's niche values to be roughly increasing with lifestage.  More importantly though, we want to make sure that every prey item is consumed by at least one lifestage. So we can impose four requirements on $\{a_i\}, \{b_i\}$: 1. $a_i\leq b_i$ 2. $a_{i+1}\leq b_i+1$ 3. $a_0=\min{total niche range}$ 4. $b_m=\max{total niche range}$, where m is the oldest lifestage for species i.
-\par You may note that the above example breaks rule 2. for i=5.  I'm not sure if I want to allow this, because it doesn't look that ugly.  I might also consider including rule 5. $b_{i+1}\geq a_i$} 
+\caption{\label{fig:Lifestage_prey}An example} 
 \end{figure} 
 
 \section*{Assumptions}
