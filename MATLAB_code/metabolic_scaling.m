@@ -22,10 +22,10 @@ function [meta,Z]= metabolic_scaling(nichewebsize,basalsp,isfish,T,Mvec)
     %IMPORTANT, FILL IN OLD Z, IN CASE YOU LOSE ACCURACY FOR NEW THINGS
     %(ALTERNATIVELY GET FUNCTION TO ONLY CALCULATE FOR J>NICHEWEBSIZE)
 
-    %%Metabolic scaling constants
-    a_r = 1;
-    a_x= 0.314; %Berlow et al. 2009
-    a_y = 8*a_x;  %% note 8 is the y_ij
+%     %%Metabolic scaling constants  %%%No longer used
+%     a_r = 1;
+%     a_x= 0.314; %Berlow et al. 2009
+%     a_y = 8*a_x;  %% note 8 is the y_ij
 
     % Allometric scaling exponent (Boit et al. in prep.)
     A_fish=0.11;

@@ -103,7 +103,7 @@ nichewebsize = length(nicheweb);%Steph: Find number of species (not sure why, al
     int_growth = zeros(nichewebsize,1);
     int_growth(basalsp) = 1.1 + .18.*randn(length(basalsp),1); 
     int_growth(int_growth<.6 & int_growth>0)=.6;
-    int_growth(int_growth>1.2)=1.2;
+    int_growth(int_growth>1.2)=1.2;%Steph:  So is it just me or does this completely mess up the distribution?  Because now you compressed the tails into little lumps at either side of the range.  Can you use the Beta distribution instead?  
     %set the r of basal within 0.6 and 1.2 (Boit et al, in prep)
 
 %Other dynamic parameters
