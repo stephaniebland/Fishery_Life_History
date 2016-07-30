@@ -160,11 +160,12 @@ spec_gener=ceil(spec_gener);%Throws on a ceiling, so that each life stage has at
 spec_gener=sort(spec_gener,2,'descend'); %I don't know how I feel about using this either. The idea is to make sure that the degree of specialism doesn't jump around, and continually increases.
 
 %%%%%%%%%%%%Rate of increase for niche values according to lifestage%%%%%%%%%%%%
-%Choose the rate at which niche values increases with lifestage.  By this I mean that the minimum niche values can increase quickly or slowly (so that fish either eat mainly small prey for most of their life, or they eat large prey most of their life - think about it as a curve with prey's niche value on the y axis and lifestage on the x axis.  You're changing the concavity of this function.
+%Choose the rate at which niche values increases with lifestage.  By this I
+%mean that the minimum niche values can increase quickly or slowly (so that fish either eat mainly small prey for most of their life, or they eat large prey most of their life - think about it as a curve with prey's niche value on the y axis and lifestage on the x axis.  You're changing the concavity of this function.)
 min_niche_prey=zeros(nichewebsize,maxStages);%preallocating variable size for speed.
-for i=1:nichewebsize
-    if max(nicheweb(i,:)==0
-        min_niche_prey(i,:)=
+for i=1:nichewebsize%Counts through all the species
+    if max(nicheweb(i,:)==0%So if species i doesn't have any prey
+        min_niche_prey(i,:)=%GAH IT WOULD PROB BE WAY SMARTER TO JUST DO FISH SPECIES
     Prey(i,:)=find(nicheweb(i,:));
     
     Juve_prey=min(Prey(i,:));
