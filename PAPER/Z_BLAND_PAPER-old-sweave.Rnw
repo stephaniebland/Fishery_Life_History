@@ -25,7 +25,7 @@ I will modify the ATN model to include life histories for fish species. To deter
 W(t)=W_\infty(1-e^{-K(t-t_0)})^3
 \end{equation}
 
-\noindent where $W_\infty$ is the asymptotic weight (g), K is the growth coefficient (year$^{-1}$), and $t_0$ is the initial condition parameter (year) (Sparre and Venema, 1998). I will define $W_\infty=1.5×W_A$ , where $W_A$ is the predetermined fish weight, and keep K constant at 0.3 year$^{-1}$. The initial condition parameter, $t_0$, will be calculated so that both of the following conditions are satisfied: 1) there are at least four life stages, and 2) the smallest life stage is no larger than 500g. 
+\noindent where $W_\infty$ is the asymptotic weight (g), K is the growth coefficient (year$^{-1}$), and $t_0$ is the initial condition parameter (year) (Sparre and Venema, 1998). I will define $W_\infty=1.5?W_A$ , where $W_A$ is the predetermined fish weight, and keep K constant at 0.3 year$^{-1}$. The initial condition parameter, $t_0$, will be calculated so that both of the following conditions are satisfied: 1) there are at least four life stages, and 2) the smallest life stage is no larger than 500g.
 \par Let $S$ be the total number of species in the model, $x_i$ be the number of lifestages for species i, so the total number of new nodes in your model is given by $T=\sum_{i=1}^S a_i$.
 \par Let the maximum number of lifestages in any of the species be $\Lambda=\max_{i=1}^S a_i$, we can store the weights for every lifestage and species in an $S\times \Lambda$ matrix $\Omega$, where element $\omega_{i,j}$ is the weight of species i in lifestage j.  
 \par We can store the life stage weights in a matrix where rows are species, and columns are life stages. So this will be an $S$
