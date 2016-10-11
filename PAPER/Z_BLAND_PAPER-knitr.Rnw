@@ -122,6 +122,7 @@ Which we can plug into the model to calculate the asymptotic weights. Using $W_\
   \item Set a lower limit for the weight of the smallest lifestage, and choose the number of lifestages accordingly.
 \end{itemize}
 \par Of course it's possible to use a combination of these methods, and both methods could be customized for individual species (for instance you could force every species to have exactly 3 lifestages, or you could assign a random number of lifestages to every species).
+\par Now that we have the smallest weight or number of lifestages, 
 
 \subsubsection*{FoodWeb: What it looks like}
 We need to store the new lifestages in the food web. Each new lifestage will be incorpated into an extended food web matrix as new nodes.  This will require keeping track of fish species by listing distinct species with a new vector. So if you start with $S$ species, and you augment the matrix by adding new rows and columns to represent the new life stages.
@@ -136,7 +137,7 @@ Since the diet assigned to fish species represents the full extent of their diet
 To control the degree to which a lifestage specializes, we will specify the number of prey each lifestage eats using a matrix, where each element $\sigma_ij$ is the number of prey consumed by species i in lifestage j.  
 
 \section*{Assumptions}
-Niche value corresponds to size of prey.  This is *roughly* true, but there are autotrophs with large niche values and fish with low niche values.  
+Niche value corresponds to size of prey.  This is {\it roughly} true, but there are autotrophs with large niche values and fish with low niche values.  
 
 
 
