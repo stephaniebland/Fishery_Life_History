@@ -11,7 +11,10 @@ Z_BLAND_PAPER-old-sweave.pdf
 Z_BLAND_PAPER-old-sweave.synctex.gz
 Z_BLAND_PAPER-old-sweave-concordance.tex
 Z_BLAND_PAPER-old-sweave.tex
+Z_BLAND_PAPER-knitr.lof
+Z_BLAND_PAPER-knitr.fff
 
 # LaTeX Figure Stuff #
 ######################
 /PAPER/figure
+/PAPER/cache

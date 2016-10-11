@@ -2,6 +2,8 @@
 \usepackage[capitalise]{cleveref} % when you reference a table or figure, automatically format as "Table 1" rather than "table 1" or "1".
 \usepackage{authblk} % allows pretty formatting of author lists
 \usepackage[margin=0.25in]{geometry}
+\usepackage{color}
+\usepackage[nomarkers]{endfloat}
 \title{Fisheries Induced Life History Changes}
 \author[2,1]{Stephanie Bland, Anna Kuparinen, Jeff Hutchings, Neo Martinez}
 \date{\today}
@@ -18,7 +20,31 @@ concordance=TRUE
 
 <<external-code, cache=FALSE,echo=F>>=
 read_chunk('Fig_lifestage_prey.R')
+read_chunk('Fig_Von_Bert.R')
 @
+
+
+%Figures go before the text because knitr will only recognize references to data used in their calculation if you start with it.
+
+\begin{figure}
+<<Lifestage_prey, cache=FALSE, echo=F>>=
+require(ggplot2)
+@
+\caption{\label{fig:Lifestage_prey}An example of prey division for prey species $[\Sexpr{niche_range}]$, over $\Sexpr{N_stages}$ lifestages. Each lifestage i eats prey in the niche value range of $[a_i, b_i]$. However, we can also think of each lifestage as having a diet range, starting from a smallest prey item, $a_i$, and continuing up to a largerst prey item, $b_i=a_i+\sigma_i$, where $\sigma_i$ is the number of prey that lifestage i consumes. This is how I chose to define my prey selection, because this way I can control the degree of specialisation for each lifestage, as well as the rate of prey size increase.} 
+\end{figure} 
+
+\begin{figure}
+\section*{Appendix:  Methods and Tables}
+  <<Von_Bert, cache=FALSE, echo=F>>=
+  require(ggplot2)
+  @
+\caption{\label{fig:Von_Bert} A typical weight based von Bertalanffy curve, reproduced from http://www.fao.org/docrep/w5449e/w5449e05.htm \textcolor{red}{[Track down orig source Pauly 1983]}. This one is parameterized for the threadfin bream, {\it Nemipterus marginatus}, with a condition factor $q=\Sexpr{q}\frac g {{cm}^3}$, curvature parameter of $K=\Sexpr{K}\frac 1 {year}$, initial condition parameter of $t_0=\Sexpr{t_0}years$, and an asymptotic length of $L_\infty=\Sexpr{L_inf}cm$.}
+\end{figure}
+
+%Back to the actual Paper
+
+
+
 \section*{Introduction}
 
 
@@ -30,7 +56,7 @@ read_chunk('Fig_lifestage_prey.R')
 \end{itemize}
 \end{itemize}
 \section*{Methods (Overview)}
-Figure \ref{fig:Lifestage_prey} shows how a species' prey will be assigned to lifestages. Figure \ref{fig:Lifestage_prey} shows an example of prey division among lifestages. This species eats prey in the niche value range of [5,17] over 9 lifestages. Each lifestage i eats prey in the niche value range of $[a_i, b_i]$. However, we can also think of each lifestage as having a diet range, starting from a smallest prey item, $a_i$, and continuing up to a largerst prey item, $b_i=a_i+\sigma_i$, where $\sigma_i$ is the number of prey that lifestage i consumes. This is how I chose to define my prey selection, because this way I can control the degree of specialisation for each lifestage, as well as the rate of prey size increase. 
+\par  Figure \ref{fig:Lifestage_prey} shows how a species' prey will be assigned to lifestages. This species eats prey in the niche value range of $[\Sexpr{niche_range}]$, over $\Sexpr{N_stages}$ lifestages. Each lifestage i eats prey in the niche value range of $[a_i, b_i]$. However, we can also think of each lifestage as having a diet range, starting from a smallest prey item, $a_i$, and continuing up to a largerst prey item, $b_i=a_i+\sigma_i$, where $\sigma_i$ is the number of prey that lifestage i consumes. This is how I chose to define my prey selection, because this way I can control the degree of specialisation for each lifestage, as well as the rate of prey size increase. 
 \par Ideally, we would want the prey's niche values to be roughly increasing with lifestage.  More importantly though, we want to make sure that every prey item is consumed by at least one lifestage. So we can impose four requirements on $\{a_i\}, \{b_i\}$:
 \begin{enumerate}
 \item $a_i\leq b_i$
@@ -90,9 +116,12 @@ So when we substitute it in:
   W_\infty=10^{3\times 0.044}q^{1-0.9841}{W_{max}}^{0.9841}
 \end{equation}
 Which we can plug into the model to calculate the asymptotic weights. Using $W_\infty$, we can now calculate the expected weights for all the lifestages. 
-\par This equation gives you a Von-Bert growth curve in weight, as shown [Insert figure ref]. Using this curve we can solve for the weight at each lifestage. This is where we run into a problem, since there are several methods of doing this:
-
-We now need to assign a minimum weight for each fish species so that we know when to stop calculating expected weights.
+\par This equation gives you a Von-Bert growth curve in weight, as shown in figuree \ref{fig:Von_Bert}. Using this curve we can solve for the weight at each lifestage. This is where we run into a problem, since there are several methods of doing this:
+\begin{itemize}
+  \item Set the number of lifestages first, and calculate the weight for that many lifestages.
+  \item Set a lower limit for the weight of the smallest lifestage, and choose the number of lifestages accordingly.
+\end{itemize}
+\par Of course it's possible to use a combination of these methods, and both methods could be customized for individual species (for instance you could force every species to have exactly 3 lifestages, or you could assign a random number of lifestages to every species).
 
 \subsubsection*{FoodWeb: What it looks like}
 We need to store the new lifestages in the food web. Each new lifestage will be incorpated into an extended food web matrix as new nodes.  This will require keeping track of fish species by listing distinct species with a new vector. So if you start with $S$ species, and you augment the matrix by adding new rows and columns to represent the new life stages.
@@ -106,17 +135,9 @@ Since the diet assigned to fish species represents the full extent of their diet
 \subsubsection*{Splitting the diet among lifestages}
 To control the degree to which a lifestage specializes, we will specify the number of prey each lifestage eats using a matrix, where each element $\sigma_ij$ is the number of prey consumed by species i in lifestage j.  
 
-\section*{Appendix:  Methods and Tables}
-
-\begin{figure}
-<<Lifestage_prey, cache=FALSE, echo=F>>=
-require(ggplot2)
-@
-\caption{\label{fig:Lifestage_prey}An example} 
-\end{figure} 
-
 \section*{Assumptions}
 Niche value corresponds to size of prey.  This is *roughly* true, but there are autotrophs with large niche values and fish with low niche values.  
+
 
 
 \end{document}
