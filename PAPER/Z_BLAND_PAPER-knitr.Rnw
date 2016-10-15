@@ -77,7 +77,7 @@ W(t)=W_\infty(1-e^{-K(t-t_0)})^3
 \par Let the maximum number of lifestages in any of the species be $\Lambda=\max_{i=1}^S a_i$, we can store the weights for every lifestage and species in an $S\times \Lambda$ matrix $\Omega$, where element $\omega_{i,j}$ is the weight of species i in lifestage j.  
 \par We can store the life stage weights in a matrix where rows are species, and columns are life stages. So this will be an $S$
 
-\subsection*{Derivation of Von-Bert Equation used in my model}
+\subsection*{Derivation of Von-Bertalanffy Equation used in my model}
 \par I started with a relationship between asymptotic length and maximum length for fish (Froese and Binohlan 2000, Equation 5):
 \begin{equation}
   log(L_\infty)=0.044+0.9841log(L_{max})
@@ -117,11 +117,11 @@ Which we can plug into the model to calculate the asymptotic weights. Using $W_\
 \par This equation gives you a Von-Bert growth curve in weight, as shown in figuree \ref{fig:Von_Bert}. Using this curve we can solve for the weight at each lifestage. This is where we run into a problem, since there are several methods of doing this:
 \begin{itemize}
   \item Set the number of lifestages first, and calculate the weight for that many lifestages.
-  \item Set a lower limit for the weight of the smallest lifestage, and choose the number of lifestages accordingly.
+  \item Set a lower limit for the weight of the smallest lifestage, and choose the number of lifestages accordingly. (Visually, this would be your y-intercept). %\textcolor{red}{[I'm not actually sure if this is possible, I think that maybe $t_0$ stretches the function instead of actually changing]}
 \end{itemize}
 \par Of course it's possible to use a combination of these methods, and both methods could be customized for individual species (for instance you could force every species to have exactly 3 lifestages, or you could assign a random number of lifestages to every species).
 \par It's probably more realistic (and much easier) to set the smallest weight possible, and use that to solve for $t_0$.
-\par Alright, you need three parameters according to the traditional von-bert model:
+\par Alright, you need three parameters according to the traditional von-Bertalanffy growth model:
 \begin{equation}
   l_t=L_\infty(1-e^{-K(t-t_0)})
 \end{equation}
@@ -139,10 +139,18 @@ Which we can plug into the model to calculate the asymptotic weights. Using $W_\
 \begin{equation}
   -K(t-t_0)=ln\left[1-\left(\frac {W_t} {W_\infty}\right)^{\frac 1 3}\right]
 \end{equation}
-So at time $t_{max}$:
+\begin{equation}
+  t_0=t+\frac 1 K ln\left[1-\left(\frac {W_t} {W_\infty}\right)^{\frac 1 3}\right]
+\end{equation}
+So if you want to use the first method where you fix the number of lifestages, just substitute in the weight $W_{max}$ at time $t_{max}$:
 \begin{equation}
   t_0=t_{max}+\frac 1 K ln\left[1-\left(\frac {W_{max}} {W_\infty}\right)^{\frac 1 3}\right]
 \end{equation}
+Otherwise, if you want to set the minimum size set the time to 0, and set minimum weight ($W_{min}$):
+\begin{equation}
+  t_0=\frac 1 K ln\left[1-\left(\frac {W_{min}} {W_\infty}\right)^{\frac 1 3}\right]
+\end{equation}
+\textcolor{red}{[Ahhhhh I think I'm making a mistake with this: because this equation doesn't factor $W_{max}$ in at all, there's no guarantee the curve will pass through that point. (I think)]}
 
 
 \subsubsection*{FoodWeb: What it looks like}
