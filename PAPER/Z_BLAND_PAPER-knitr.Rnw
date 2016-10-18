@@ -73,7 +73,7 @@ W(t)=W_\infty(1-e^{-K(t-t_0)})^3
 \end{equation}
 
 \noindent where $W_\infty$ is the asymptotic weight (g), K is the growth coefficient (year$^{-1}$), and $t_0$ is the initial condition parameter (year) (Sparre and Venema, 1998). I will define $W_\infty=1.5?W_A$ , where $W_A$ is the predetermined fish weight, and keep K constant at 0.3 year$^{-1}$. The initial condition parameter, $t_0$, will be calculated so that both of the following conditions are satisfied: 1) there are at least four life stages, and 2) the smallest life stage is no larger than 500g. 
-\par Let $S$ be the total number of species in the model, $x_i$ be the number of lifestages for species i, so the total number of new nodes in your model is given by $T=\sum_{i=1}^S a_i$.
+\par Let $S$ be the total number of species in the model, $k_i$ be the number of lifestages for species i, so the total number of new nodes in your model is given by $T=\sum_{i=1}^S k_i$, so the total number of nodes is now $S+T=S+\sum_{i=1}^S k_i$.
 \par Let the maximum number of lifestages in any of the species be $\Lambda=\max_{i=1}^S a_i$, we can store the weights for every lifestage and species in an $S\times \Lambda$ matrix $\Omega$, where element $\omega_{i,j}$ is the weight of species i in lifestage j.  
 \par We can store the life stage weights in a matrix where rows are species, and columns are life stages. So this will be an $S$
 
@@ -92,11 +92,11 @@ Where the logarithms are base 10 (http://www.fishbase.org/download/popdynJFB.zip
 \begin{equation}
   L_\infty=10^{0.044}{L_{max}}^{0.9841}
 \end{equation}
-Now we can substitute length for weight using the equation ():
+Now we can substitute length for weight using the equation (Sangun {\it et al.} 2007) \textcolor{red}{technically $W=qL^b$, but b is generally close enough to 3 for us to just use isometric growth instead}:
 \begin{equation}
   W=qL^3
 \end{equation}
-where W is individual fish weight, q= is the conversion factor for length to weight, and L is individual fish length. We assume that this equation holds true across species and lifestages. We solve for length:
+where W is individual fish weight, q= (\textcolor{red}{source}) is the conversion factor for length to weight, and L is individual fish length. We assume that this equation holds true across species and lifestages. We solve for length:
 \begin{equation}
   L={\left(\frac Wq \right)}^{\frac 1 3}
 \end{equation}
@@ -154,16 +154,16 @@ Otherwise, if you want to set the minimum size set the time to 0, and set minimu
 
 
 \subsubsection*{FoodWeb: What it looks like}
-We need to store the new lifestages in the food web. Each new lifestage will be incorpated into an extended food web matrix as new nodes.  This will require keeping track of fish species by listing distinct species with a new vector. So if you start with $S$ species, and you augment the matrix by adding new rows and columns to represent the new life stages.
+We need to store the new lifestages in the food web. Each new lifestage will be incorpated into an extended food web matrix as new nodes.  This will require keeping track of fish species by listing distinct species with a new vector. So if you start with $S$ species, and you augment the matrix by adding new rows and columns to represent the new life stages. For instance, if you add $k_i$ new life stages for species i, you will end up with a $S+\sum_{i=1}^S k_i$ square food web matrix.
 
 \subsubsection*{Splitting the diet among lifestages}
 Since the diet assigned to fish species represents the full extent of their diet over their entire lifespan, we need to split their diet up among life stages.
 \par We want to be able to control a species' diet over its lifespan. In particular, we want to be able to specify whether each life stage is a specialist or a generalist, and the size of their prey. 
 \par We also need to ensure that every prey species in the fish's original diet is consumed by at least one life stage. 
-\par It would also be ideal if we could constrain the lifestages diets so that they are always increasing.
+\par It would also be ideal if we could constrain the lifestages diets so that they are always increasing along the trophic levels (Which is true for North Atlantic fish species, but not for reef fish [specific citation needed])
 
-\subsubsection*{Splitting the diet among lifestages}
-To control the degree to which a lifestage specializes, we will specify the number of prey each lifestage eats using a matrix, where each element $\sigma_ij$ is the number of prey consumed by species i in lifestage j.  
+\subsubsection*{Splitting the diet among lifestages: Specialization}
+To control the degree to which a lifestage specializes, we will specify the number of prey each lifestage eats using a matrix, where each element $\sigma_{ij}$ is the number of prey consumed by species i in lifestage j. So if you have a species that is specialized at birth but becomes more of a generalist, that row will have increasingly large numbers as you move right. We should constrain this with $\sum_{j=1}^m \sigma_{ij}\geq b_i-a_i$, where $m$ is the oldest lifestages for species i, and $a_i$ and $b_i$ are the smallest and largest prey consumed by species i, respectively.
 
 \section*{Assumptions}
 Niche value corresponds to size of prey.  This is {\it roughly} true, but there are autotrophs with large niche values and fish with low niche values.  

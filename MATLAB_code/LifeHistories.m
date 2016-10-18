@@ -134,7 +134,7 @@ diet_redundancy=5;%A rough estimate of the amount of overlap in diet between lif
 if speci_fun(0)<=0
     error('CHANGE THE SPECIALIST FUNCTION SO THAT IT IS ALWAYS GREATER THAN 0')
 end
-spec_gener=zeros(nichewebsize,maxStages);%preallocating variable size for speed.
+spec_gener=zeros(nichewebsize,maxStages);%pre-allocating variable size for speed.
 for i=1:nichewebsize
     N=lifestage_N(i);%Number of lifestages in this species (1 for non-fish)
     spec_i=speci_fun(0:1/(N-1):1); %Assigns the number of prey for each life stage from N different points in the chosen function in [0,1] interval.
