@@ -5,6 +5,8 @@ L_inf=28.4
 K=0.37
 t_0=-0.2
 
+
+
 # Write Von-Bert Function
 VonBert=function(t){
   q*(L_inf^3)*((1-exp(-K*(t-t_0)))^3)

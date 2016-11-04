@@ -57,10 +57,7 @@ t_0=t_max+((1./K).*log(1-(L_max./L_inf)));%For small adult weights (ex: W_max=88
 newwebsize=nichewebsize+sum(isfish.*t_max);
 Mass=zeros(newwebsize,1);
 Mass(1:nichewebsize)=Mvec/W_scalar;
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%PICK UP HERE TOMORROW WITH A MATRIX OF
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%NICHESIZE BY MAX LIFESTAGES, THEN CONVERT INTO
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%VECTOR.
-%%%%%%%%%ALSO GET VECTOR THAT SAYS WHAT SPECIES EACH LIFESTAGE IS PART OF
+%%%%%%%%%%%%%%%%%%%%%%%%%
 for i=1:sum(isfish.*t_max)%only does the loop for fish species
     t=
     L_t=L_inf.*(1-exp(-K.*(t-t_0)));%von-Bertalanffy growth model

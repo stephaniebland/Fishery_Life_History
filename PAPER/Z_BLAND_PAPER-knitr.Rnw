@@ -168,6 +168,8 @@ To control the degree to which a lifestage specializes, we will specify the numb
 \section*{Assumptions}
 Niche value corresponds to size of prey.  This is {\it roughly} true, but there are autotrophs with large niche values and fish with low niche values.  
 
-
+\begin{equation}
+  \frac{762903816560071\, {W_{m}\mathrm{ax}}^{\frac{9841}{10000}}\, q^{\frac{159}{10000}}}{562949953421312}
+\end{equation}
 
 \end{document}
