@@ -54,13 +54,37 @@ L_inf=(10^0.044)*(L_max.^0.9841);
 K=3./t_max;% Set according to W_inf
 t_0=t_max+((1./K).*log(1-(L_max./L_inf)));%For small adult weights (ex: W_max=88.7630), this breaks down and starts giving positive t_0
 
+%Create a matrix lifestage_Mass/Mass_matrix that describes the weight of each life stage j
+%for each fish i (so fish species are in rows, and lifestages are in
+%columns.
+Mass_matrix=zeros(nichewebsize,1+max(t_max))/0;
+Mass_matrix(:,1)=Mvec/W_scalar;
+for i=find(isfish')%only does the loop for fish species
+    for t=0:t_max(i)
+        L_t=L_inf(i)*(1-exp(-K(i)*(t-t_0(i))));%von-Bertalanffy growth model
+        W_t=q*(L_t^growth_exp);%(Sangun et al. 2007)
+        Mass_matrix(i,t+1)=W_t;
+    end
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%PICK UP HERE TOMORROW CONVERT MATRIX INTO
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%VECTOR.
+%%%%%%%%%ALSO GET VECTOR THAT SAYS WHAT SPECIES EACH LIFESTAGE IS PART OF
 newwebsize=nichewebsize+sum(isfish.*t_max);
 Mass=zeros(newwebsize,1);
 Mass(1:nichewebsize)=Mvec/W_scalar;
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%PICK UP HERE TOMORROW WITH A MATRIX OF
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%NICHESIZE BY MAX LIFESTAGES, THEN CONVERT INTO
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%VECTOR.
-%%%%%%%%%ALSO GET VECTOR THAT SAYS WHAT SPECIES EACH LIFESTAGE IS PART OF
+
+
+for t=0:max(t_max)%BUT THIS IS WRONG BECAUSE ALL SPECIES WILL HAVE SAME NUBER OF LIFESTAGES
+    L_t=L_inf.*(1-exp(-K.*(t-t_0)));%von-Bertalanffy growth model
+    W_t=q*(L_t.^growth_exp);%(Sangun et al. 2007)
+    Mass_matrix(:,t+1)=W_t;
+end
+    
+
+
+
+
+
 for i=1:sum(isfish.*t_max)%only does the loop for fish species
     t=
     L_t=L_inf.*(1-exp(-K.*(t-t_0)));%von-Bertalanffy growth model
