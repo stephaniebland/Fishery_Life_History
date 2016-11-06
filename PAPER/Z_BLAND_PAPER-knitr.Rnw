@@ -165,6 +165,43 @@ Since the diet assigned to fish species represents the full extent of their diet
 \subsubsection*{Splitting the diet among lifestages: Specialization}
 To control the degree to which a lifestage specializes, we will specify the number of prey each lifestage eats using a matrix, where each element $\sigma_{ij}$ is the number of prey consumed by species i in lifestage j. So if you have a species that is specialized at birth but becomes more of a generalist, that row will have increasingly large numbers as you move right. We should constrain this with $\sum_{j=1}^m \sigma_{ij}\geq b_i-a_i$, where $m$ is the oldest lifestages for species i, and $a_i$ and $b_i$ are the smallest and largest prey consumed by species i, respectively.
 
+\subsubsection*{Temporary Bandage Fix for $K$ being too large}
+If $K$ is too large you will end up with a positive $t_0$, which is bad since the y-intercept will be negative, so the first lifestage would have a negative weight.  So I'll just force it to be positive. 
+\begin{equation}
+  0>t_0=t_{max}+\frac 1 K ln\left(1- \frac {L_{max}} {L_\infty} \right)
+\end{equation}
+\begin{equation}
+  -\frac 1 K ln\left(1- \frac {L_{max}} {L_\infty} \right)>t_{max}
+\end{equation}
+\begin{equation}
+  -\frac 1 {t_{max}} ln\left(1- \frac {L_{max}} {L_\infty} \right)>K
+\end{equation}
+So I just set:
+\begin{equation}
+  K=-\frac {0.9} {t_{max}} ln\left(1- \frac {L_{max}} {L_\infty} \right)
+\end{equation}
+whenever K is too large. In all other cases, I stick with $K=3/t_{max}$. 0.9 was chosen arbitrarily
+\par I should also check that $\frac {L_{max}} {L_\infty} \in (0,1)$, so that K exists and is always positive. It's also important to ensure that the asymptotic length is always bigger than the maximum length to make sure that it makes biological sense. 
+\begin{equation}
+  \frac {L_{max}} {L_\infty}=\frac {L_{max}} {10^{0.044}L_{max}^{0.9841}}=\frac {L_{max}^{1-0.9841}} {10^{0.044}}=\frac {L_{max}^{0.0159}} {10^{0.044}}
+\end{equation}
+Which is greater than 0 provided $L_{max}>0$, and less than 1 provided that
+\begin{equation}
+  \frac {L_{max}^{0.0159}} {10^{0.044}}<1
+\end{equation}
+\begin{equation}
+  L_{max}^{0.0159}<10^{0.044}
+\end{equation}
+\begin{equation}
+  L_{max}<10^\frac {0.044} {0.0159}=585.1883 cm
+\end{equation}
+Or, in weight instead, for q=0.0125:
+\begin{equation}
+  W<0.0125\left(\frac {0.044} {0.0159}\right)^3=2,504.937 kg
+\end{equation}
+Which is true, because we set $L_{inf}<100 kg$.
+
+
 \section*{Assumptions}
 Niche value corresponds to size of prey.  This is {\it roughly} true, but there are autotrophs with large niche values and fish with low niche values.  
 
