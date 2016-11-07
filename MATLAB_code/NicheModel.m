@@ -14,7 +14,9 @@
 %--------------------------------------------------------------------------
 
 % uncomment below to use as a function if called by another script:
- function [nicheweb,Index_par]= NicheModel(num_species, connectance)
+ %function [nicheweb,Index_par]= NicheModel(num_species, connectance)%old
+ %line, no idea what Index_par is even supposed to be.
+ function [nicheweb,n_new,c_new,r_new]= NicheModel(num_species, connectance)
 % or uncomment below to use as stand-alone script
 %num_species=10; %input('Enter number of species \n');
 %connectance=.1; %input('Enter connectance \n'); Usually 0.09
@@ -70,7 +72,7 @@
         %the largest)
         r_new = r(Indx); %the smallest r to highest index species
         c_new = c(Indx);
-        r_new(1) = 0; %change the r of highest index species to 0
+        r_new(1) = 0; %change the r of lowest index species to 0
         %so we have a basal species in every web
 
     %----------------------------------------------------------------------

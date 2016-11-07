@@ -22,7 +22,7 @@
 %basically just adding rows and columns for your new life stages).
 
 %function [output]= LifeHistories(input)
-function [nicheweb_new,lifehistory_table,Mvec,Mass,isfish]= LifeHistories(nicheweb,nichewebsize,connectance,basalsp)
+function [nicheweb_new,lifehistory_table,Mvec,Mass,isfish]= LifeHistories(nicheweb,nichewebsize,connectance,basalsp,n_new,c_new,r_new)
 
 %%-------------------------------------------------------------------------
 %%  FIRST: SET DYNAMICS PARAMETERS
