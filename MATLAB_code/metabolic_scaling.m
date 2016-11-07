@@ -13,12 +13,12 @@
 %--------------------------------------------------------------------------
 
 % uncomment if to use as a function
-function [meta,Z]= metabolic_scaling(nichewebsize,basalsp,isfish,T,Mvec)
+function [meta,Z]= metabolic_scaling(nichewebsize,basalsp,isfish,T,Mass)
 %--------------------------------------------------------------------------
 % Find remaining consumer-resource body size ratios (for new life stages)
 % and calculate metabolic rates
 %--------------------------------------------------------------------------
-    Z=Mvec.^(1/(T-1)); %Consumer-resource body-size
+    Z=Mass.^(1/(T-1)); %Consumer-resource body-size
     %IMPORTANT, FILL IN OLD Z, IN CASE YOU LOSE ACCURACY FOR NEW THINGS
     %(ALTERNATIVELY GET FUNCTION TO ONLY CALCULATE FOR J>NICHEWEBSIZE)
 
@@ -37,8 +37,8 @@ function [meta,Z]= metabolic_scaling(nichewebsize,basalsp,isfish,T,Mvec)
         if ismember(i,basalsp)
             meta(i)=0;% Brose et al 2006 , was set to .138 before;  %metabolic rate for producers
         elseif isfish(i)
-            meta(i) = .88*(1./(Mvec(i)) ).^A_fish;%metabolic rate for etcotherm vertebrates
+            meta(i) = .88*(1./(Mass(i)) ).^A_fish;%metabolic rate for etcotherm vertebrates
         else
-            meta(i) = .314*(1./(Mvec(i)) ).^A_invert; %metabolic rate for invertebrates
+            meta(i) = .314*(1./(Mass(i)) ).^A_invert; %metabolic rate for invertebrates
         end
     end

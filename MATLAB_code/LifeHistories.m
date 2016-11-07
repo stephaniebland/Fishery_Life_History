@@ -22,15 +22,8 @@
 %basically just adding rows and columns for your new life stages).
 
 %function [output]= LifeHistories(input)
-function [nicheweb_new,lifehistory_table,Mvec,Mass,isfish]= LifeHistories(nicheweb,nichewebsize,connectance,basalsp,n_new,c_new,r_new)
+function [nicheweb_new,lifehistory_table,Mass,orig_nodes,species,N_stages]= LifeHistories(nicheweb,nichewebsize,Mvec,isfish,n_new,c_new,r_new)
 
-%%-------------------------------------------------------------------------
-%%  FIRST: SET DYNAMICS PARAMETERS
-%%-------------------------------------------------------------------------
-%Calculates species weight -> so you know how many life stages it needs
-%"meta", "TrophLevel" & "T1", "IsFish" and "Z"
-    [TrophLevel,T1]= TrophicLevels(nichewebsize,nicheweb,basalsp);
-    [Z,Mvec,isfish]= MassCalc(nichewebsize,basalsp,TrophLevel);
 
 %%-------------------------------------------------------------------------
 %%  NUMBER OF LIFESTAGES & WEIGHTS
@@ -149,16 +142,23 @@ end
 %Currently the fish prey is split correctly, but the only fish lifestage
 %that is predated are the adults.
 
+%[n_new, c_new, r_new]
+
+
+
+
+
 %Species that eat fish
 indexfish_new=find(ismember(species, find(isfish)));%Index of fish species for new web
-nicheweb_new(:,indexfish_new)
-nicheweb(:,find(isfish'))
+nicheweb_new(:,indexfish_new);
+nicheweb(:,find(isfish'));
 
 %First approximation is just that if something preys on a species, it will prey on all of the lifestages
 %newnodes=1-orig_nodes;
 for i=find(isfish')
     fishpred=nicheweb_new(:,find(species==i));
-    fishpred(:,1:end-1)=fishpred(:,1:end-1)+fishpred(:,end)
+    fishpred(:,1:end-1)=fishpred(:,1:end-1)+fishpred(:,end);
+    nicheweb_new(:,find(species==i))=fishpred;
 end
 
 end

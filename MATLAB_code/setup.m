@@ -65,7 +65,7 @@
 %%-------------------------------------------------------------------------
 
 %to construct niche web, uncomment the following lines.
-    S_0=10;%30;
+    S_0=30;
     connectance=0.15;
     [nicheweb,n_new,c_new,r_new] = NicheModel(S_0, connectance);%Create a connected (no infinite degrees of separation) foodweb with realistic species (eg. no predators without prey), and no isolated species.
 
@@ -75,14 +75,31 @@
 nichewebsize = length(nicheweb);%Steph: Find number of species (not sure why, already have S_0)
 basalsp = find(sum(nicheweb,2)==0);%List the autotrophs (So whatever doesn't have prey)  Hidden assumption - can't assign negative prey values (but why would you?)
 
+%%-------------------------------------------------------------------------
+%%  FIRST: SET DYNAMICS PARAMETERS
+%%-------------------------------------------------------------------------
+%Calculates species weight -> so you know how many life stages it needs
+%"meta", "TrophLevel" & "T1", "IsFish" and "Z"
+    [TrophLevel,T1]= TrophicLevels(nichewebsize,nicheweb,basalsp);
+    [Z,Mvec,isfish]= MassCalc(nichewebsize,basalsp,TrophLevel);
 
 %%-------------------------------------------------------------------------
 %%  LIFE HISTORY
 %%-------------------------------------------------------------------------
 nicheweb_old=nicheweb;%Save the old nicheweb just incase.
-[nicheweb_new,lifehistory_table,Mvec,Mass,isfish]= LifeHistories(nicheweb,nichewebsize,connectance,basalsp,n_new,c_new,r_new);
+Mvec_old=Mvec;
+[nicheweb_new,lifehistory_table,Mass,orig_nodes,species,N_stages]= LifeHistories(nicheweb,nichewebsize,Mvec,isfish,n_new,c_new,r_new);
+%Update all the output to reflect new web
 nicheweb=nicheweb_new;%Update nicheweb.  This looks really messy, but I'll clean it up later(also not sure if this line is required)
 nichewebsize = length(nicheweb);%Steph: Find number of species (not sure why, already have S_0)
+TrophLevel=repelem(TrophLevel,N_stages);
+T1=repelem(T1,N_stages);
+Z=repelem(Z,N_stages);
+isfish=repelem(isfish,N_stages);
+meta_N_stages=repelem(N_stages,N_stages);
+basalsp = find(sum(nicheweb,2)==0);%List the autotrophs (So whatever doesn't have prey)  Hidden assumption - can't assign negative prey values (but why would you?)
+
+
 
 
 %%-------------------------------------------------------------------------
@@ -94,8 +111,8 @@ nichewebsize = length(nicheweb);%Steph: Find number of species (not sure why, al
 %1) set manually
     %meta = [0; .15; .02];    
 %2) Can be scaled with body size
-    [TrophLevel,T1]= TrophicLevels(nichewebsize,nicheweb,basalsp);
-    [meta,Z]=metabolic_scaling(nichewebsize,basalsp,IsFish,TrophLevel,Mvec);
+    %[TrophLevel,T1]= TrophicLevels(nichewebsize,nicheweb,basalsp);%Trophiclevel can probably be preserved
+    [meta,Z]=metabolic_scaling(nichewebsize,basalsp,isfish,TrophLevel,Mass);
     
 
 %Intrinsic growth parameter "r" for basal species only
@@ -126,7 +143,7 @@ nichewebsize = length(nicheweb);%Steph: Find number of species (not sure why, al
 %-----------------------------------------------------------
     %Bsd = 1.5*ones(nichewebsize);
     %c = ones(nichewebsize,nichewebsize)*0.5;
-    [Bsd, c]=func_resp_scaling(nicheweb,nichewebsize,IsFish,Z,basalsp);
+    [Bsd, c]=func_resp_scaling(nicheweb,nichewebsize,isfish,Z,basalsp);
 
 %set initial and final integration times
 %---------------------------------------
