@@ -119,27 +119,23 @@ end
 %Two ways of doing this, either can split old diet, as recommended by Neo,
 %or we can run the model again and just give new lifestages new diets.
 N_prey=sum(nicheweb,2);%Vector saying how many prey species each species has.
-diet_selec=ceil(N_prey./N_stages);%Minimum number of prey each lifestage needs to eat to cover entire diet
+Nprey_per_stage=ceil(N_prey./N_stages);%Minimum number of prey each lifestage needs to eat to cover entire diet
 %        diet_selec(find(isfish'))
 %Create new nicheweb
 nicheweb_new=zeros(newwebsize);
 nicheweb_new(orig_index,orig_index)=nicheweb.*nonfish;%Rows for invertebrate species that you wish to preserve
 for i=find(isfish')%This loop will give a broader overlap
     selec=find(nicheweb(i,:));
-    Nprey_per_stage=diet_selec(i);%minimum number of prey assigned to each lifestage
-    k=(Nprey_per_stage*N_stages(i))-N_prey(i);%How many prey will need to be assigned to two lifestages.
+    k=(Nprey_per_stage(i)*N_stages(i))-N_prey(i);%How many prey will need to be assigned to two lifestages.
     n=N_stages(i)-1;%number of neighbouring lifestages.
-    y=randsample(n,k);%Which pairs of lifestages will share a prey species.  without replacement
-    shared_prey=zeros(1,N_stages(i));
-    shared_prey(y)=1;
-    %repelem(prey_min,N_stages(i));
+    y=randsample(n,k);%Which pairs of lifestages will share a prey species.  with or without replacement
     prey_split=zeros(N_stages(i),newwebsize);
     u=1;
     for j=1:N_stages(i)
-        v=u+Nprey_per_stage-1;
+        v=u+Nprey_per_stage(i)-1;
         choose=selec(u:v);
         prey_split(j,choose)=1;
-        u=v+1-shared_prey(j);
+        u=v+1-sum(y==j);
     end
     nicheweb_new(find(species==i),:)=prey_split;
 end
