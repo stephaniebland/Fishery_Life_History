@@ -41,7 +41,7 @@ W_scalar=max(Mvec)/100000;%Factor by which you can scale all the weights, so tha
 lifestage_mass=Mvec.*isfish;% You only want to add lifestages to fish
 W_max=lifestage_mass/W_scalar;%So adult weight of all the fish species.
 t_max=ones(nichewebsize,1);
-t_max(find(isfish))=randi([1 4],sum(isfish),1);
+t_max(find(isfish))=randi([1 4],sum(isfish),1);%BE CAREFUL - THIS IS LIKE NUMBER OF ADDITIONAL LIFE STAGES (you may want N_stages instead)
 
 growth_exp=3;%Growth exponent, 3 is for isometric growth (Sangun et al. 2007)
 q=0.0125;%Conversion factor from weight to length
@@ -83,9 +83,10 @@ for i=1:nichewebsize
     orig_nodes=[orig_nodes, repelem(0,j-1),1];
 end
 orig_species=orig_nodes.*species;%Enumerates the original species
+orig_index=find(orig_nodes');%index of original species
 
 %%-------------------------------------------------------------------------
-%%  LIFE HISTORY MATRIX
+%%  LIFE HISTORY MATRIX - LESLIE MATRIX
 %%-------------------------------------------------------------------------
 %Suppose you have a fish with 4 life stages.  Then you can create a
 %lifehistory matrix for it.  Find correlations from Hutchings, J. A., Myers, R. A., García, V. B., Lucifora, L. O., & Kuparinen, A. (2012). Life-history correlates of extinction risk and recovery potential. Ecological Applications, 22(4), 1061–1067. Retrieved from http://www.esajournals.org/doi/abs/10.1890/11-1313.1
@@ -96,7 +97,6 @@ orig_species=orig_nodes.*species;%Enumerates the original species
 
 %Fish life history tables:  Creates a Leslie matrix where aij is the contribution of life stage j to life stage i.
 lifehistory_table=eye(newwebsize);%Identity Matrix for life history table, so non-fish are untransformed by matrix
-%temp_index=nichewebsize;%Old code for when I didn't have lifestages clustered by species.
 for i=1:nichewebsize
     stages=N_stages(i);%Number of fish life history stages
     if stages~=1
@@ -109,28 +109,86 @@ for i=1:nichewebsize
         lifehis_breed(1,:)=fert;%Set the first row to the fertility rate;
         lifehis_breed=lifehis_breed+diag(non_mature);%Set the diagonal to the probability of not maturing to the next stage, but staying the same age.
         %So now, incorporate it into life history table
-        %lifehistory_table([i,temp_index+(1:stages-1)],[i,temp_index+(1:stages-1)])=lifehis_breed;%Not this one - I chose to cluster lifestages together to keep species in groups
         lifehistory_table(i:(i+stages-1),i:(i+stages-1))=lifehis_breed;
-        %temp_index=temp_index+stages-1;
     end
 end
 
 %%-------------------------------------------------------------------------
-%%  NEW NICHEWEB
+%%  NEW NICHEWEB - NEO'S METHOD - SPLIT OLD DIET
 %%-------------------------------------------------------------------------
 %Two ways of doing this, either can split old diet, as recommended by Neo,
 %or we can run the model again and just give new lifestages new diets.
+N_prey=sum(nicheweb,2);%Vector saying how many prey species each species has.
+diet_selec=ceil(N_prey./N_stages);%Minimum number of prey each lifestage needs to eat to cover entire diet
+%        diet_selec(find(isfish'))
+%Create new nicheweb
+nicheweb_new=zeros(newwebsize);
+nicheweb_new(orig_index,orig_index)=nicheweb.*nonfish;%Rows for invertebrate species that you wish to preserve
+for i=find(isfish')%This loop will give a broader overlap
+    selec=find(nicheweb(i,:));
+    Nprey_per_stage=diet_selec(i);%minimum number of prey assigned to each lifestage
+    k=(Nprey_per_stage*N_stages(i))-N_prey(i);%How many prey will need to be assigned to two lifestages.
+    n=N_stages(i)-1;%number of neighbouring lifestages.
+    y=randsample(n,k);%Which pairs of lifestages will share a prey species.  without replacement
+    shared_prey=zeros(1,N_stages(i));
+    shared_prey(y)=1;
+    %repelem(prey_min,N_stages(i));
+    prey_split=zeros(N_stages(i),newwebsize);
+    u=1;
+    for j=1:N_stages(i)
+        v=u+Nprey_per_stage-1;
+        choose=selec(u:v);
+        prey_split(j,choose)=1;
+        u=v+1-shared_prey(j);
+    end
+    nicheweb_new(find(species==i),:)=prey_split;
+end
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+[N_stages, (1:30)'];%useful for coding rn. 
+N_prey=sum(nicheweb,2);%This is redundant, can delete later
+[[string('Species'), string('Number of stages'), string('Number of Prey')];[find(isfish), N_stages(find(isfish')), N_prey(find(isfish'))]]%again, just useful for coding rn.  
+
+
+for i=find(isfish')%This loop will give a narrower overlap DONT USE IT WHAT IF YOU HAVE 3 PREY AND 4 STAGES, ONE WILL GIVE 0
+    find(nicheweb(i,:))
+    n=diet_selec(i);
+    N_prey(i)-(n*N_stages(i));
+end
+
+stages=N_stages(i);
+diet=N_prey(i);
 
 
 
 
 
 
+%nonfish=1-isfish;
+for i in 
+i=12;
+stages=N_stages(i);
+diet=N_prey(i);
+
+
+
+find(nicheweb)
+
+A=nicheweb
+[a b]=find(A);
+M=30
+v = A((1-M:0)'+accumarray(a,b,[],@min)*M)
 
 
 %Assign sigma, the degree of specialization or generalization
 maxStages=max(lifestage_N);
-NofPrey=sum(nicheweb,2);
+N_prey=sum(nicheweb,2);
 %The following way is extremely controlled, it will mimic any function in [0,1]:
 speci_fun=@(x) x.^2+1;%Important -> speci_fun(0)>0
 diet_redundancy=5;%A rough estimate of the amount of overlap in diet between life stages.
@@ -141,7 +199,7 @@ spec_gener=zeros(nichewebsize,maxStages);%pre-allocating variable size for speed
 for i=1:nichewebsize
     N=lifestage_N(i);%Number of lifestages in this species (1 for non-fish)
     spec_i=speci_fun(0:1/(N-1):1); %Assigns the number of prey for each life stage from N different points in the chosen function in [0,1] interval.
-    spec_i=(spec_i/sum(spec_i)).*(NofPrey(i)+diet_redundancy);%Normalizes the number of prey so that the entire prey selection is covered by the different lifestages.
+    spec_i=(spec_i/sum(spec_i)).*(N_prey(i)+diet_redundancy);%Normalizes the number of prey so that the entire prey selection is covered by the different lifestages.
     spec_gener(i,1:N)=ceil(spec_i);%Throws on a ceiling, so that each life stage has at least 1 prey item.
 end
 %Honestly, this function has its fair share of problems.  It might just be
@@ -156,7 +214,7 @@ for i=1:nichewebsize
     spec_i=rand(1,lifestage_N(i))*10;%see, at least these values will be kind of normal.
     %Now if I want to normalize it so that I can guarantee it covers the
     %entire prey selection:
-    spec_gener(i,1:lifestage_N(i))=(spec_i/sum(spec_i)).*(NofPrey(i)+diet_redundancy);%Normalizes the number of prey so that the entire prey selection is covered by the different lifestages.
+    spec_gener(i,1:lifestage_N(i))=(spec_i/sum(spec_i)).*(N_prey(i)+diet_redundancy);%Normalizes the number of prey so that the entire prey selection is covered by the different lifestages.
 end
 spec_gener=ceil(spec_gener);%Throws on a ceiling, so that each life stage has at least 1 prey item.
 %Here is the sort function:
