@@ -65,7 +65,7 @@
 %%-------------------------------------------------------------------------
 
 %to construct niche web, uncomment the following lines.
-    S_0=30;
+    S_0=10;%30;
     connectance=0.15;
     [nicheweb] = NicheModel(S_0, connectance);%Create a connected (no infinite degrees of separation) foodweb with realistic species (eg. no predators without prey), and no isolated species.
 
@@ -80,7 +80,7 @@ basalsp = find(sum(nicheweb,2)==0);%List the autotrophs (So whatever doesn't hav
 %%  LIFE HISTORY
 %%-------------------------------------------------------------------------
 nicheweb_old=nicheweb;%Save the old nicheweb just incase.
-[nicheweb_new,lifehistory_table,Mvec,IsFish]= LifeHistories(nicheweb,nichewebsize,connectance,basalsp);
+[nicheweb_new,lifehistory_table,Mvec,Mass,isfish]= LifeHistories(nicheweb,nichewebsize,connectance,basalsp);
 nicheweb=nicheweb_new;%Update nicheweb.  This looks really messy, but I'll clean it up later(also not sure if this line is required)
 nichewebsize = length(nicheweb);%Steph: Find number of species (not sure why, already have S_0)
 
