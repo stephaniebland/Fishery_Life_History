@@ -1,22 +1,24 @@
 # LaTeX Residual Files #
 ########################
-Z_BLAND_PAPER-knitr.log
-Z_BLAND_PAPER-knitr.pdf
-Z_BLAND_PAPER-knitr.synctex.gz
-Z_BLAND_PAPER-knitr-concordance.tex
-Z_BLAND_PAPER-knitr.tex
-Z_BLAND_PAPER-knitr-concordance.log
-Z_BLAND_PAPER-old-sweave.log
-Z_BLAND_PAPER-old-sweave.pdf
-Z_BLAND_PAPER-old-sweave.synctex.gz
-Z_BLAND_PAPER-old-sweave-concordance.tex
-Z_BLAND_PAPER-old-sweave.tex
-Z_BLAND_PAPER-knitr.lof
-Z_BLAND_PAPER-knitr.fff
+/PAPER/**.ttt
+/PAPER/**.lot
+/PAPER/**.log
+/PAPER/**.pdf
+/PAPER/**.gz
+/PAPER/**.lof
+/PAPER/**.fff
+/PAPER/**.tex
+/PAPER/cache
 
 # LaTeX Figure Stuff #
 ######################
 /PAPER/figure
-/PAPER/cache
-*.ttt
-*.lot
+
+# Testing Code Files #
+######################
+/Testing Code Files/Niche_mass_correlation
+/Testing Code Files/**.png
+/Testing Code Files/**.txt
+/Testing Code Files/.Rhistory
+
+

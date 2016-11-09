@@ -27,6 +27,7 @@ setup; % to set all the parameters and simulate a nicheweb
 harv_index = find(harv~=0); %index of the harvested species
 %[nicheproperties]=web_properties(nicheweb,T1,TrophLevel); % to calculate the 17 structural properties of the nicheweb
 %dlmwrite('exniche.txt',nicheweb,',') % export the nicheweb (to plot with network3d)
+%dlmwrite('adj_list.txt',adj_list,',') % export the nicheweb (to plot with network3d)
 
 B=x(:,1:nichewebsize);
 E=x(:,nichewebsize+1:end);
