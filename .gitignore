@@ -18,3 +18,5 @@ Z_BLAND_PAPER-knitr.fff
 ######################
 /PAPER/figure
 /PAPER/cache
+*.ttt
+*.lot

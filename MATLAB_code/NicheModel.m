@@ -53,7 +53,7 @@
 
     %----------------------------------------------------------------------    
     % set center of range, uniformly distributed in [r_i/2,n_i];
-        c = min(1-r./2,rand(num_species,1).*(n-r./2)+r./2); %CP : rand was always the same
+        %c = min(1-r./2,rand(num_species,1).*(n-r./2)+r./2); %CP : rand was always the same
         %The min term (1-r/2) is just to make sure that you don't exceed
         %the web; your predator will always prey on food in the web.  So if
         %you look at the species with the largest niche index, the center

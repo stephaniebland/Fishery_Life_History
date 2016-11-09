@@ -15,6 +15,7 @@
 %--------------------------------------------------------------------------
 
 clear;
+beep off
 warning off MATLAB:divideByZero;
 
 
@@ -35,6 +36,7 @@ E=x(:,nichewebsize+1:end);
 %-----------------------------------------
 
     Beq=mean(B(end-400:end,:));
+    Beq(find(isfish'))
     %Eeq=mean(E(end-400:end,nichewebsize));
     
     %Bheq=mean(B(end-400:end,harv_index));
@@ -47,7 +49,11 @@ E=x(:,nichewebsize+1:end);
     figure(1); hold on;
 
     %subplot(2,1,1); hold on;
-    plot(t,log10(B)); 
+    plot_fish=B(:,[find(isfish')]);
+    plot_invert=B(:,[find(1-isfish')]);
+    plot(t,log10(plot_fish),'r'); 
+    plot(t,log10(plot_invert),'b'); 
+    %plot(t,log10(B)); 
     xlabel('time'); ylabel('log10 biomass')
     %legend('Autotroph','Herbivore','Carnivore')
     grid on;

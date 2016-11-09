@@ -1,9 +1,20 @@
 \documentclass[12pt]{article}
+%Following lines are for citations
+%\usepackage[T1]{fontenc}
+%\usepackage[utf8]{inputenc}
+%usepackage{lmodern}
+%\usepackage[hidelinks]{hyperref} % Hyperref package for url's and [hidelinks] option to remove collouring
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 \usepackage[capitalise]{cleveref} % when you reference a table or figure, automatically format as "Table 1" rather than "table 1" or "1".
 \usepackage{authblk} % allows pretty formatting of author lists
 \usepackage[margin=0.25in]{geometry}
 \usepackage{color}
-\usepackage[nomarkers]{endfloat}
+\usepackage[nomarkers,figuresonly]{endfloat}
+\usepackage [english]{babel} %Following three lines set quotes to automatically format to regular quotes
+\usepackage [autostyle, english = american]{csquotes}
+\MakeOuterQuote{"}
 \title{Fisheries Induced Life History Changes}
 \author[2,1]{Stephanie Bland, Anna Kuparinen, Jeff Hutchings, Neo Martinez}
 \date{\today}
@@ -20,6 +31,139 @@ opts_chunk$set(concordance=TRUE)
 read_chunk('Fig_lifestage_prey.R')
 read_chunk('Fig_Von_Bert.R')
 @
+
+
+
+\section*{Current Problem}
+I'm not really happy with how I assign individual body mass to new lifestages. The original model outputs mass for nodes, calculated allometrically from foodweb relationships between species. So the mass of each species is assigned based on two factors: trophic level and type of organism (fish or other organism). They first calculate the metabolic rate (Z) using a lognormally distributed random number with parameters $\mu$ and $\sigma$ derived from the body mass mean and variance as described in table \ref{table:weight}:
+\begin{equation}
+  \mu=\log\left(\frac {m^2} {\sqrt{v+m^2}} \right)
+\end{equation}
+\begin{equation}
+  \sigma=\sqrt{\log\left(\frac v {m^2} +1\right)}
+\end{equation}
+Then they use the metabolic rate and Trophic level (T) to calculate the individual body mass:
+\begin{equation}
+  \mathit{Mass}=Z^{T-1}
+\end{equation}
+\par These masses, according to Neo, are "average adult body mass" in grams/individual fish.
+\section*{Goal}
+I want is to come up with new lifestages. So I want to take this average adult body mass and use that to determine:
+\begin{itemize}
+  \item Number of lifestages
+  \item Weight at each lifestage.
+\end{itemize}
+\subsection*{Correcting Body Mass to More Realistic Weights}
+\par Most of the equations I'll be using later on are dependent on having realistic body weights for fish, because the equations were only designed to fit the model for realistic body weights. Neo says that it might be best to change the means and variance for individual body weights from what they are currently set at:
+\begin{table}[ht]
+\caption{Body Weights mean and variance for fish and non-fish species}% title of Table
+\centering % used for centering table
+\begin{tabular}{c c c}% centered columns (4 columns)
+\hline\hline                        %inserts double horizontal lines
+Type of Organism & Mean & Variance \\ [0.5ex]% inserts table heading
+\hline                 % inserts single horizontal line
+Fish & 5000 & 100  \\% inserting body of the table
+Other & 100 & 100  \\ [1ex]      % [1ex] adds vertical space
+\hline %inserts single line
+\end{tabular}
+\label{table:weight}% is used to refer this table in the text
+\end{table}
+\par It might also be wise to have an error message if the weights ever exceed a threshold limit. 100 kg might be a good setting for this. 
+\subsection*{Number of Lifestages}
+\par It might be sufficent to just assume that each species has 4 lifestages and fix it at that. This is without a doubt the simplest model. At the moment, I have it set to take a uniform distribution between 2 and 6 lifestges. We can also use a different distribution. Alternatively, we can set it as a function of the average adult body mass, so that smaller fish mature faster than larger fish. So to summarize, the three methods are:
+\begin{itemize}
+  \item {\bf Fixed number} for all species (4 lifestages)
+  \item {\bf Random distribution} (Uniform, Normal, Poisson...). This distribution is determined {\it independently} of body mass.
+  \item {\bf Correlated to body mass} using a function. 
+\end{itemize}
+\subsection*{Using Weights and Number of Lifestages to determine Weight at each lifestage}
+Weights and lengths are interchangeable using an isometric growth model (Sangun {\it et al.} 2007):
+\begin{equation}
+  W=qL^3
+\end{equation}
+where W is individual fish weight, q=0.0125 (\textcolor{red}{source?}) is the conversion factor for length to weight, and L is individual fish length. We assume that this equation holds true across species and lifestages.
+\par So all future equations will be dealing with lengths rather than weights.
+\subsubsection*{von Bertalanffy Growth Model}
+I will use a von Bertalanffy growth model to calculate the weights at each lifestage:
+\begin{equation}
+  W(t)=W_\infty(1-e^{-K(t-t_0)})^3
+\end{equation}
+\noindent where $W_\infty$ is the asymptotic weight (g), K is the growth coefficient (year$^{-1}$), and $t_0$ is the initial condition parameter (year) (Sparre and Venema \cite{Sparre1998}, 1998).
+\subsubsection{Calculate Asymptotic Weight}
+\par I started with a relationship between asymptotic length and maximum length for fish (Froese and Binohlan 2000 \cite{Froese2000}, Equation 5):
+\begin{equation}
+  log(L_\infty)=0.044+0.9841log(L_{max})
+\end{equation}
+Where the logarithms are base 10 (http://www.fishbase.org/download/popdynJFB.zip), $L_{max}$ is the maximum length that a fish species grows to, and $L_\infty$ is the asymptotic length that a fish could theoretically expect to grow to if it grew forever, although we can treat $L_\infty$ as a constant.
+\subsubsection{Calculate Growth Coefficient}
+At the moment I just have $K=\frac 3 {t_{max}}$ from (http://www.fishbase.org/download/popdynJFB.zip). It might make more sense to use a different equation, or find a correlation between K and $L_\infty$.
+\subsubsection{Calculate Initial Condition Parameter}
+We now have sufficent parameters to solve for $t_0$ using the original von Bertalanffy growth model. We can plug in the average adult body mass and the total number of lifestages, and we already solved for $K$ and $L_\infty$:
+\begin{equation}
+  l_t=L_\infty(1-e^{-K(t-t_0)})
+\end{equation}
+\section*{Issues - you can skim this part}
+\subsubsection*{Sometimes $t_0$ is positive}
+If $K$ is too large you will end up with a positive $t_0$, which is bad since the y-intercept will be negative, so the first lifestage would have a negative weight.  So I'll just force it to be negative. 
+\begin{equation}
+  0>t_0=t_{max}+\frac 1 K ln\left(1- \frac {L_{max}} {L_\infty} \right)
+\end{equation}
+\begin{equation}
+  -\frac 1 K ln\left(1- \frac {L_{max}} {L_\infty} \right)>t_{max}
+\end{equation}
+\begin{equation}
+  -\frac 1 {t_{max}} ln\left(1- \frac {L_{max}} {L_\infty} \right)>K
+\end{equation}
+So I just set:
+\begin{equation}
+  K=-\frac {0.9} {t_{max}} ln\left(1- \frac {L_{max}} {L_\infty} \right)
+\end{equation}
+whenever K is too large. In all other cases, I stick with $K=\frac 3 {t_{max}}$. 0.9 was chosen arbitrarily.
+\section*{Assumptions}
+\subsubsection*{Check that K values make sense}
+\par I should also check that $\frac {L_{max}} {L_\infty} \in (0,1)$, so that K exists and is always positive. It's also important to ensure that the asymptotic length is always bigger than the maximum length to make sure that it makes biological sense. 
+\begin{equation}
+  \frac {L_{max}} {L_\infty}=\frac {L_{max}} {10^{0.044}L_{max}^{0.9841}}=\frac {L_{max}^{1-0.9841}} {10^{0.044}}=\frac {L_{max}^{0.0159}} {10^{0.044}}
+\end{equation}
+Which is greater than 0 provided $L_{max}>0$, and less than 1 provided that
+\begin{equation}
+  \frac {L_{max}^{0.0159}} {10^{0.044}}<1
+\end{equation}
+\begin{equation}
+  L_{max}^{0.0159}<10^{0.044}
+\end{equation}
+\begin{equation}
+  L_{max}<10^\frac {0.044} {0.0159}=585.1883 cm
+\end{equation}
+Or, in weight instead, for q=0.0125:
+\begin{equation}
+  W<0.0125\left(\frac {0.044} {0.0159}\right)^3=2,504.937 kg
+\end{equation}
+Which is true, because we set $L_\infty<100 kg$.
+\section*{Conclusion}
+I'm not really sure if any of this is good enough. It seems to work, but I want to make sure that it's a fairly realistic calculation of lifestage body masses. I also am not sure if it makes sense to have everything set so deterministically; we are using one value (average adult body mass) to determine everything else. Maybe introduce some stochasticity into it? Or that might make it to difficult to disentangle other effects. I'm also not sure if I interpreted the average adult body mass correctly, so the calculation for the asymptotic weight may be flawed. 
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bibliographystyle{IEEEtran}
+\bibliography{/Users/JurassicPark/Documents/ZoteroCitations/ZBLANDPAPERknitr.bib}
+
+\newpage \noindent\hrulefill
+\section*{IGNORE EVERYTHING BELOW THIS}
+\hrulefill
 
 
 %Figures go before the text because knitr will only recognize references to data used in their calculation if you start with it.
@@ -42,25 +186,24 @@ require(ggplot2)
 %Back to the actual Paper
 
 
-
 \section*{Introduction}
 
 
 \begin{itemize}
-\item Most models in ecology look at specific systems
-\item This model generalizes the results we find in a specific system to others
+  \item Most models in ecology look at specific systems
+  \item This model generalizes the results we find in a specific system to others
 \begin{itemize}
-\item So we are looking for trends in a general ecosystem
+  \item So we are looking for trends in a general ecosystem
 \end{itemize}
 \end{itemize}
 \section*{Methods (Overview)}
 \par  Figure \ref{fig:Lifestage_prey} shows how a species' prey will be assigned to lifestages. This species eats prey in the niche value range of $[\Sexpr{niche_range}]$, over $\Sexpr{N_stages}$ lifestages. Each lifestage i eats prey in the niche value range of $[a_i, b_i]$. However, we can also think of each lifestage as having a diet range, starting from a smallest prey item, $a_i$, and continuing up to a largerst prey item, $b_i=a_i+\sigma_i$, where $\sigma_i$ is the number of prey that lifestage i consumes. This is how I chose to define my prey selection, because this way I can control the degree of specialisation for each lifestage, as well as the rate of prey size increase. 
 \par Ideally, we would want the prey's niche values to be roughly increasing with lifestage.  More importantly though, we want to make sure that every prey item is consumed by at least one lifestage. So we can impose four requirements on $\{a_i\}, \{b_i\}$:
 \begin{enumerate}
-\item $a_i\leq b_i$
-\item $a_{i+1}\leq b_i+1$
-\item $a_0=\min{total niche range}$
-\item $b_m=\max{total niche range}$, where m is the oldest lifestage for species i.
+  \item $a_i\leq b_i$
+  \item $a_{i+1}\leq b_i+1$
+  \item $a_0=\min{total niche range}$
+  \item $b_m=\max{total niche range}$, where m is the oldest lifestage for species i.
 \end{enumerate}
 \par You may note that the above example breaks rule 2. for i=5.  I'm not sure if I want to allow this, because it doesn't look that ugly.  
 \par I might also consider including a new rule 5. $b_{i+1}\geq a_i$
@@ -69,7 +212,7 @@ require(ggplot2)
 I will modify the ATN model to include life histories for fish species. To determine the number of life stages and the mass at each stage, I will use a weight based von Bertalanffy growth model
 
 \begin{equation}
-W(t)=W_\infty(1-e^{-K(t-t_0)})^3
+  W(t)=W_\infty(1-e^{-K(t-t_0)})^3
 \end{equation}
 
 \noindent where $W_\infty$ is the asymptotic weight (g), K is the growth coefficient (year$^{-1}$), and $t_0$ is the initial condition parameter (year) (Sparre and Venema, 1998). I will define $W_\infty=1.5?W_A$ , where $W_A$ is the predetermined fish weight, and keep K constant at 0.3 year$^{-1}$. The initial condition parameter, $t_0$, will be calculated so that both of the following conditions are satisfied: 1) there are at least four life stages, and 2) the smallest life stage is no larger than 500g. 
@@ -77,7 +220,7 @@ W(t)=W_\infty(1-e^{-K(t-t_0)})^3
 \par Let the maximum number of lifestages in any of the species be $\Lambda=\max_{i=1}^S a_i$, we can store the weights for every lifestage and species in an $S\times \Lambda$ matrix $\Omega$, where element $\omega_{i,j}$ is the weight of species i in lifestage j.  
 \par We can store the life stage weights in a matrix where rows are species, and columns are life stages. So this will be an $S$
 
-\subsection*{Derivation of Von-Bertalanffy Equation used in my model}
+\subsection*{Derivation of von Bertalanffy Equation used in my model}
 \par I started with a relationship between asymptotic length and maximum length for fish (Froese and Binohlan 2000, Equation 5):
 \begin{equation}
   log(L_\infty)=0.044+0.9841log(L_{max})
@@ -114,14 +257,14 @@ So when we substitute it in:
   W_\infty=10^{3\times 0.044}q^{1-0.9841}{W_{max}}^{0.9841}
 \end{equation}
 Which we can plug into the model to calculate the asymptotic weights. Using $W_\infty$, we can now calculate the expected weights for all the lifestages. 
-\par This equation gives you a Von-Bert growth curve in weight, as shown in figuree \ref{fig:Von_Bert}. Using this curve we can solve for the weight at each lifestage. This is where we run into a problem, since there are several methods of doing this:
+\par This equation gives you a von Bertalanffy growth curve in weight, as shown in figuree \ref{fig:Von_Bert}. Using this curve we can solve for the weight at each lifestage. This is where we run into a problem, since there are several methods of doing this:
 \begin{itemize}
   \item Set the number of lifestages first, and calculate the weight for that many lifestages.
   \item Set a lower limit for the weight of the smallest lifestage, and choose the number of lifestages accordingly. (Visually, this would be your y-intercept). %\textcolor{red}{[I'm not actually sure if this is possible, I think that maybe $t_0$ stretches the function instead of actually changing]}
 \end{itemize}
 \par Of course it's possible to use a combination of these methods, and both methods could be customized for individual species (for instance you could force every species to have exactly 3 lifestages, or you could assign a random number of lifestages to every species).
 \par It's probably more realistic (and much easier) to set the smallest weight possible, and use that to solve for $t_0$.
-\par Alright, you need three parameters according to the traditional von-Bertalanffy growth model:
+\par Alright, you need three parameters according to the traditional von Bertalanffy growth model:
 \begin{equation}
   l_t=L_\infty(1-e^{-K(t-t_0)})
 \end{equation}
@@ -166,7 +309,7 @@ Since the diet assigned to fish species represents the full extent of their diet
 To control the degree to which a lifestage specializes, we will specify the number of prey each lifestage eats using a matrix, where each element $\sigma_{ij}$ is the number of prey consumed by species i in lifestage j. So if you have a species that is specialized at birth but becomes more of a generalist, that row will have increasingly large numbers as you move right. We should constrain this with $\sum_{j=1}^m \sigma_{ij}\geq b_i-a_i$, where $m$ is the oldest lifestages for species i, and $a_i$ and $b_i$ are the smallest and largest prey consumed by species i, respectively.
 
 \subsubsection*{Temporary Bandage Fix for $K$ being too large}
-If $K$ is too large you will end up with a positive $t_0$, which is bad since the y-intercept will be negative, so the first lifestage would have a negative weight.  So I'll just force it to be positive. 
+If $K$ is too large you will end up with a positive $t_0$, which is bad since the y-intercept will be negative, so the first lifestage would have a negative weight.  So I'll just force it to be negative. 
 \begin{equation}
   0>t_0=t_{max}+\frac 1 K ln\left(1- \frac {L_{max}} {L_\infty} \right)
 \end{equation}
@@ -199,7 +342,7 @@ Or, in weight instead, for q=0.0125:
 \begin{equation}
   W<0.0125\left(\frac {0.044} {0.0159}\right)^3=2,504.937 kg
 \end{equation}
-Which is true, because we set $L_{inf}<100 kg$.
+Which is true, because we set $L_\infty<100 kg$.
 
 
 \section*{Assumptions}
