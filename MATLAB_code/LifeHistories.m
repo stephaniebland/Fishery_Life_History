@@ -151,10 +151,10 @@ end
 
 
 
-%Species that eat fish
-indexfish_new=find(ismember(species, find(isfish)));%Index of fish species for new web
-nicheweb_new(:,indexfish_new);
-nicheweb(:,find(isfish'));
+% %Species that eat fish
+% indexfish_new=find(ismember(species, find(isfish)));%Index of fish species for new web
+% nicheweb_new(:,indexfish_new);
+% nicheweb(:,find(isfish'));
 
 %First approximation is just that if something preys on a species, it will prey on all of the lifestages
 %newnodes=1-orig_nodes;
