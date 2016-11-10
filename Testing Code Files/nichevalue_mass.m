@@ -1,6 +1,6 @@
+clear;
 
-
-for i=1:10000
+for i=1:100000
     clearvars -except i
     beep off
     warning off MATLAB:divideByZero;
@@ -22,7 +22,7 @@ for i=1:10000
     %%-------------------------------------------------------------------------
     %Calculates species weight -> so you know how many life stages it needs
     %"meta", "TrophLevel" & "T1", "IsFish" and "Z"
-    [TrophLevel,T1]= TrophicLevels(nichewebsize,nicheweb,basalsp);
+    [TrophLevel,T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp);
     [Z,Mvec,isfish]= MassCalc(nichewebsize,basalsp,TrophLevel);
     
     
@@ -32,11 +32,14 @@ for i=1:10000
     isplant=zeros(S_0,1);
     isplant(basalsp)=1;
     justinvert=isplant+isfish;
-    niche_mass=[n_new, Mvec,isfish,isplant,justinvert,TrophLevel,Z];
+    webnumber=i*ones(length(n_new),1);
+    log_mass=log(Mvec);
+    log_ten=log10(Mvec);
+    niche_mass=[webnumber, n_new, Mvec, log_mass,log_ten,isfish,isplant,justinvert,TrophLevel,Z,T1',T2];
     
     
     %Save the file
-    cd('/Users/JurassicPark/Google Drive/GIT/Masters Project/Testing Code Files/Niche_mass_correlation')
+    cd('/Users/JurassicPark/Google Drive/GIT/Masters Project/Testing Code Files/Everything')
     dlmwrite(strcat('n_mass_',num2str(i),'.txt'),niche_mass,',') % export the nicheweb (to plot with network3d)
     
 end

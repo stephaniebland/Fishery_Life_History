@@ -13,7 +13,7 @@
 %--------------------------------------------------------------------------
 
 % uncomment if to use as a function
-function [T, T1]= TrophicLevels(nichewebsize,nicheweb,basalsp)
+function [T, T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp)
 
 
 %--------------------------------------------------------------------------

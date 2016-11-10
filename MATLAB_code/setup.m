@@ -80,8 +80,10 @@ basalsp = find(sum(nicheweb,2)==0);%List the autotrophs (So whatever doesn't hav
 %%-------------------------------------------------------------------------
 %Calculates species weight -> so you know how many life stages it needs
 %"meta", "TrophLevel" & "T1", "IsFish" and "Z"
-    [TrophLevel,T1]= TrophicLevels(nichewebsize,nicheweb,basalsp);
+    [TrophLevel,T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp);
     [Z,Mvec,isfish]= MassCalc(nichewebsize,basalsp,TrophLevel);
+    % Use Linear regression to estimate slope of mass-niche relationship:
+    [R_squared,Adj_Rsq,lin_regr]=Linear_Regression(Mvec,n_new,isfish,nicheweb);
 
 %%-------------------------------------------------------------------------
 %%  LIFE HISTORY
@@ -113,7 +115,7 @@ adj_list=[adj_row, adj_col];%indexed from 1 and up, so if you want first node to
 %1) set manually
     %meta = [0; .15; .02];    
 %2) Can be scaled with body size
-    %[TrophLevel,T1]= TrophicLevels(nichewebsize,nicheweb,basalsp);%Trophiclevel can probably be preserved
+    %[TrophLevel,T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp);%Trophiclevel can probably be preserved
     [meta,Z]=metabolic_scaling(nichewebsize,basalsp,isfish,TrophLevel,Mass);
     
 
