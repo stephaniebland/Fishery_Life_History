@@ -17,6 +17,8 @@
 clear;
 beep off
 warning off MATLAB:divideByZero;
+% Number of original nodes (species)
+S_0=30;
 
 
 setup; % to set all the parameters and simulate a nicheweb

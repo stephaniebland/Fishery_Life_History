@@ -155,13 +155,23 @@ I'm not really sure if any of this is good enough. It seems to work, but I want 
 
 
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage \noindent\hrulefill
-\section*{Stuff I already figured out}
+\section*{Stuff that's too messy still}
 \hrulefill
-
+\section*{Predators of New Lifestages}
+We need to specify which lifestages each predator eats, because right now all we know is that they eat a fish species, not which lifestages they eat within that species. So, since we know the mass of each life stage we can find a correlation between that and niche value, and just assign the new lifestages new niche values. Then plug it back into the niche model (with the old, preserved $c_{new}$ and $r_{new}$) to reset the diets. 
+\subsection*{Correlation between niche value and Mass}
+If we only want a correlation for invertebrate species, that's pretty easy, and you can generally find a pretty good correlation for individual webs (check out the histograms that I may attach later). This is useful for other projects in Neo's lab.  
+\par The difficulty is finding a correlation that works well for fish species, because they have much higher body masses than any invertebrates. I couldn't find any correlation (adjusted R-squared=0.01815, Number of food webs=20,927) for fish after standardizing mass and normalizing niche value (double check this), but I realized I messed up by limiting the number of fish in each web to 3 species.
+\subsubsection*{Extend Number of Fish to more than 3}
+It makes more sense to use more than three species because when you're extending the food web you're basically filling in the other species that aren't the top three "most fish like". I may want to consider adding more invertebrate/basal species though!
+\subsubsection*{Check that all food webs have same general trend}
+This is why I normalize/standardize data before fitting it, they wouldn't without that. I was lazy and just plotted each web in a different colour, and all the colours seem evenly distributed throughout. But a more thorough test should be done if you want to make sure (particulaly because I can only visually check for one web at a time) \textcolor{red}{Check this! I forgot that I've been plotting this for 100's of webs at a time, so each colour will be representing several webs, so I was only ever looking at average webs anyhow!  I need a statistical test!}
+\subsubsection*{Instead of Linear Regression...}
+Since I already have such a large data set, and a regression would just give me deterministic values anyhow, unless I artificially add stochasticity, I could just be lazy instead. I think I'll just take my new relationship between niche and mass and split it into niche value groups. Then I can get the average and standard deviation for any particular range, turn that into a matrix with columns niche value range, average, standard deviation, and use that to find new niche values for any new lifestages. Fitting it to a curve with artificial stochasticity will probably just add error from a poor fitting curve, and there's no reason to talk about the linear regression in the paper anyhow because niche value doesn't mean anything. Of course, if the data set is homoscedastic, then you might as well just use a lin. regression, but I'm expecting it to be heteroscedastic, from what I saw with invertebrates.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

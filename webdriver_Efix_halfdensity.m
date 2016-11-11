@@ -14,12 +14,15 @@
 clear;
 beep off
 warning off MATLAB:divideByZero;
+% Number of original nodes (species)
+S_0=30;
+
 
 %--------------------------------------------------------------------------
 % Protocole parameters
 %--------------------------------------------------------------------------
-    mu=0;    %security
-    ca=0.01; %security
+    mu=0;    %security - stiffness parameter
+    ca=0.01; %security - catchability coefficient
     
     tot_nwebs = 10;         % number of webs to create
     tot_harv_species = 3;   % number of different species to harvest within each web
@@ -29,10 +32,10 @@ warning off MATLAB:divideByZero;
     pers_thresh = 0.70; % minimum tolerated number of persistant species for a web
     errorrange = 0.05;  % tolerated error for the biomass when calculating gammaATN
 
-    tot_simu = tot_nwebs*tot_harv_species
-    xmat = zeros(tot_simu,56);
-    all_webs = zeros(30,30,tot_nwebs);
-    all_param = zeros(66,30,tot_nwebs);
+    tot_simu = tot_nwebs*tot_harv_species;
+    xmat = zeros(tot_simu,56);% Matrix to save output in at the end. Number of columns comes from total number of output that you want to save. 
+    all_webs = zeros(S_0,S_0,tot_nwebs);
+    all_param = zeros(66,S_0,tot_nwebs);
 
 %--------------------------------------------------------------------------
 % For each food web 
@@ -48,8 +51,8 @@ warning off MATLAB:divideByZero;
         setup;
         
         % simulation without exploitation
-        B0=(999*rand(nichewebsize,1)+1)*0.01;
-        E0=zeros(nichewebsize,1);
+        B0=(999*rand(nichewebsize,1)+1)*0.01;%Duplicate of line in setup!
+        E0=zeros(nichewebsize,1);%Duplicate of line in setup!
         [x, t] =  dynamic_fn(K,int_growth,meta,max_assim,effic,Bsd,q,c,f_a,f_m, ...
                   ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,t_final,ext_thresh);
         B0=x(end,1:nichewebsize)'; % use the final biomasses as the initial conditions
@@ -57,7 +60,7 @@ warning off MATLAB:divideByZero;
         % selection of only the surviving species
         surv_sp=find(B0>ext_thresh);
         newnicheweb=nicheweb(surv_sp,surv_sp);  % nicheweb without the rows and cols of extincted species
-        fish_sp=find(IsFish(surv_sp));          % we want webs with at least 3 fish species remaining
+        fish_sp=find(isfish(surv_sp));          % we want webs with at least 3 fish species remaining
         
         % keep only webs with more than pers_thresh % of persistant
         % species, still connected and with at least 3 fish species
@@ -67,8 +70,8 @@ warning off MATLAB:divideByZero;
             
             % calculate the properties of the new web
             nichewebsize=length(surv_sp);
-            Lfinal=sum(sum(newnicheweb));
-            conn_final=Lfinal/nichewebsize^2;
+            Lfinal=sum(sum(newnicheweb));%total number of remaining links
+            conn_final=Lfinal/nichewebsize^2;%end connectance
             structproperties=web_properties(newnicheweb,T1(surv_sp),TrophLevel(surv_sp)); %calculates the structural properties of the niche
             
             % remove all the extincted species
@@ -87,7 +90,7 @@ warning off MATLAB:divideByZero;
             TrophLevel=TrophLevel(surv_sp);
             T1=T1(surv_sp);
             Z=Z(surv_sp);
-            nonbasalsp=find(sum(newnicheweb,2)>0)
+            nonbasalsp=find(sum(newnicheweb,2)>0);
             
             % selection of the biggest species to harvest
             if length(fish_sp)==3
@@ -103,7 +106,7 @@ warning off MATLAB:divideByZero;
             
             % harvesting each of the three selected species
             for i=1:tot_harv_species
-                k=k+1
+                k=k+1;
                 harv_index=harv_species(i); % index of the harvested species
                 harv=zeros(nichewebsize,1);
                 harv(harv_index)=1;	        % array giving the harvested species
@@ -171,7 +174,7 @@ warning off MATLAB:divideByZero;
         %if the new web has too few persistant species or is not fully
         %connected or has less than 3 fish species ...
         else
-            trash=trash+1
+            trash=trash+1;
         end
             
     end

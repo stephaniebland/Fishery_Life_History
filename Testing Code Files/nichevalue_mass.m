@@ -31,11 +31,11 @@ for i=1:100000
     %just_inve=intersect(no_plants,no_fish);
     isplant=zeros(S_0,1);
     isplant(basalsp)=1;
-    justinvert=isplant+isfish;
+    either=isplant+isfish;
     webnumber=i*ones(length(n_new),1);
     log_mass=log(Mvec);
     log_ten=log10(Mvec);
-    niche_mass=[webnumber, n_new, Mvec, log_mass,log_ten,isfish,isplant,justinvert,TrophLevel,Z,T1',T2];
+    niche_mass=[webnumber, n_new, Mvec, log_mass,log_ten,isfish,isplant,either,TrophLevel,Z,T1',T2];
     
     
     %Save the file

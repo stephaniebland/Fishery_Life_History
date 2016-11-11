@@ -65,7 +65,7 @@
 %%-------------------------------------------------------------------------
 
 %to construct niche web, uncomment the following lines.
-    S_0=30;
+    %S_0=30; %Commented out this line since it's better to keep it with webdriver, I think
     connectance=0.15;
     [nicheweb,n_new,c_new,r_new] = NicheModel(S_0, connectance);%Create a connected (no infinite degrees of separation) foodweb with realistic species (eg. no predators without prey), and no isolated species.
 
