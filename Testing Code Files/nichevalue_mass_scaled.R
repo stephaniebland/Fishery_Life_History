@@ -15,10 +15,8 @@ std.fun=function(x){
   y=(x-mean(x))/sd(x)
   return(y)
 }
-lin.regr=function(N,bodymass,nichevalue){#a has two columns
-  #nichevalue=a[,1]
-  #bodymass=a[,2]
-  
+#Function to do a linear regression
+lin.regr=function(N,bodymass,nichevalue){
   Mregr=lm(bodymass~nichevalue)
   adjR=summary(Mregr)$adj.r.squared
   R.squar=summary(Mregr)$r.squared
@@ -28,15 +26,10 @@ lin.regr=function(N,bodymass,nichevalue){#a has two columns
   beep=cbind(web_num, intercept.regr,slope.regr,R.squar,adjR)
   return(beep)
 }
-# trial=function(x,y){
-#   z=x*y
-#   return(z)
-# }
-# test=rbind(c(2,50),c(3,100))
+#Import Data
 setwd("/Users/JurassicPark/Documents/Testing code/Fixed_for_morethan3fish")
 n_mass=matrix(0,0,5)
-n_webs=3
-#col_scheme <- brewer.pal(n_webs, "Dark2")
+n_webs=100000
 for (i in 1:n_webs){
   x=paste("n_mass_",i,".txt",sep="")
   temp=read.csv(x,header=F)
@@ -98,18 +91,15 @@ y=tapply(indep_var,N,std.fun)
 x=as.vector(unlist(x))
 y=as.vector(unlist(y))
 run_lm=as.data.frame(cbind(N,y,x))
-#by(test, N, function(k) cor(k$x, k$y))#finding correlation is mostly useless
-#fancy.regr=by(test, N, function(k) lm(y~x, data = k))#doesn't output nearly enough data
-#testing=fancy.regr[1]
-trial=by(run_lm, N, function(k) lin.regr(k$N,k$y, k$x))
-lm_by_web=matrix(unlist(trial),dim(trial),length(unlist(trial[1])),byrow=T)
+
+running_lm=by(run_lm, N, function(k) lin.regr(k$N,k$y, k$x))
+lm_by_web=matrix(unlist(running_lm),dim(running_lm),length(unlist(running_lm[1])),byrow=T)
 colnames(lm_by_web)=c("web","Intercept","slope","R squared","adjusted R squared")
 plot(x,y,col=N,pch=19)
-abline(lm_by_web[1,2],lm_by_web[1,3],col=lm_by_web[1,1])
-abline(lm_by_web[2,2],lm_by_web[2,3],col=lm_by_web[2,1])
-abline(lm_by_web[3,2],lm_by_web[3,3],col=lm_by_web[3,1])
-abline(lm_by_web[,2],lm_by_web[,3],col=lm_by_web[,1])
-by(lm_by_web,lm_by_web[,1],function(k) abline(k$Intercept,k$slope,col=k$web))
+silent=by(lm_by_web,lm_by_web[,1],function(k) abline(k$Intercept,k$slope,col=k$web))
+#Histograms
+hist(lm_by_web[,4],main="Histogram of R squared for mass")
+hist(lm_by_web[,5],main="Histogram of adjusted R squared for mass")
 
 detach(fish_only)
 
