@@ -31,11 +31,14 @@ setwd("/Users/JurassicPark/Documents/Testing code/Fixed_for_morethan3fish")
 n_mass=matrix(0,0,5)
 n_webs=100000
 for (i in 1:n_webs){
-  x=paste("n_mass_",i,".txt",sep="")
+  x=paste0("n_mass_",i,".txt")
   temp=read.csv(x,header=F)
   n_mass=rbind(n_mass,temp)
 }
 colnames(n_mass)=c("N","niche","mass","ln_m","log_m","isfish","plant","either","Troph","meta","T1","T2")
+setwd("/Users/JurassicPark/Documents/Testing code")
+write(n_mass, file=paste0("Fixed_for_morethan3fish.txt"))
+
 neither=n_mass[n_mass$either==0,]#only use invertebrates
 fish_only=n_mass[n_mass$isfish==1,]#only use fish
 no_plants=n_mass[n_mass$plant==0,]#fish and invertebrates

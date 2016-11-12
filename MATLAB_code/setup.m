@@ -130,18 +130,19 @@ adj_list=[adj_row, adj_col];%indexed from 1 and up, so if you want first node to
 %Other dynamic parameters
 %------------------------
 
-    K_param=540;
+    K_param=540;%carrying capacity
     K = ones(nichewebsize,1) .*K_param;
 
-    max_assim = 10*ones(nichewebsize);
+    max_assim = 10*ones(nichewebsize);% max rate i assimilates j per unit metabolic rate of i
 
-    effic = .85*ones(nichewebsize);
+    effic = .85*ones(nichewebsize);%assimilation efficiency of i for j
     effic(:,basalsp) = .45;
     
-    f_a = 0.4;
-    f_m = 0.1;
+    f_a = 0.4;% fraction of assimilated carbon used for production of consumers biomass under activity
+    f_m = 0.1;% fraction of assimilated carbon respired by maintenance of basic bodily functions
     
-    q = .2;
+    q =.2;% q>0 gives type III response (set to a scalar here) [according to Fernanda Valdovinos, this one parameter makes a huge difference to stability]
+    %biomasses to power q+1, which regulates shape of Holling-curve (h=1+q) Fernanda says h=1.2 is stable for normal webs.
     
 %Half saturation density "Bsd" and predator interference "c"  
 %-----------------------------------------------------------

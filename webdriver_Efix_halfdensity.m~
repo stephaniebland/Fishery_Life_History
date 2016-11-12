@@ -75,10 +75,10 @@ S_0=30;
             structproperties=web_properties(newnicheweb,T1(surv_sp),TrophLevel(surv_sp)); %calculates the structural properties of the niche
             
             % remove all the extincted species
-            B0=B0(surv_sp);%biomass of all remaining species inbetween cycles (so after last one and before the one that's about to start) 
-            B0mean=mean(x(end-meanlast:end,surv_sp));%mean biomasses of all extant species throughout last cycle
-            B0std=std(x(end-meanlast:end,surv_sp));%standard deviations
-            K=K(surv_sp);%carrying capacity
+            B0=B0(surv_sp);%biomass of all remaining species inbetween cycles (so after last one and before the 
+            B0mean=mean(x(end-meanlast:end,surv_sp));
+            B0std=std(x(end-meanlast:end,surv_sp));
+            K=K(surv_sp);
             int_growth=int_growth(surv_sp);
             meta=meta(surv_sp);
             max_assim=max_assim(surv_sp,surv_sp);
@@ -86,7 +86,7 @@ S_0=30;
             Bsd=Bsd(surv_sp,surv_sp);
             c=c(surv_sp,surv_sp);
             IsFish=IsFish(surv_sp);
-            fish_sp=find(isfish);
+            fish_sp=find(IsFish);
             TrophLevel=TrophLevel(surv_sp);
             T1=T1(surv_sp);
             Z=Z(surv_sp);
@@ -95,7 +95,6 @@ S_0=30;
             % selection of the biggest species to harvest
             if length(fish_sp)==3
                 harv_species=fish_sp;    % if there are only 3 fish species, harvest all of them
-                %Yes, but isn't this redundant, because it does that anyhow!
             else
                 possib_harv=zeros(nichewebsize,1);
                 possib_harv(fish_sp)=TrophLevel(fish_sp)./meta(fish_sp); % calculate trophic level / metabolic rate
@@ -115,39 +114,39 @@ S_0=30;
                 % mortality gammaATN=q*E for which the harvested species biomass has been divided by 2
                 % uses a dichotomic research algorythm
                 gammaATN=0;
-                Bhalf=B0mean(harv_index)/2;
+                Bhalf=B0mean(harv_index)/2
                 E_inf=0;
                 E_sup=Emax;
                 
                 while gammaATN==0
-                   Elevel=(E_sup+E_inf)/2;
+                   Elevel=(E_sup+E_inf)/2
                    E0=harv.*Elevel;
                    [x, t] =  dynamic_fn(K,int_growth,meta,max_assim,effic,Bsd,q,c,f_a,f_m, ...
                                 ca,co,mu,p_a,p_b,newnicheweb,B0,E0,t_init,t_final,ext_thresh);
                    Bmean=mean(x(end-meanlast:end,1:nichewebsize));
-                   Bf=Bmean(harv_index);
+                   Bf=Bmean(harv_index)
                    Bstd=std(x(end-meanlast:end,1:nichewebsize));
                    
                    if isnan(Bf)==1
-                       gammaATN=-99; % sometimes the new web won't allow the ode45 function to work properly
+                       gammaATN=-99 % sometimes the new web won't allow the ode45 function to work properly
                        
                    elseif Bf<Bhalf*(1+errorrange) && Bf>Bhalf*(1-errorrange) % Bf=B0/2 +-1%
-                       gammaATN=Elevel;
+                       gammaATN=Elevel
                        
                    elseif E_sup-E_inf<0.01
-                       gammaATN=Elevel;
+                       gammaATN=Elevel
                        
                    elseif Bf>2*Bhalf % Bf>B0 then return -1 (Hydra Effect)
-                       gammaATN=-1;
+                       gammaATN=-1
                        
                    elseif Bf>Bhalf && Elevel>Emax-.01 % Elevel<gammaATN but to make the algorithm end
-		                gammaATN=Emax-.01;
+		                gammaATN=Emax-.01
                         
                    elseif Bf>Bhalf   % Elevel<gammaATN
                        E_inf=Elevel;
                        
                    elseif Elevel<.01  % Elevel>gammaATN but set 0 to make the algo finish
-                       gammaATN=.01;
+                       gammaATN=.01
                        
                    else
                        E_sup=Elevel; % Elevel>gammaATN

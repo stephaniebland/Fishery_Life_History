@@ -53,12 +53,12 @@ for i=1:nichewebsize
                     % if the invertebrate prey j is mostly herbivore
                     %------------------------------------------------------
                     else
-                        ratio = Z(i)/Z(j);%I *think* Z is predator-prey body-mass ratio. StephHWK: Find out why you take the ratios of Z's then?
+                        ratio = Z(i)/Z(j);%Z is predator-prey metabolic rate ratio. 
                         
                         %--------------------------------------------------
                         % if the invertebrate prey j mostly herbivore is
                         % 50 times smaller than the fish predator
-                        % LIKE DAPHNEA !
+                        % LIKE DAPHNIA !
                         %--------------------------------------------------
                         if ratio>50
                             Bsd(i,j) = 150;
@@ -66,7 +66,7 @@ for i=1:nichewebsize
                             
                         %--------------------------------------------------
                         % if the invertebrate prey j mostly herbivore is
-                        % not very smaller than the fish predator
+                        % not very much smaller than the fish predator
                         %--------------------------------------------------
                         else
                             Bsd(i,j) = 15;
