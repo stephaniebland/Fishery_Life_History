@@ -20,5 +20,13 @@
 /Testing Code Files/**.png
 /Testing Code Files/**.txt
 /Testing Code Files/.Rhistory
+/Testing Code Files/Git_Ignore
 
 
+# Modified Code Files #
+#######################
+*.m~
+
+webdriver_Efix_halfdensity.m~
+
+webdriver_Efix_halfdensity.m~

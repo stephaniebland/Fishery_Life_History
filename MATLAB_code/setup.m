@@ -141,7 +141,7 @@ adj_list=[adj_row, adj_col];%indexed from 1 and up, so if you want first node to
     f_a = 0.4;% fraction of assimilated carbon used for production of consumers biomass under activity
     f_m = 0.1;% fraction of assimilated carbon respired by maintenance of basic bodily functions
     
-    q =.2;% q>0 gives type III response (set to a scalar here) [according to Fernanda Valdovinos, this one parameter makes a huge difference to stability]
+    q =.2;%.2;% q>0 gives type III response (set to a scalar here) [according to Fernanda Valdovinos, this one parameter makes a huge difference to stability]
     %biomasses to power q+1, which regulates shape of Holling-curve (h=1+q) Fernanda says h=1.2 is stable for normal webs.
     
 %Half saturation density "Bsd" and predator interference "c"  
@@ -219,6 +219,7 @@ adj_list=[adj_row, adj_col];%indexed from 1 and up, so if you want first node to
 %---------------
 %1) randomly set between 0.02 and 20, from a uniform distb:
      B0 = (999*rand(nichewebsize,1)+1)*.01;
+     %B0(find(isfish))=B0(find(isfish))/60;% Maybe try to tweak original fish densities
 %2) from uniform distribution in the ranges 5-500, 2-200 and 1-100 
     %B0 = (99*rand(nichewebsize,1)+1).*[5; 2; 1];
 %3) set manually, example on 2 species
