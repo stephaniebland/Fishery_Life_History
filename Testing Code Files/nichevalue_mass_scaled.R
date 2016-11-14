@@ -37,7 +37,7 @@ for (i in 1:n_webs){
 }
 colnames(n_mass)=c("N","niche","mass","ln_m","log_m","isfish","plant","either","Troph","meta","T1","T2")
 setwd("/Users/JurassicPark/Documents/Testing code")
-write(n_mass, file=paste0("Fixed_for_morethan3fish.txt"))
+#write.csv(n_mass,file = "fixed_more_3_fish_blank")
 
 neither=n_mass[n_mass$either==0,]#only use invertebrates
 fish_only=n_mass[n_mass$isfish==1,]#only use fish

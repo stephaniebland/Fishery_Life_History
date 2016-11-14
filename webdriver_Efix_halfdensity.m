@@ -85,7 +85,7 @@ S_0=30;
             effic=effic(surv_sp,surv_sp);
             Bsd=Bsd(surv_sp,surv_sp);
             c=c(surv_sp,surv_sp);
-            IsFish=IsFish(surv_sp);
+            isfish=isfish(surv_sp);
             fish_sp=find(isfish);
             TrophLevel=TrophLevel(surv_sp);
             T1=T1(surv_sp);
@@ -93,17 +93,17 @@ S_0=30;
             nonbasalsp=find(sum(newnicheweb,2)>0);
             
             % selection of the biggest species to harvest
-            if length(fish_sp)==3
+            if length(fish_sp)==tot_harv_species
                 harv_species=fish_sp;    % if there are only 3 fish species, harvest all of them
                 %Yes, but isn't this redundant, because it does that anyhow!
             else
                 possib_harv=zeros(nichewebsize,1);
                 possib_harv(fish_sp)=TrophLevel(fish_sp)./meta(fish_sp); % calculate trophic level / metabolic rate
                 sortsize=sort(possib_harv);                              % sort the species by TL/x_i
-                sizethreshold=sortsize(end-2);
+                sizethreshold=sortsize(end-tot_harv_species+1);
                 harv_species=find(possib_harv>=sizethreshold);           %s elect the species with highest TL/x_i
             end
-            clear Lfinal possib_harv nonbasalsp sortsize sizethreshold;
+            clear Lfinal possib_harv sortsize sizethreshold;%nonbasalsp %I'm not quite sure why the original model clears nonbasalsp - it seems like a bug that would always make the code stop.
             
             % harvesting each of the three selected species
             for i=1:tot_harv_species
@@ -158,7 +158,7 @@ S_0=30;
                 % save the data
                 xmat(k,1:3)=[webindex nichewebsize conn_final];
                 xmat(k,4:20)=structproperties;
-                xmat(k,21:24)=[harv_index IsFish(harv_index) meta(harv_index) TrophLevel(harv_index)];
+                xmat(k,21:24)=[harv_index isfish(harv_index) meta(harv_index) TrophLevel(harv_index)];
                 xmat(k,25:47)=local_properties(newnicheweb,harv_index,harv_species);
                 xmat(k,48:51)=[B0mean(harv_index) B0std(harv_index) sum(B0mean) sum(B0mean(nonbasalsp))];
                 xmat(k,52:end)=[gammaATN Bstd(harv_index) sum(Bmean) sum(Bmean(nonbasalsp)) 4.5*meta(harv_index)];
@@ -166,7 +166,7 @@ S_0=30;
             end
 
 	    all_webs(1:nichewebsize,1:nichewebsize,webindex)=newnicheweb;
-	    all_param(1:5,1:nichewebsize,webindex)=[meta'; TrophLevel'; T1; Z'; int_growth']; 
+	    all_param(1:5,1:nichewebsize,webindex)=[meta'; TrophLevel'; T1; Z; int_growth']; 
         all_param(6:5+nichewebsize,1:nichewebsize,webindex)=Bsd;
         all_param(36:35+nichewebsize,1:nichewebsize,webindex)=c;
         all_param(66,1:nichewebsize,webindex)=B0';
