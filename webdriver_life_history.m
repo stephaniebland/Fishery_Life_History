@@ -28,7 +28,10 @@ for i=1:N_years
         ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,t_final,ext_thresh);
     B_end=x(end,1:nichewebsize)'; % use the final biomasses as the initial conditions
     B0=B_end;
-    B0(find(isfish))=B_end(find(isfish))+x(1,find(isfish))';%new biomasses for new year
+    %% Move biomass from one life history to the next
+    %B0(find(isfish))=B_end(find(isfish))+x(1,find(isfish))';%new biomasses for new year (Simple solution where you just add extra fish stock each year - where you add the amount of fish that the model originally produced)
+    B0=lifehistory_table*B_end;
+    %% Concatenate Data for all years
     full_sim=[full_sim;x];
     t=t+L_year*(i-1);
     full_t=[full_t;t];
