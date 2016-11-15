@@ -34,8 +34,8 @@ W_scalar=max(Mvec)/100000;%Factor by which you can scale all the weights, so tha
 lifestage_mass=Mvec.*isfish;% You only want to add lifestages to fish
 W_max=lifestage_mass/W_scalar;%So adult weight of all the fish species.
 t_max=ones(nichewebsize,1);
-t_max(find(isfish))=randi([1 5],sum(isfish),1);%BE CAREFUL - THIS IS LIKE NUMBER OF ADDITIONAL LIFE STAGES (you may want N_stages instead)
-%Jeff said most fish are within 2-6 years for age at maturity (and t_max
+t_max(find(isfish))=randi([3 3],sum(isfish),1);%BE CAREFUL - THIS IS LIKE NUMBER OF ADDITIONAL LIFE STAGES (you may want N_stages instead)
+%Jeff said most fish are within 2-6 [1 5] years for age at maturity (and t_max
 %excludes the first year, so it's fine.)
 
 

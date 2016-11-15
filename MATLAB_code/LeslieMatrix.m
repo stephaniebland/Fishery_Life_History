@@ -33,7 +33,8 @@ for i=find(isfish_old')
     stages=N_stages(i);%Number of fish life history stages
     if stages~=1
         aging=1*ones(1,stages-1);%length of stages-1, some sort of distribution
-        fert=.5*ones(1,stages);%length of stages, some sort of distribution
+        %fert=.5*ones(1,stages);%length of stages, some sort of distribution
+        fert=[0, 0.05, 0.5, 1];%Assuming four life stages
         non_mature=zeros(1,stages);%Default for fish that don't mature is 0, they either mature or die.
         %NOTE!  The order of the following lines IS important!!!
         %lifehis_breed=zeros(stages);%Reset matrix from last run.
