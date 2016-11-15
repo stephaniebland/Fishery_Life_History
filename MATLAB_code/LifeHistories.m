@@ -96,12 +96,12 @@ lifehistory_table=eye(newwebsize);%Identity Matrix for life history table, so no
 for i=1:nichewebsize
     stages=N_stages(i);%Number of fish life history stages
     if stages~=1
-        mature=.1*ones(1,stages-1);%length of stages-1, some sort of distribution
+        aging=1*ones(1,stages-1);%length of stages-1, some sort of distribution
         fert=.5*ones(1,stages);%length of stages, some sort of distribution
         non_mature=zeros(1,stages);%Default for fish that don't mature is 0, they either mature or die.
         %NOTE!  The order of the following lines IS important!!!
         %lifehis_breed=zeros(stages);%Reset matrix from last run.
-        lifehis_breed=diag(mature,-1);%Set the subdiagonal to the probability of maturing to the next stage
+        lifehis_breed=diag(aging,-1);%Set the subdiagonal to the probability of maturing to the next stage
         lifehis_breed(1,:)=fert;%Set the first row to the fertility rate;
         lifehis_breed=lifehis_breed+diag(non_mature);%Set the diagonal to the probability of not maturing to the next stage, but staying the same age.
         %So now, incorporate it into life history table
