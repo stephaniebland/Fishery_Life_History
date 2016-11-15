@@ -16,7 +16,7 @@
 %Leslie Matrix can change every year
 
 %function [output]= LifeHistories(input)
-function [lifehistory_table]= LeslieMatrix(S_0,newwebsize,N_stages,year)
+function [lifehistory_table]= LeslieMatrix(S_0,newwebsize,N_stages,year,isfish_old,species)
 
 %%-------------------------------------------------------------------------
 %%  LIFE HISTORY MATRIX - LESLIE MATRIX
@@ -27,10 +27,9 @@ function [lifehistory_table]= LeslieMatrix(S_0,newwebsize,N_stages,year)
 %But since both weight and age are fixed, well, you could either adjust age
 %accordingly (you just calculated age). Are you sure you want to use this,
 %or is there something better?
-
 %Fish life history tables:  Creates a Leslie matrix where aij is the contribution of life stage j to life stage i.
 lifehistory_table=eye(newwebsize);%Identity Matrix for life history table, so non-fish are untransformed by matrix
-for i=1:S_0
+for i=find(isfish_old')
     stages=N_stages(i);%Number of fish life history stages
     if stages~=1
         aging=1*ones(1,stages-1);%length of stages-1, some sort of distribution
@@ -42,6 +41,9 @@ for i=1:S_0
         lifehis_breed(1,:)=fert;%Set the first row to the fertility rate;
         lifehis_breed=lifehis_breed+diag(non_mature);%Set the diagonal to the probability of not maturing to the next stage, but staying the same age.
         %So now, incorporate it into life history table
-        lifehistory_table(i:(i+stages-1),i:(i+stages-1))=lifehis_breed;
+        fish_index=find(species==i);
+        lifehistory_table(fish_index,fish_index)=lifehis_breed;
     end
+end
+
 end

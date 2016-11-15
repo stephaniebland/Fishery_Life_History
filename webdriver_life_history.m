@@ -32,7 +32,7 @@ for i=1:N_years
     B_end=x(L_year,1:nichewebsize)'; % use the final biomasses as the initial conditions
     B0=B_end;
     %% Change Biomass as Kuparinen et al. for Lake Constance.
-    [lifehistory_table]= LeslieMatrix(S_0,nichewebsize,N_stages,i);
+    [lifehistory_table]= LeslieMatrix(S_0,nichewebsize,N_stages,i,isfish_old,species);
     %% Move biomass from one life history to the next
     %B0(find(isfish))=B_end(find(isfish))+x(1,find(isfish))';%new biomasses for new year (Simple solution where you just add extra fish stock each year - where you add the amount of fish that the model originally produced)
     B0=lifehistory_table*B_end;
