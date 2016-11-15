@@ -104,6 +104,7 @@ lifestage=[];
 for i=1:S_0 
     lifestage=[lifestage 1:N_stages(i)];
 end
+Mvec=Mass';
 basalsp = find(sum(nicheweb,2)==0);%List the autotrophs (So whatever doesn't have prey)  Hidden assumption - can't assign negative prey values (but why would you?)
 %Convert Nicheweb into an adjacency list "two-column format, in which the first column lists the number of a consumer, and the second column lists the number of one of the resource species of that consumer." - Dunne 2006
 [adj_row,adj_col]=find(nicheweb);
