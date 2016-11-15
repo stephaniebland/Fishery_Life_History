@@ -26,18 +26,23 @@ lin.regr=function(N,bodymass,nichevalue){
   beep=cbind(web_num, intercept.regr,slope.regr,R.squar,adjR)
   return(beep)
 }
-#Import Data
+#Import Data - Limited Number
 setwd("/Users/JurassicPark/Documents/Testing code/Fixed_for_morethan3fish")
 n_mass=matrix(0,0,5)
-n_webs=100000
+n_webs=10
 for (i in 1:n_webs){
   x=paste0("n_mass_",i,".txt")
   temp=read.csv(x,header=F)
   n_mass=rbind(n_mass,temp)
 }
 colnames(n_mass)=c("N","niche","mass","ln_m","log_m","isfish","plant","either","Troph","meta","T1","T2")
+
+#Import Data - All
 setwd("/Users/JurassicPark/Documents/Testing code")
-#write.csv(n_mass,file = "fixed_more_3_fish_blank")
+n_mass=read.csv("fixed_data_everything_multifish.txt",header=T)
+head(n_mass)
+n_mass=n_mass[,3:14]
+colnames(n_mass)=c("N","niche","mass","ln_m","log_m","isfish","plant","either","Troph","meta","T1","T2")
 
 neither=n_mass[n_mass$either==0,]#only use invertebrates
 fish_only=n_mass[n_mass$isfish==1,]#only use fish
@@ -57,9 +62,9 @@ detach(no_plants)
 reduced_fish=A[A[,3]==1,]
 reduced_fish=as.data.frame(reduced_fish)
 colnames(reduced_fish)=c("xvar","yvar","isfish","N")
-attach(fish_only)
+attach(no_plants)
 indep_var=log_m
-x=tapply(niche,N,squash)
+x=tapply(niche,N,std.fun)
 y=tapply(indep_var,N,std.fun)
 x=as.vector(unlist(x))
 y=as.vector(unlist(y))
@@ -69,14 +74,20 @@ M0=lm(y~x)
 
 adjR.M0=summary(M0)$adj.r.squared
 adjR.M0
-plot(x,y,col=N,pch=19)
+#plot(x,y,col=N,pch=19)
 
 #plot(x,y,col=col_scheme[N],pch=19)
-#plot(x,y,col=col_scheme[isfish+2],pch=19)
+plot(x,y,col=col_scheme[isfish+2],pch=19)
 #legend("bottomright",legend=c("hi","hello"))
 abline(M0)
 #legend(x=.5, y=0.5,legend=c("hi"))
 
+
+M1=lm(x~y)
+adjR.M1=summary(M1)$adj.r.squared
+adjR.M1
+plot(y,x,col=col_scheme[isfish+2],pch=19,xlab="individual body mass",ylab="niche value")
+abline(M1)
 
 
 detach(neither)
