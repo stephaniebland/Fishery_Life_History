@@ -74,10 +74,10 @@ M0=lm(y~x)
 
 adjR.M0=summary(M0)$adj.r.squared
 adjR.M0
-#plot(x,y,col=N,pch=19)
+#plot(x,y,col=N,pch=19,ylab="individual body mass",xlab="niche value")
 
-#plot(x,y,col=col_scheme[N],pch=19)
-plot(x,y,col=col_scheme[isfish+2],pch=19)
+#plot(x,y,col=col_scheme[N],pch=19,ylab="individual body mass",xlab="niche value")
+plot(x,y,col=col_scheme[isfish+2],pch=19,ylab="individual body mass",xlab="niche value")
 #legend("bottomright",legend=c("hi","hello"))
 abline(M0)
 #legend(x=.5, y=0.5,legend=c("hi"))
@@ -109,7 +109,7 @@ run_lm=as.data.frame(cbind(N,y,x))
 running_lm=by(run_lm, N, function(k) lin.regr(k$N,k$y, k$x))
 lm_by_web=matrix(unlist(running_lm),dim(running_lm),length(unlist(running_lm[1])),byrow=T)
 colnames(lm_by_web)=c("web","Intercept","slope","R squared","adjusted R squared")
-plot(x,y,col=N,pch=19)
+plot(x,y,col=N,pch=19,ylab="individual body mass",xlab="niche value")
 silent=by(lm_by_web,lm_by_web[,1],function(k) abline(k$Intercept,k$slope,col=k$web))
 #Histograms
 hist(lm_by_web[,4],main="Histogram of R squared for mass")
