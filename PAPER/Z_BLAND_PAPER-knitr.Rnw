@@ -161,6 +161,11 @@ I'm not really sure if any of this is good enough. It seems to work, but I want 
 \newpage \noindent\hrulefill
 \section*{Stuff that's too messy still}
 \hrulefill
+\section*{Correlation between K and $L_\infty$}
+According to proba mature.m in the lake constance model, correlation is given by following equation, log is base 10. Double check before using.
+\begin{equation}
+  L_\infty=e^{\left(2.78log(10)-\frac {log(K)} 2 \right)}
+\end{equation}
 \section*{Predators of New Lifestages}
 We need to specify which lifestages each predator eats, because right now all we know is that they eat a fish species, not which lifestages they eat within that species. So, since we know the mass of each life stage we can find a correlation between that and niche value, and just assign the new lifestages new niche values. Then plug it back into the niche model (with the old, preserved $c_{new}$ and $r_{new}$) to reset the diets. 
 \subsection*{Correlation between niche value and Mass}
