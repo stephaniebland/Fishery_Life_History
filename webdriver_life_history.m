@@ -16,7 +16,7 @@ S_0=30;% Number of original nodes (species)
 setup;% creation of a new food web
 
 
-N_years=100;%Total number of years to run simulation for
+N_years=5;%Total number of years to run simulation for
 L_year=100;% Number of (days?) in a year (check units!!!)
 t_final=L_year; % Number of timesteps in a year
 
@@ -63,6 +63,22 @@ plot(full_t,log10(plot_invert),'b');
 %plot(t,log10(B));
 xlabel('time'); ylabel('log10 biomass')
 %legend('Autotroph','Herbivore','Carnivore')
+grid on;
+
+%% Plot Fish Species by colour (invertebrates are all same colour), and lifestage by line type
+
+figure(1); hold on;
+p=plot(full_t,log10(B));
+[~,~,ind_species]=unique(isfish.*species');
+[~,~,ind_lifestage]=unique(lifestage);
+colours=get(gca,'colororder');
+%mark={'o', '+', '*', '.', 'x', 's', 'd', '^', 'v', '>', '<', 'p', 'h'}
+line_lifestage={'-','--',':','-.','-.','-.'};
+for i=1:nichewebsize
+    p(i).Color=colours(ind_species(i),1:3);
+    %p(i).Marker=char(mark(ind(i)))
+    p(i).LineStyle=char(line_lifestage(lifestage(i)));%Youngest lifestage is given same line type as non-fish species
+end
 grid on;
     
 %% Individual Fish Species, by total biomass
