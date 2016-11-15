@@ -1,0 +1,18 @@
+##########INTRODUCTION##########
+Goal:	Incorporate life history into a general aquatic food web model.
+Method:	Add more nodes to the model that represent new life stages for the fish species.
+
+
+##########TROPHIC LEVELS##########
+- Calculate trophic levels again after you run the simulation (and have necessary biomasses and preferential diets)  This is useful for comparing it to fishbase or "real fish".
+- Trophic level is calculated as average of shortest path to basalsp and weighted diet, *this is intentional!*  Turns out that it gives a very accurate estimate of actual trophic level, better than either combined.  See:
+	Carscallen et al. 2012. Estimating trophic position... Ecosphere 3(3): art25.
+	Williams and Martinez 2004. Limits to trophic levels... Am. Nat. 163(3): 458–468.
+
+##########REJECTED IDEAS##########
+- Post doc Kim Davies (Oceanography, Dal) suggested using a three-dimensional array to store life stages, so predators go along the rows, prey (the same species) go along the columns, and the lifestages are stored in the third dimension (pages). Each cell would be filled with booleans, where 1 is predator feeds on prey, and 0 means it doesn't. Upon further consideration, I concluded that this idea would not work because there is no way to specify which fish lifestages are predated upon. It's probably possible to accomplish this with a fourth dimension, so [predspecies, preyspecies, predlifestages, preylifestages], but my intuition is weak with that, and I'm probably more likely to make a mistake.  
+	**ACTUALLY ON FURTHER CONSIDERATION**: It may be possible to use four dimensions.  I just need to be careful and think about things in terms of a single matrix at a time.  
+	- Could track biomass through the model using matrices rather than vectors
+	- But fish species will not be separated into nodes. I'm not even certain if this is actually a problem.  
+	- The advantage would be that you wouldn't require a separate vector telling you which lifestages belong to which species.
+	

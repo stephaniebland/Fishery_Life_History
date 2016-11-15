@@ -65,9 +65,9 @@
 %%-------------------------------------------------------------------------
 
 %to construct niche web, uncomment the following lines.
-    S_0=30;
+    %S_0=30; %Commented out this line since it's better to keep it with webdriver, I think
     connectance=0.15;
-    [nicheweb] = NicheModel(S_0, connectance);%Create a connected (no infinite degrees of separation) foodweb with realistic species (eg. no predators without prey), and no isolated species.
+    [nicheweb,n_new,c_new,r_new] = NicheModel(S_0, connectance);%Create a connected (no infinite degrees of separation) foodweb with realistic species (eg. no predators without prey), and no isolated species.
 
 %or enter custom web (rows eats column)
     %nicheweb = [0 0 0; 1 0 0; 0 1 0];
@@ -75,7 +75,39 @@
 nichewebsize = length(nicheweb);%Steph: Find number of species (not sure why, already have S_0)
 basalsp = find(sum(nicheweb,2)==0);%List the autotrophs (So whatever doesn't have prey)  Hidden assumption - can't assign negative prey values (but why would you?)
 
+%%-------------------------------------------------------------------------
+%%  FIRST: SET DYNAMICS PARAMETERS
+%%-------------------------------------------------------------------------
+%Calculates species weight -> so you know how many life stages it needs
+%"meta", "TrophLevel" & "T1", "IsFish" and "Z"
+    [TrophLevel,T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp);
+    [Z,Mvec,isfish]= MassCalc(nichewebsize,basalsp,TrophLevel);
+    % Use Linear regression to estimate slope of mass-niche relationship:
+    [R_squared,Adj_Rsq,lin_regr]=Linear_Regression(Mvec,n_new,isfish,nicheweb);
 
+%%-------------------------------------------------------------------------
+%%  LIFE HISTORY
+%%-------------------------------------------------------------------------
+nicheweb_old=nicheweb;%Save the old nicheweb just incase.
+isfish_old=isfish;
+Mvec_old=Mvec;
+[nicheweb_new,lifehistory_table,Mass,orig_nodes,species,N_stages]= LifeHistories(nicheweb,nichewebsize,Mvec,isfish,n_new,c_new,r_new);
+%Update all the output to reflect new web
+nicheweb=nicheweb_new;%Update nicheweb.  This looks really messy, but I'll clean it up later(also not sure if this line is required)
+nichewebsize = length(nicheweb);%Steph: Find number of species (not sure why, already have S_0)
+TrophLevel=repelem(TrophLevel,N_stages);
+T1=repelem(T1,N_stages);
+Z=repelem(Z,N_stages);
+isfish=repelem(isfish,N_stages);
+meta_N_stages=repelem(N_stages,N_stages);
+lifestage=[];
+for i=1:S_0 
+    lifestage=[lifestage 1:N_stages(i)];
+end
+basalsp = find(sum(nicheweb,2)==0);%List the autotrophs (So whatever doesn't have prey)  Hidden assumption - can't assign negative prey values (but why would you?)
+%Convert Nicheweb into an adjacency list "two-column format, in which the first column lists the number of a consumer, and the second column lists the number of one of the resource species of that consumer." - Dunne 2006
+[adj_row,adj_col]=find(nicheweb);
+adj_list=[adj_row, adj_col];%indexed from 1 and up, so if you want first node to be 0, you need to subtract 1.
 
 
 %%-------------------------------------------------------------------------
@@ -87,7 +119,9 @@ basalsp = find(sum(nicheweb,2)==0);%List the autotrophs (So whatever doesn't hav
 %1) set manually
     %meta = [0; .15; .02];    
 %2) Can be scaled with body size
-    [meta, TrophLevel, T1, IsFish, Z]=metabolic_scaling(nichewebsize,nicheweb,basalsp);
+    %[TrophLevel,T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp);%Trophiclevel can probably be preserved
+    [meta,Z]=metabolic_scaling(nichewebsize,basalsp,isfish,TrophLevel,Mass);
+    
 
 %Intrinsic growth parameter "r" for basal species only
 %-----------------------------------------------------
@@ -100,29 +134,30 @@ basalsp = find(sum(nicheweb,2)==0);%List the autotrophs (So whatever doesn't hav
 %Other dynamic parameters
 %------------------------
 
-    K_param=540;
+    K_param=540;%carrying capacity
     K = ones(nichewebsize,1) .*K_param;
 
-    max_assim = 10*ones(nichewebsize);
+    max_assim = 10*ones(nichewebsize);% max rate i assimilates j per unit metabolic rate of i
 
-    effic = .85*ones(nichewebsize);
+    effic = .85*ones(nichewebsize);%assimilation efficiency of i for j
     effic(:,basalsp) = .45;
     
-    f_a = 0.4;
-    f_m = 0.1;
+    f_a = 0.4;% fraction of assimilated carbon used for production of consumers biomass under activity
+    f_m = 0.1;% fraction of assimilated carbon respired by maintenance of basic bodily functions
     
-    q = .2;
+    q =.2;%.2;% q>0 gives type III response (set to a scalar here) [according to Fernanda Valdovinos, this one parameter makes a huge difference to stability]
+    %biomasses to power q+1, which regulates shape of Holling-curve (h=1+q) Fernanda says h=1.2 is stable for normal webs.
     
 %Half saturation density "Bsd" and predator interference "c"  
 %-----------------------------------------------------------
     %Bsd = 1.5*ones(nichewebsize);
     %c = ones(nichewebsize,nichewebsize)*0.5;
-    [Bsd, c]=func_resp_scaling(nicheweb,nichewebsize,IsFish,Z,basalsp);
+    [Bsd, c]=func_resp_scaling(nicheweb,nichewebsize,isfish,Z,basalsp);
 
 %set initial and final integration times
 %---------------------------------------
     t_init = 0;
-    t_final= 5000;
+    t_final= 700;%5000;
 
 %set the extinction threshold
 %----------------------------
@@ -188,6 +223,7 @@ basalsp = find(sum(nicheweb,2)==0);%List the autotrophs (So whatever doesn't hav
 %---------------
 %1) randomly set between 0.02 and 20, from a uniform distb:
      B0 = (999*rand(nichewebsize,1)+1)*.01;
+     %B0(find(isfish))=B0(find(isfish))/60;% Maybe try to tweak original fish densities
 %2) from uniform distribution in the ranges 5-500, 2-200 and 1-100 
     %B0 = (99*rand(nichewebsize,1)+1).*[5; 2; 1];
 %3) set manually, example on 2 species

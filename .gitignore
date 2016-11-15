@@ -1,0 +1,32 @@
+# LaTeX Residual Files #
+########################
+/PAPER/**.ttt
+/PAPER/**.lot
+/PAPER/**.log
+/PAPER/**.pdf
+/PAPER/**.gz
+/PAPER/**.lof
+/PAPER/**.fff
+/PAPER/**.tex
+/PAPER/cache
+
+# LaTeX Figure Stuff #
+######################
+/PAPER/figure
+
+# Testing Code Files #
+######################
+/Testing Code Files/Niche_mass_correlation
+/Testing Code Files/**.png
+/Testing Code Files/**.txt
+/Testing Code Files/.Rhistory
+/Testing Code Files/Git_Ignore
+
+
+# Modified Code Files #
+#######################
+*.m~
+
+webdriver_Efix_halfdensity.m~
+
+webdriver_Efix_halfdensity.m~

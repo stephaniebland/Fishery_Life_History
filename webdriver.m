@@ -15,7 +15,10 @@
 %--------------------------------------------------------------------------
 
 clear;
+beep off
 warning off MATLAB:divideByZero;
+% Number of original nodes (species)
+S_0=30;
 
 
 setup; % to set all the parameters and simulate a nicheweb
@@ -26,6 +29,7 @@ setup; % to set all the parameters and simulate a nicheweb
 harv_index = find(harv~=0); %index of the harvested species
 %[nicheproperties]=web_properties(nicheweb,T1,TrophLevel); % to calculate the 17 structural properties of the nicheweb
 %dlmwrite('exniche.txt',nicheweb,',') % export the nicheweb (to plot with network3d)
+%dlmwrite('adj_list.txt',adj_list,',') % export the nicheweb (to plot with network3d)
 
 B=x(:,1:nichewebsize);
 E=x(:,nichewebsize+1:end);
@@ -35,6 +39,7 @@ E=x(:,nichewebsize+1:end);
 %-----------------------------------------
 
     Beq=mean(B(end-400:end,:));
+    Beq(find(isfish'))
     %Eeq=mean(E(end-400:end,nichewebsize));
     
     %Bheq=mean(B(end-400:end,harv_index));
@@ -47,7 +52,11 @@ E=x(:,nichewebsize+1:end);
     figure(1); hold on;
 
     %subplot(2,1,1); hold on;
-    plot(t,log10(B)); 
+    plot_fish=B(:,[find(isfish')]);
+    plot_invert=B(:,[find(1-isfish')]);
+    plot(t,log10(plot_fish),'r'); 
+    plot(t,log10(plot_invert),'b'); 
+    %plot(t,log10(B)); 
     xlabel('time'); ylabel('log10 biomass')
     %legend('Autotroph','Herbivore','Carnivore')
     grid on;
