@@ -84,7 +84,8 @@ orig_index=find(orig_nodes');%index of original species
 %%-------------------------------------------------------------------------
 %%  LIFE HISTORY MATRIX - LESLIE MATRIX
 %%-------------------------------------------------------------------------
-[lifehistory_table]= LeslieMatrix(nichewebsize,newwebsize,N_stages);
+year=1;%Because leslie matrix will soon be time dependent, I want to preserve functionality in original file
+[lifehistory_table]= LeslieMatrix(nichewebsize,newwebsize,N_stages,year);
 
 %%-------------------------------------------------------------------------
 %%  NEW NICHEWEB - NEO'S METHOD - SPLIT OLD DIET

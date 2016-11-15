@@ -16,7 +16,7 @@
 %Leslie Matrix can change every year
 
 %function [output]= LifeHistories(input)
-function [lifehistory_table]= LeslieMatrix(S_0,newwebsize,N_stages)
+function [lifehistory_table]= LeslieMatrix(S_0,newwebsize,N_stages,year)
 
 %%-------------------------------------------------------------------------
 %%  LIFE HISTORY MATRIX - LESLIE MATRIX
