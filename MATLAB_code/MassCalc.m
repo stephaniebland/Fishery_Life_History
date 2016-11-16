@@ -26,9 +26,9 @@ function [Z,Mvec,isfish]= MassCalc(nichewebsize,basalsp,T)
     isfish(possibfish)=bernoulli; %That's clever...
     
     %Alternatively, just choose top three "most fish-like" species to be fish
-    %isfish=zeros(nichewebsize,1);
-    %[x fishiness]=sort(T); clear x;%Rank species by how fish like they are.  This only chooses top 3, but some could have trophic levles < 3 still.
-    %isfish(fishiness(end-2:end))=1;%Choose top three species to be fish
+    isfish=zeros(nichewebsize,1);
+    [x fishiness]=sort(T); clear x;%Rank species by how fish like they are.  This only chooses top 3, but some could have trophic levles < 3 still.
+    isfish(fishiness(end-2:end))=1;%Choose top three species to be fish
     
         
 %--------------------------------------------------------------------------

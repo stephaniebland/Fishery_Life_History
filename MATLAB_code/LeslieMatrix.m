@@ -27,17 +27,24 @@ function [lifehistory_table]= LeslieMatrix(S_0,newwebsize,N_stages,year,isfish_o
 %But since both weight and age are fixed, well, you could either adjust age
 %accordingly (you just calculated age). Are you sure you want to use this,
 %or is there something better?
-%Fish life history tables:  Creates a Leslie matrix where aij is the contribution of life stage j to life stage i.
+%% Fecundity is a function of year
+a50 = 3*(1- 0.005)^0;
+%a50 = 3*(1- 0.005)^year;%For years after evolution starts
+a = 2:max(N_stages);
+sumL = 1 + exp(-3*(a-a50));
+P =[0, 1./sumL];
+
+
+%% Fish life history tables:  Creates a Leslie matrix where aij is the contribution of life stage j to life stage i.
 lifehistory_table=eye(newwebsize);%Identity Matrix for life history table, so non-fish are untransformed by matrix
 for i=find(isfish_old')
     stages=N_stages(i);%Number of fish life history stages
     if stages~=1
         aging=1*ones(1,stages-1);%length of stages-1, some sort of distribution
-        %fert=.5*ones(1,stages);%length of stages, some sort of distribution
-        fert=[0, 0.05, 0.5, 1];%Assuming four life stages
+        fert=P(1:stages);%Works for any number of lifestages (but check that equation makes sense!)
         non_mature=zeros(1,stages);%Default for fish that don't mature is 0, they either mature or die.
         %NOTE!  The order of the following lines IS important!!!
-        %lifehis_breed=zeros(stages);%Reset matrix from last run.
+        %lifehis_breed=zeros(stages);%Reset matrix from last run. (not necessary because next line does it automatically)
         lifehis_breed=diag(aging,-1);%Set the subdiagonal to the probability of maturing to the next stage
         lifehis_breed(1,:)=fert;%Set the first row to the fertility rate;
         lifehis_breed=lifehis_breed+diag(non_mature);%Set the diagonal to the probability of not maturing to the next stage, but staying the same age.
