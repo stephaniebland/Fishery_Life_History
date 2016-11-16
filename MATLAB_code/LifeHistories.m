@@ -114,7 +114,8 @@ for i=find(isfish')%This loop will give a broader overlap
         prey_split(j,choose)=1;
         u=v+1-sum(y==j);
     end
-    nicheweb_new(find(species==i),:)=prey_split;
+    %nicheweb_new(find(species==i),:)=prey_split;
+    nicheweb_new(find(species==i),selec)=1;%Give all life stages complete, adult diet, to test things
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

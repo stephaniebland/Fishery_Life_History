@@ -14,6 +14,7 @@ global fish_gain;
 % Protocol parameters
 %--------------------------------------------------------------------------
 setup;% creation of a new food web
+B_orig=B0;%Save original biomass
 
 
 N_years=5;%Total number of years to run simulation for
@@ -24,6 +25,14 @@ full_sim=nan(N_years*L_year,nichewebsize);
 full_t=nan(N_years*L_year,1);
 year_index=nan(N_years*L_year,1);
 B_year_end=nan(N_years,nichewebsize);
+B0=B_orig;%Revert to original biomass (useful if you want to run same simulation multiple times)
+fish_gain=[];
+[x, t] =  dynamic_fn(K,int_growth,meta,max_assim,effic,Bsd,q,c,f_a,f_m, ...
+    ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,500,ext_thresh);
+full_sim= x;
+full_t=t;
+B0=x(end,1:nichewebsize)';
+
 %Run one year at a time
 for i=1:N_years
     fish_gain=[];
@@ -38,10 +47,13 @@ for i=1:N_years
     fish_gain_tot=sum(fish_gain,2);
     fish_gain_tot(find(1-isfish))=1;
     B0=aging_table*B_end+fecund_table*B_end.*fish_gain_tot; %Split lifehistory_table into two parts.
+    %B0=B_end;%Try taking out life history all together
     %% Concatenate Data for all years
-    full_sim((1:L_year)+(i-1)*L_year,1:nichewebsize)=x(1:L_year,1:nichewebsize);
-    t=t+L_year*(i-1);
-    full_t((1:L_year)+(i-1)*L_year)=t(1:L_year);
+%     full_sim((1:L_year)+(i-1)*L_year,1:nichewebsize)=x(1:L_year,1:nichewebsize);
+    t=t+L_year*(i-1)+500;
+%     full_t((1:L_year)+(i-1)*L_year)=t(1:L_year);
+    full_sim=[full_sim; x];
+    full_t=[full_t; t];
     year_index((1:L_year)+(i-1)*L_year)=repelem(i,L_year);
     B_year_end(i,1:nichewebsize)=B_end;
 end

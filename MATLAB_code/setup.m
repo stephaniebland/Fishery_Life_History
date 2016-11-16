@@ -225,6 +225,7 @@ basalsp = find(sum(nicheweb,2)==0);%List the autotrophs (So whatever doesn't hav
 %1) randomly set between 0.02 and 20, from a uniform distb:
      B0 = (999*rand(nichewebsize,1)+1)*.01;
      %B0(find(isfish))=B0(find(isfish))/60;% Maybe try to tweak original fish densities
+     B0=B0.*orig_nodes';%Start with adults only.
 %2) from uniform distribution in the ranges 5-500, 2-200 and 1-100 
     %B0 = (99*rand(nichewebsize,1)+1).*[5; 2; 1];
 %3) set manually, example on 2 species
