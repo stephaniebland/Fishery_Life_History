@@ -16,7 +16,7 @@
 %Leslie Matrix can change every year
 
 %function [output]= LifeHistories(input)
-function [lifehistory_table]= LeslieMatrix(S_0,newwebsize,N_stages,year,isfish_old,species)
+function [lifehistory_table,aging_table,fecund_table]= LeslieMatrix(S_0,newwebsize,N_stages,year,isfish_old,species)
 
 %%-------------------------------------------------------------------------
 %%  LIFE HISTORY MATRIX - LESLIE MATRIX
@@ -41,6 +41,8 @@ invest = [1, 0.9, 0.85, 0.8]; % allocation to growth for class 1,2 and 3
 
 %% Fish life history tables:  Creates a Leslie matrix where aij is the contribution of life stage j to life stage i.
 lifehistory_table=eye(newwebsize);%Identity Matrix for life history table, so non-fish are untransformed by matrix
+aging_table=eye(newwebsize);
+fecund_table=zeros(newwebsize);
 for i=find(isfish_old')
     stages=N_stages(i);%Number of fish life history stages
     if stages~=1
@@ -56,6 +58,9 @@ for i=find(isfish_old')
         %So now, incorporate it into life history table
         fish_index=find(species==i);
         lifehistory_table(fish_index,fish_index)=lifehis_breed;
+        %% Split lifehistory_table into two matrices, where aging_table+fecund_table=lifehistory_table. This way you can multiply fecund_table by additional factors.
+        fecund_table(fish_index(1),fish_index)=fert;
+        aging_table(fish_index,fish_index)=diag(aging,-1)+diag(non_mature);
     end
 end
 
