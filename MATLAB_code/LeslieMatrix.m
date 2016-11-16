@@ -42,7 +42,7 @@ for i=find(isfish_old')
     if stages~=1
         aging=1*ones(1,stages-1);%length of stages-1, some sort of distribution
         fert=P(1:stages);%Works for any number of lifestages (but check that equation makes sense!)
-        non_mature=zeros(1,stages);%Default for fish that don't mature is 0, they either mature or die.
+        non_mature=[zeros(1,stages-1), 1];%Keeps last life history stage alive.
         %NOTE!  The order of the following lines IS important!!!
         %lifehis_breed=zeros(stages);%Reset matrix from last run. (not necessary because next line does it automatically)
         lifehis_breed=diag(aging,-1);%Set the subdiagonal to the probability of maturing to the next stage
