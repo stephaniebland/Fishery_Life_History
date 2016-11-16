@@ -48,6 +48,8 @@ end
 B=full_sim(:,1:nichewebsize);
 E=full_sim(:,nichewebsize+1:end);
 
+find(isnan(B)==1); % Check for errors that might occur
+
 %--------------------------------------------------------------------------
 % plot the dynamics
 %--------------------------------------------------------------------------

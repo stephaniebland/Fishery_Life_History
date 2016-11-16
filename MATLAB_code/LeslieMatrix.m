@@ -27,12 +27,16 @@ function [lifehistory_table]= LeslieMatrix(S_0,newwebsize,N_stages,year,isfish_o
 %But since both weight and age are fixed, well, you could either adjust age
 %accordingly (you just calculated age). Are you sure you want to use this,
 %or is there something better?
-%% Fecundity is a function of year
+%% a50 is age at which 50 reach maturity, P is Probability of maturity
 a50 = 3*(1- 0.005)^0;
 %a50 = 3*(1- 0.005)^year;%For years after evolution starts
 a = 2:max(N_stages);
 sumL = 1 + exp(-3*(a-a50));
 P =[0, 1./sumL];
+
+%% 
+invest = [1, 0.9, 0.85, 0.8]; % allocation to growth for class 1,2 and 3
+
 
 
 %% Fish life history tables:  Creates a Leslie matrix where aij is the contribution of life stage j to life stage i.
@@ -41,7 +45,8 @@ for i=find(isfish_old')
     stages=N_stages(i);%Number of fish life history stages
     if stages~=1
         aging=1*ones(1,stages-1);%length of stages-1, some sort of distribution
-        fert=P(1:stages);%Works for any number of lifestages (but check that equation makes sense!)
+        P_mat=P(1:stages);%Works for any number of lifestages (but check that equation makes sense!)
+        fert=P_mat.*(1-invest);
         non_mature=[zeros(1,stages-1), 1];%Keeps last life history stage alive.
         %NOTE!  The order of the following lines IS important!!!
         %lifehis_breed=zeros(stages);%Reset matrix from last run. (not necessary because next line does it automatically)
