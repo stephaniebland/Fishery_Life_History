@@ -9,7 +9,7 @@ clear;
 beep off
 warning off MATLAB:divideByZero;
 S_0=30;% Number of original nodes (species)
-
+global fish_gain;
 %--------------------------------------------------------------------------
 % Protocol parameters
 %--------------------------------------------------------------------------
@@ -26,7 +26,7 @@ year_index=nan(N_years*L_year,1);
 B_year_end=nan(N_years,nichewebsize);
 %Run one year at a time
 for i=1:N_years
-    
+    fish_gain=[];
     [x, t] =  dynamic_fn(K,int_growth,meta,max_assim,effic,Bsd,q,c,f_a,f_m, ...
         ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,t_final,ext_thresh);
     B_end=x(L_year,1:nichewebsize)'; % use the final biomasses as the initial conditions
@@ -35,7 +35,9 @@ for i=1:N_years
     [lifehistory_table]= LeslieMatrix(S_0,nichewebsize,N_stages,i,isfish_old,species);
     %% Move biomass from one life history to the next
     %B0(find(isfish))=B_end(find(isfish))+x(1,find(isfish))';%new biomasses for new year (Simple solution where you just add extra fish stock each year - where you add the amount of fish that the model originally produced)
-    B0=lifehistory_table*B_end;
+    fish_gain_tot=sum(fish_gain,2);
+    fish_gain_tot(find(1-isfish))=1;
+    B0=lifehistory_table*B_end.*fish_gain_tot;
     %% Concatenate Data for all years
     full_sim((1:L_year)+(i-1)*L_year,1:nichewebsize)=x(1:L_year,1:nichewebsize);
     t=t+L_year*(i-1);
@@ -48,7 +50,8 @@ end
 B=full_sim(:,1:nichewebsize);
 E=full_sim(:,nichewebsize+1:end);
 
-find(isnan(B)==1); % Check for errors that might occur
+find(isnan(B)==1) % Check for errors that might occur
+min(find(isnan(B)==1))
 
 %--------------------------------------------------------------------------
 % plot the dynamics
@@ -74,6 +77,7 @@ p=plot(full_t,log10(B));
 [~,~,ind_species]=unique(isfish.*species');
 [~,~,ind_lifestage]=unique(lifestage);
 colours=get(gca,'colororder');
+colours=parula(sum(isfish_old)+1);
 %mark={'o', '+', '*', '.', 'x', 's', 'd', '^', 'v', '>', '<', 'p', 'h'}
 line_lifestage={'-','--',':','-.','-.','-.'};
 for i=1:nichewebsize

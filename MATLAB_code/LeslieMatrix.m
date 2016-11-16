@@ -46,7 +46,7 @@ for i=find(isfish_old')
     if stages~=1
         aging=1*ones(1,stages-1);%length of stages-1, some sort of distribution
         P_mat=P(1:stages);%Works for any number of lifestages (but check that equation makes sense!)
-        fert=P_mat.*(1-invest);
+        fert=P_mat.*(1-invest(1:stages));
         non_mature=[zeros(1,stages-1), 1];%Keeps last life history stage alive.
         %NOTE!  The order of the following lines IS important!!!
         %lifehis_breed=zeros(stages);%Reset matrix from last run. (not necessary because next line does it automatically)

@@ -11,6 +11,7 @@
 
 function [growth_vec]= gr_func(x,b_size,K,int_growth,meta,max_assim,...
     effic,Bsd,nicheweb,q,c,f_a,f_m,ca)
+global fish_gain;
 
 B=x(1:b_size);
 E=x(b_size+1:end);
@@ -100,6 +101,9 @@ B2mx = B1mx';         %% B in rows (one column=one species, rows are identical)
     %it, but we want to multiply by it only in biomass.m
     loss(deadpreds_j) = 0;  % results of previous row cleared for dead
     NRG = gain - loss';     % consumption - being consumed
+    
+    fish_gain_timestep=max(NRG/B,0);
+    fish_gain=[fish_gain, fish_gain_timestep];
     
     % Total growth
     growth_vec = GPP - MetabLoss - Loss_H + NRG;
