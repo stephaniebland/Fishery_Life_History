@@ -14,6 +14,7 @@ global fish_gain;
 % Protocol parameters
 %--------------------------------------------------------------------------
 setup;% creation of a new food web
+B_orig=B0;
 
 
 N_years=5;%Total number of years to run simulation for
@@ -51,7 +52,9 @@ B=full_sim(:,1:nichewebsize);
 E=full_sim(:,nichewebsize+1:end);
 
 find(isnan(B)==1) % Check for errors that might occur
-min(find(isnan(B)==1))
+nan_error=min(find(isnan(B)==1))
+
+%fish_props;
 
 %--------------------------------------------------------------------------
 % plot the dynamics

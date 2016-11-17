@@ -38,14 +38,14 @@ read_chunk('Fig_Von_Bert.R')
 
 
 \section*{Current Problem}
-I'm not really happy with how I assign individual body mass to new lifestages. The original model outputs mass for nodes, calculated allometrically from foodweb relationships between species. So the mass of each species is assigned based on two factors: trophic level and type of organism (fish or other organism). They first calculate the metabolic rate (Z) using a lognormally distributed random number with parameters $\mu$ and $\sigma$ derived from the body mass mean ($m$) and variance ($v$) as described in table \ref{table:weight}:
+I'm not really happy with how I assign individual body mass to new lifestages. The original model outputs mass for nodes, calculated allometrically from foodweb relationships between species. So the mass of each species is assigned based on two factors: trophic level and type of organism (fish or other organism). They first calculate the predator-prey body mass ratio (Z) using a lognormally distributed random number with parameters $\mu$ and $\sigma$ derived from the body mass mean ($m$) and variance ($v$) as described in table \ref{table:weight}:
 \begin{equation}
   \mu=\log\left(\frac {m^2} {\sqrt{v+m^2}} \right)
 \end{equation}
 \begin{equation}
   \sigma=\sqrt{\log\left(\frac v {m^2} +1\right)}
 \end{equation}
-Then they use the metabolic rate and Trophic level (T) to calculate the individual body mass:
+Then they use the predator-prey body mass ratio (Z) and Trophic level (T) to calculate the individual body mass:
 \begin{equation}
   \mathit{Mass}=Z^{T-1}
 \end{equation}

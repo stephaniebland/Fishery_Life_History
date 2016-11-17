@@ -34,7 +34,7 @@ function [Z,Mvec,isfish]= MassCalc(nichewebsize,basalsp,T)
 %--------------------------------------------------------------------------
 %Constant consumer-resource body size
 %--------------------------------------------------------------------------
-    % Follows a lognormal distribution with different means and standart
+    % Follows a lognormal distribution with different means and standard
     % deviation for invertebrates and fishes (Brose et al, 2006)
     
     m_fish   =5000;  % mean for fishes

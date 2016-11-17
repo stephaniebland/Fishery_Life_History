@@ -80,31 +80,28 @@ basalsp = find(sum(nicheweb,2)==0);%List the autotrophs (So whatever doesn't hav
 %%-------------------------------------------------------------------------
 %Calculates species weight -> so you know how many life stages it needs
 %"meta", "TrophLevel" & "T1", "IsFish" and "Z"
-    [TrophLevel,T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp);
-    [Z,Mvec,isfish]= MassCalc(nichewebsize,basalsp,TrophLevel);
+    [TrophLevel,T1_old,T2_old]= TrophicLevels(nichewebsize,nicheweb,basalsp);
+    [Z,Mvec_old,isfish]= MassCalc(nichewebsize,basalsp,TrophLevel);
     % Use Linear regression to estimate slope of mass-niche relationship:
-    [R_squared,Adj_Rsq,lin_regr]=Linear_Regression(Mvec,n_new,isfish,nicheweb);
+    [R_squared,Adj_Rsq,lin_regr]=Linear_Regression(Mvec_old,n_new,isfish,nicheweb);
 
 %%-------------------------------------------------------------------------
 %%  LIFE HISTORY
 %%-------------------------------------------------------------------------
     nicheweb_old=nicheweb;%Save the old nicheweb just incase.
-    isfish_old=isfish;
-    Mvec_old=Mvec;
-    [nicheweb_new,lifehistory_table,Mass,orig_nodes,species,N_stages]= LifeHistories(nicheweb,nichewebsize,Mvec,isfish,n_new,c_new,r_new);
+    isfish_old=isfish;% Uses this in webdriver, so might as well keep it now rather than recalculate later
+    Z_old=Z;%Need to keep this, because recalculating it introduces error
+    [nicheweb_new,lifehistory_table,Mass,orig_nodes,species,N_stages]= LifeHistories(nicheweb,nichewebsize,Mvec_old,isfish,n_new,c_new,r_new);
     %Update all the output to reflect new web
     nicheweb=nicheweb_new;%Update nicheweb.  This looks really messy, but I'll clean it up later(also not sure if this line is required)
     nichewebsize = length(nicheweb);%Steph: Find number of species (not sure why, already have S_0)
-    TrophLevel=repelem(TrophLevel,N_stages);
-    T1=repelem(T1,N_stages);
-    Z=repelem(Z,N_stages);
     isfish=repelem(isfish,N_stages);
     meta_N_stages=repelem(N_stages,N_stages);
     lifestage=[];
     for i=1:S_0
         lifestage=[lifestage 1:N_stages(i)];
     end
-    Mvec=Mass';
+    Mvec=Mass;
     basalsp = find(sum(nicheweb,2)==0);%List the autotrophs (So whatever doesn't have prey)  Hidden assumption - can't assign negative prey values (but why would you?)
     %Convert Nicheweb into an adjacency list "two-column format, in which the first column lists the number of a consumer, and the second column lists the number of one of the resource species of that consumer." - Dunne 2006
     [adj_row,adj_col]=find(nicheweb);
@@ -120,8 +117,9 @@ basalsp = find(sum(nicheweb,2)==0);%List the autotrophs (So whatever doesn't hav
 %1) set manually
     %meta = [0; .15; .02];    
 %2) Can be scaled with body size
-    %[TrophLevel,T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp);%Trophiclevel can probably be preserved
-    [meta,Z]=metabolic_scaling(nichewebsize,basalsp,isfish,TrophLevel,Mass);
+    [TrophLevel,T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp);%Recalculate trophic levels for new nicheweb
+    %YES BUT NOW I DON'T KNOW IF I SHOULD USE OLD TROPHIC LEVEL OR NEW TROPHIC LEVELS IN METABOLIC SCALING
+    [meta,Z]=metabolic_scaling(nichewebsize,basalsp,isfish,TrophLevel,Mass,Z_old,orig_nodes);
     
 
 %Intrinsic growth parameter "r" for basal species only

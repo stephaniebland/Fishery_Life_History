@@ -67,7 +67,7 @@ for i=find(isfish')%only does the loop for fish species
     end
 end
 %Now convert to a vector.
-Mass=reshape(Mass_matrix',1,numel(Mass_matrix));
+Mass=reshape(Mass_matrix',numel(Mass_matrix),1);
 Mass(isnan(Mass))=[];%Alternate identical method: Mass=Mass(find(isnan(Mass)==0));
 %Get a vector that says what species each lifestage is part of
 N_stages=isfish+t_max;%Number of lifestages for each species. Necessary because fish with t_max=1 means it has 2 lifestages, and didn't want to use 0 for other species because K=3/t_max doesn't like it.
