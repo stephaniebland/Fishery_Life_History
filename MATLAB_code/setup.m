@@ -125,10 +125,12 @@ basalsp = find(sum(nicheweb,2)==0);%List the autotrophs (So whatever doesn't hav
 %Intrinsic growth parameter "r" for basal species only
 %-----------------------------------------------------
     int_growth = zeros(nichewebsize,1);
-    int_growth(basalsp) = 1.1 + .18.*randn(length(basalsp),1); 
-    int_growth(int_growth<.6 & int_growth>0)=.6;
-    int_growth(int_growth>1.2)=1.2;%Steph:  So is it just me or does this completely mess up the distribution?  Because now you compressed the tails into little lumps at either side of the range.  Can you use the Beta distribution instead?  
-    %set the r of basal within 0.6 and 1.2 (Boit et al, in prep)
+    r_i_mean=1.1; r_i_std=.18; r_i_min=0.6; r_i_max=1.6;%set the r of basal within 0.6 and 1.6 (Boit et al, in prep). Original file called for 0.6-1.2 range, but methods doc says otherwise. 
+    int_growth(basalsp)=r_i_mean+r_i_std*randn(length(basalsp),1);
+    while max((int_growth~=0 & int_growth<r_i_min) | int_growth>r_i_max)>0%Changed to while loop so that the distribution isn't truncated and sharp at edges (original compressed the tails into little lumps at either side of the range.)
+        to_replace=((int_growth~=0 & int_growth<r_i_min) | int_growth>r_i_max);
+        int_growth(to_replace)=r_i_mean+r_i_std*randn(sum(to_replace),1); 
+    end
 
 %Other dynamic parameters
 %------------------------
