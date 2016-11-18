@@ -13,7 +13,8 @@
 %--------------------------------------------------------------------------
 
 % uncomment if to use as a function
-function [meta,Z]= metabolic_scaling(nichewebsize,basalsp,isfish,T,Mass,Z_old,orig_nodes)
+function [meta,Z]= metabolic_scaling(meta_scale,nichewebsize,basalsp,isfish,T,Mass,Z_old,orig_nodes)
+attach(meta_scale);
 %--------------------------------------------------------------------------
 % Find remaining consumer-resource body size ratios (for new life stages)
 % and calculate metabolic rates
@@ -28,10 +29,6 @@ function [meta,Z]= metabolic_scaling(nichewebsize,basalsp,isfish,T,Mass,Z_old,or
 %     a_r = 1;
 %     a_x= 0.314; %Berlow et al. 2009
 %     a_y = 8*a_x;  %% note 8 is the y_ij
-
-    % Allometric scaling exponent (Boit et al. in prep.)
-    A_fish=0.11;
-    A_invert=0.15;
 
     %Metabolic and mass assimilation rates
     meta=zeros(nichewebsize,1);

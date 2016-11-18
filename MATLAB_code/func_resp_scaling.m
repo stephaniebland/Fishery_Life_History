@@ -8,7 +8,8 @@
 % and the predator-prey body-masses ratios Z
 %--------------------------------------------------------------------------
 
-function [Bsd, c] = func_resp_scaling(nicheweb,nichewebsize,isfish,Z,basalsp)
+function [Bsd, c] = func_resp_scaling(func_resp,nicheweb,nichewebsize,isfish,Z,basalsp)
+attach(func_resp);
 
 Bsd = ones(nichewebsize); % non zero value to prevent division by 0 in gr_func  (Default half-sat constants)
 c   = zeros(nichewebsize);%Predator Interference
@@ -21,20 +22,22 @@ for i=1:nichewebsize
             % if i is an invertebrate
             %--------------------------------------------------------------
             if isfish(i)==0   
-                Bsd(i,j) = 1.5;            % low half saturation density
-                c(i,j)=min(exprnd(.2),.5); % competition  coefficient is exponential distribution with mu=0.2 (i.e. lambda=5), limited to 0.5
+                attach(invert);
+                Bsd(i,j) = K_invert;            % low half saturation density
+                c(i,j)=min(exprnd(c_dist),c_max); % competition  coefficient is exponential distribution with mu=0.2 (i.e. lambda=5), limited to 0.5
                 
             %--------------------------------------------------------------
             % if i is a fish 
             %--------------------------------------------------------------
             else 
+                attach(fish);
                
                 %----------------------------------------------------------
                 % if a fish (i) eats another fish (j)
                 %----------------------------------------------------------
                 if isfish(j)==1
-                    Bsd(i,j) = 15; %Half-saturation density
-                    c(i,j)   = 3*10^-4; %Low competition coefficient 
+                    Bsd(i,j) = fish_K; %Half-saturation density
+                    c(i,j)   = fish_c; %Low competition coefficient 
                   
                 %----------------------------------------------------------
                 % if a fish (i) eats an invertebrate (j)
@@ -46,14 +49,15 @@ for i=1:nichewebsize
                     % if the invertebrate prey j is omnivore
                     %------------------------------------------------------
                     if rate<0.7
-                        Bsd(i,j) = 50;
-                        c(i,j)   = 10^-4;
+                        Bsd(i,j) = omni_K;
+                        c(i,j)   = omni_c;
                         
                     %------------------------------------------------------
                     % if the invertebrate prey j is mostly herbivore
                     %------------------------------------------------------
                     else
-                        ratio = Z(i)/Z(j);%Z is predator-prey metabolic rate ratio. 
+                        attach(herb);
+                        ratio = Z(i)/Z(j);%Z is predator-prey body mass ratio. 
                         
                         %--------------------------------------------------
                         % if the invertebrate prey j mostly herbivore is
@@ -61,16 +65,16 @@ for i=1:nichewebsize
                         % LIKE DAPHNIA !
                         %--------------------------------------------------
                         if ratio>50
-                            Bsd(i,j) = 150;
-                            c(i,j)   = 1;
+                            Bsd(i,j) = smallZ_K;
+                            c(i,j)   = smallZ_c;
                             
                         %--------------------------------------------------
                         % if the invertebrate prey j mostly herbivore is
                         % not very much smaller than the fish predator
                         %--------------------------------------------------
                         else
-                            Bsd(i,j) = 15;
-                            c(i,j)   = 10^-4;
+                            Bsd(i,j) = largeZ_K;
+                            c(i,j)   = largeZ_c;
                             
                         end
                     end

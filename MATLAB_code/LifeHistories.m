@@ -21,32 +21,26 @@
 %old nicheweb, so as to not mess up the entire model.  (So you are
 %basically just adding rows and columns for your new life stages).
 
-%function [output]= LifeHistories(input)
-function [nicheweb_new,lifehistory_table,Mass,orig_nodes,species,N_stages]= LifeHistories(nicheweb,nichewebsize,Mvec,isfish,n_new,c_new,r_new)
-
+function [nicheweb_new,lifehistory_table,Mass,orig_nodes,species,N_stages]= LifeHistories(lifehis,leslie,orig,nichewebsize,n_new,c_new,r_new)
+attach(orig); attach(lifehis);
 
 %%-------------------------------------------------------------------------
 %%  NUMBER OF LIFESTAGES & WEIGHTS
 %%-------------------------------------------------------------------------
 %Calculate Life history mass for all fish species
-W_scalar=max(Mvec)/100000;%Factor by which you can scale all the weights, so that the maximum fish weight is *exactly* the denominator.  So every ecosystem will always have top predator that weighs exactly that amount (unless it goes extinct)
+W_scalar=max(Mvec)/maxweight;%Factor by which you can scale all the weights, so that the maximum fish weight is *exactly* the denominator.  So every ecosystem will always have top predator that weighs exactly that amount (unless it goes extinct)
 %May want to consider adding some stochasticity to this scalar.
 lifestage_mass=Mvec.*isfish;% You only want to add lifestages to fish
 W_max=lifestage_mass/W_scalar;%So adult weight of all the fish species.
 t_max=ones(nichewebsize,1);
-t_max(find(isfish))=randi([3 3],sum(isfish),1);%BE CAREFUL - THIS IS LIKE NUMBER OF ADDITIONAL LIFE STAGES (you may want N_stages instead)
-%Jeff said most fish are within 2-6 [1 5] years for age at maturity (and t_max
-%excludes the first year, so it's fine.)
+t_max(find(isfish))=randi(agerange,sum(isfish),1);%BE CAREFUL - THIS IS LIKE NUMBER OF ADDITIONAL LIFE STAGES (you may want N_stages instead)
+%Jeff said most fish are within 2-6 [1 5] years for age at maturity (and t_max excludes the first year, so it's fine.)
 
-
-growth_exp=3;%Growth exponent, 3 is for isometric growth (Sangun et al. 2007)
-q=0.0125;%Conversion factor from weight to length
 L_max=(W_max/q).^(1/growth_exp);%(Sangun et al. 2007)
 L_inf=(10^0.044)*(L_max.^0.9841);
 K=3./t_max;% Set according to W_inf
 t_0=t_max+((1./K).*log(1-(L_max./L_inf)));%For small adult weights (ex: W_max=88.7630), this breaks down and starts giving positive t_0
-%Temporary solution to K being too large.  I'll just force it to be small
-%enough to get a negative t_0
+%Temporary solution to K being too large.  I'll just force it to be small enough to get a negative t_0
 for i=find(t_0>0)'
     K(i)=-log(1-(L_max(i)/L_inf(i)))/t_max(i);
     K(i)=0.9*K(i);%I had no justification for choosing 90%
@@ -85,7 +79,7 @@ orig_index=find(orig_nodes');%index of original species
 %%  LIFE HISTORY MATRIX - LESLIE MATRIX
 %%-------------------------------------------------------------------------
 year=1;%Because leslie matrix will soon be time dependent, I want to preserve functionality in original file
-[lifehistory_table,~,~]= LeslieMatrix(nichewebsize,newwebsize,N_stages,year,isfish,species);
+[lifehistory_table,~,~]= LeslieMatrix(leslie,newwebsize,N_stages,year,isfish,species);
 
 %%-------------------------------------------------------------------------
 %%  NEW NICHEWEB - NEO'S METHOD - SPLIT OLD DIET

@@ -8,17 +8,13 @@
 clear;
 beep off
 warning off MATLAB:divideByZero;
-S_0=30;% Number of original nodes (species)
 global fish_gain;
 %--------------------------------------------------------------------------
 % Protocol parameters
 %--------------------------------------------------------------------------
+Parameters;
 setup;% creation of a new food web
 B_orig=B0;
-
-
-N_years=5;%Total number of years to run simulation for
-L_year=100;% Number of (days?) in a year (check units!!!)
 
 full_sim=nan(N_years*L_year,nichewebsize);
 full_t=nan(N_years*L_year,1);
@@ -32,7 +28,7 @@ for i=1:N_years
     B_end=x(L_year,1:nichewebsize)'; % use the final biomasses as the initial conditions
     B0=B_end;
     %% Change Biomass as Kuparinen et al. for Lake Constance.
-    [lifehistory_table,aging_table,fecund_table]= LeslieMatrix(S_0,nichewebsize,N_stages,i,isfish_old,species);
+    [lifehistory_table,aging_table,fecund_table]= LeslieMatrix(leslie,nichewebsize,N_stages,i,orig.isfish,species);
     %% Move biomass from one life history to the next
     fish_gain_tot=sum(fish_gain,2);
     fish_gain_tot(find(1-isfish))=1;
