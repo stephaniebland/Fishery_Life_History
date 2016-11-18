@@ -14,31 +14,31 @@
 %%-------------------------------------------------------------------------
 
 %to construct niche web, uncomment the following lines.
-    [orig.web.niche,n_new,c_new,r_new] = NicheModel(S_0, connectance);%Create a connected (no infinite degrees of separation) foodweb with realistic species (eg. no predators without prey), and no isolated species.
+    [orig.nicheweb,n_new,c_new,r_new] = NicheModel(S_0, connectance);%Create a connected (no infinite degrees of separation) foodweb with realistic species (eg. no predators without prey), and no isolated species.
 
 %or enter custom web (rows eats column)
     %nicheweb = [0 0 0; 1 0 0; 0 1 0];
 
-    nichewebsize = length(orig.web.niche);%Steph: Find number of species (not sure why, already have S_0)
-    basalsp = find(sum(orig.web.niche,2)==0);%List the autotrophs (So whatever doesn't have prey)  Hidden assumption - can't assign negative prey values (but why would you?)
+    nichewebsize = length(orig.nicheweb);%Steph: Find number of species (not sure why, already have S_0)
+    basalsp = find(sum(orig.nicheweb,2)==0);%List the autotrophs (So whatever doesn't have prey)  Hidden assumption - can't assign negative prey values (but why would you?)
 
 %%-------------------------------------------------------------------------
 %%  FIRST: SET DYNAMICS PARAMETERS
 %%-------------------------------------------------------------------------
 %Calculates species weight -> so you know how many life stages it needs
 %"meta", "TrophLevel" & "T1", "IsFish" and "Z"
-    [TrophLevel,orig.T1,orig.T2]= TrophicLevels(nichewebsize,orig.web.niche,basalsp);
-    [Z_old,orig.web.Mvec,orig.web.isfish]= MassCalc(masscalc,nichewebsize,basalsp,TrophLevel);
+    [TrophLevel,orig.T1,orig.T2]= TrophicLevels(nichewebsize,orig.nicheweb,basalsp);
+    [orig.Z,orig.Mvec,orig.isfish]= MassCalc(masscalc,nichewebsize,basalsp,TrophLevel);
     % Use Linear regression to estimate slope of mass-niche relationship:
-    [R_squared,Adj_Rsq,lin_regr]=Linear_Regression(orig.web,n_new);
+    [R_squared,Adj_Rsq,lin_regr]=Linear_Regression(orig,n_new);
 
 %%-------------------------------------------------------------------------
 %%  LIFE HISTORY
 %%-------------------------------------------------------------------------
-    [nicheweb,lifehistory_table,Mass,orig_nodes,species,N_stages]= LifeHistories(orig.web,nichewebsize,n_new,c_new,r_new);
+    [nicheweb,lifehistory_table,Mass,orig.nodes,species,N_stages]= LifeHistories(lifehis,leslie,orig,nichewebsize,n_new,c_new,r_new);
     %Update all the output to reflect new web
     nichewebsize = length(nicheweb);
-    isfish=repelem(isfish,N_stages);
+    isfish=repelem(orig.isfish,N_stages);
     meta_N_stages=repelem(N_stages,N_stages);
     lifestage=[];
     for i=1:S_0
@@ -62,14 +62,12 @@
 %2) Can be scaled with body size
     [TrophLevel,T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp);%Recalculate trophic levels for new nicheweb
     %YES BUT NOW I DON'T KNOW IF I SHOULD USE OLD TROPHIC LEVEL OR NEW TROPHIC LEVELS IN METABOLIC SCALING
-    [meta,Z]=metabolic_scaling(meta_scale,nichewebsize,basalsp,isfish,TrophLevel,Mass,Z_old,orig_nodes);
+    [meta,Z]=metabolic_scaling(meta_scale,nichewebsize,basalsp,isfish,TrophLevel,Mass,orig.Z,orig.nodes);
     
 
 %Intrinsic growth parameter "r" for basal species only
 %-----------------------------------------------------
     int_growth = zeros(nichewebsize,1);
-    r_i_mean=1.1; r_i_std=.18; r_i_min=0.6; r_i_max=1.6;%set the r of basal within 0.6 and 1.6 (Boit et al, in prep). Original file called for 0.6-1.2 range, but methods doc says otherwise. 
-    r_i_mean=0.9; r_i_std=.2; r_i_min=0.6; r_i_max=1.2;%Other Perrine code has these parameters, which make more sense because at least it's symmetrical.
     int_growth(basalsp)=r_i_mean+r_i_std*randn(length(basalsp),1);
     while max((int_growth~=0 & int_growth<r_i_min) | int_growth>r_i_max)>0%Changed to while loop so that the distribution isn't truncated and sharp at edges (original compressed the tails into little lumps at either side of the range.)
         to_replace=((int_growth~=0 & int_growth<r_i_min) | int_growth>r_i_max);
@@ -78,50 +76,29 @@
 
 %Other dynamic parameters
 %------------------------
-
-    K_param=540;%carrying capacity
     K = ones(nichewebsize,1) .*K_param;
 
-    max_assim = 10*ones(nichewebsize);% max rate i assimilates j per unit metabolic rate of i
+    max_assim=assim.max_rate*ones(nichewebsize);% max rate i assimilates j per unit metabolic rate of i
 
-    effic = .85*ones(nichewebsize);%assimilation efficiency of i for j
-    effic(:,basalsp) = .45;
-    
-    f_a = 0.4;% fraction of assimilated carbon used for production of consumers biomass under activity
-    f_m = 0.1;% fraction of assimilated carbon respired by maintenance of basic bodily functions
-    
-    q =.2;%.2;% q>0 gives type III response (set to a scalar here) [according to Fernanda Valdovinos, this one parameter makes a huge difference to stability]
-    %biomasses to power q+1, which regulates shape of Holling-curve (h=1+q) Fernanda says h=1.2 is stable for normal webs.
-    
+    effic=assim.effic_nonplants*ones(nichewebsize);%assimilation efficiency of i for j
+    effic(:,basalsp) = assim.effic_basal;
+
 %Half saturation density "Bsd" and predator interference "c"  
 %-----------------------------------------------------------
     %Bsd = 1.5*ones(nichewebsize);
     %c = ones(nichewebsize,nichewebsize)*0.5;
-    [Bsd, c]=func_resp_scaling(nicheweb,nichewebsize,isfish,Z,basalsp);
+    [Bsd, c]=func_resp_scaling(func_resp,nicheweb,nichewebsize,isfish,Z,basalsp);
 
 %set initial and final integration times
 %---------------------------------------
     t_init = 0;
-    t_final= 700;%5000;
-
-%set the extinction threshold
-%----------------------------
-    ext_thresh = 10^-6; %set to zero to work without extinction threshold  (=reality check --> biomass set to zero if it goes under this value)
-    
+    t_final= L_year*N_years;%5000;
     
     
     
 %%-------------------------------------------------------------------------
 %%  HARVESTING
 %%-------------------------------------------------------------------------
-
-%set parameters for harvesting
-%-----------------------------
-%  base-case set from Conrad(1999)
-%  set mu to 0 to fix the harvest
-    mu=0; % stiffness parameter
-    ca=0.01; % catchability coefficient
-    co=1; % cost per unit effort
 
 %price parameters
 %----------------

@@ -17,9 +17,8 @@
 % Estimates line of best fit for mass-niche value relationship using linear
 % regression.
 
-%function [output]= LifeHistories(input)
-function[R_squared,Adj_Rsq,lin_regr]=Linear_Regression(orig.web,n_new)
-attach(orig.web);
+function[R_squared,Adj_Rsq,lin_regr]=Linear_Regression(orig,n_new)
+attach(orig);
     %Exclude plants and fish from model
     no_plants = find(sum(nicheweb,2)~=0);
     no_fish=find(1-isfish);
