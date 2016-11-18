@@ -19,7 +19,6 @@ B_orig=B0;
 
 N_years=5;%Total number of years to run simulation for
 L_year=100;% Number of (days?) in a year (check units!!!)
-t_final=L_year; % Number of timesteps in a year
 
 full_sim=nan(N_years*L_year,nichewebsize);
 full_t=nan(N_years*L_year,1);
@@ -29,13 +28,12 @@ B_year_end=nan(N_years,nichewebsize);
 for i=1:N_years
     fish_gain=[];
     [x, t] =  dynamic_fn(K,int_growth,meta,max_assim,effic,Bsd,q,c,f_a,f_m, ...
-        ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,t_final,ext_thresh);
+        ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,L_year,ext_thresh);
     B_end=x(L_year,1:nichewebsize)'; % use the final biomasses as the initial conditions
     B0=B_end;
     %% Change Biomass as Kuparinen et al. for Lake Constance.
     [lifehistory_table,aging_table,fecund_table]= LeslieMatrix(S_0,nichewebsize,N_stages,i,isfish_old,species);
     %% Move biomass from one life history to the next
-    %B0(find(isfish))=B_end(find(isfish))+x(1,find(isfish))';%new biomasses for new year (Simple solution where you just add extra fish stock each year - where you add the amount of fish that the model originally produced)
     fish_gain_tot=sum(fish_gain,2);
     fish_gain_tot(find(1-isfish))=1;
     B0=aging_table*B_end+fecund_table*B_end.*fish_gain_tot; %Split lifehistory_table into two parts.
@@ -54,7 +52,7 @@ E=full_sim(:,nichewebsize+1:end);
 find(isnan(B)==1) % Check for errors that might occur
 nan_error=min(find(isnan(B)==1))
 
-%fish_props;
+%fish_props;% Remember to change function so nothing is brought back [~]=fish_props;
 
 %--------------------------------------------------------------------------
 % plot the dynamics

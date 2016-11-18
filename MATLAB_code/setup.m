@@ -81,7 +81,7 @@ basalsp = find(sum(nicheweb,2)==0);%List the autotrophs (So whatever doesn't hav
 %Calculates species weight -> so you know how many life stages it needs
 %"meta", "TrophLevel" & "T1", "IsFish" and "Z"
     [TrophLevel,T1_old,T2_old]= TrophicLevels(nichewebsize,nicheweb,basalsp);
-    [Z,Mvec_old,isfish]= MassCalc(nichewebsize,basalsp,TrophLevel);
+    [Z_old,Mvec_old,isfish]= MassCalc(nichewebsize,basalsp,TrophLevel);
     % Use Linear regression to estimate slope of mass-niche relationship:
     [R_squared,Adj_Rsq,lin_regr]=Linear_Regression(Mvec_old,n_new,isfish,nicheweb);
 
@@ -90,11 +90,9 @@ basalsp = find(sum(nicheweb,2)==0);%List the autotrophs (So whatever doesn't hav
 %%-------------------------------------------------------------------------
     nicheweb_old=nicheweb;%Save the old nicheweb just incase.
     isfish_old=isfish;% Uses this in webdriver, so might as well keep it now rather than recalculate later
-    Z_old=Z;%Need to keep this, because recalculating it introduces error
-    [nicheweb_new,lifehistory_table,Mass,orig_nodes,species,N_stages]= LifeHistories(nicheweb,nichewebsize,Mvec_old,isfish,n_new,c_new,r_new);
+    [nicheweb,lifehistory_table,Mass,orig_nodes,species,N_stages]= LifeHistories(nicheweb,nichewebsize,Mvec_old,isfish,n_new,c_new,r_new);
     %Update all the output to reflect new web
-    nicheweb=nicheweb_new;%Update nicheweb.  This looks really messy, but I'll clean it up later(also not sure if this line is required)
-    nichewebsize = length(nicheweb);%Steph: Find number of species (not sure why, already have S_0)
+    nichewebsize = length(nicheweb);
     isfish=repelem(isfish,N_stages);
     meta_N_stages=repelem(N_stages,N_stages);
     lifestage=[];
