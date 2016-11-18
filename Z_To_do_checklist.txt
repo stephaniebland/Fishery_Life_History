@@ -38,10 +38,6 @@ Neo Martinez also confirmed that each fish species is assigned food according to
 - Also, it looks like species eat *every* prey that fall in their range [c-r/2,c+r/2].  So no randomness. 
 
 
-##########FIX METABOLIC_SCALING.M Z##########
-- Quick fix, as soon as I have a steady value for number of species
-
-
 ##########TIME SCALES##########
 - Check what time scale the ODE uses.
 - Might want to consider using two different timescales:  One for plankton and one for fish.
