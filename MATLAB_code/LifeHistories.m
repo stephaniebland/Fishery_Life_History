@@ -22,8 +22,8 @@
 %basically just adding rows and columns for your new life stages).
 
 %function [output]= LifeHistories(input)
-function [nicheweb_new,lifehistory_table,Mass,orig_nodes,species,N_stages]= LifeHistories(nicheweb,nichewebsize,Mvec,isfish,n_new,c_new,r_new)
-
+function [nicheweb_new,lifehistory_table,Mass,orig_nodes,species,N_stages]= LifeHistories(orig.web,nichewebsize,n_new,c_new,r_new)
+attach(orig.web);
 
 %%-------------------------------------------------------------------------
 %%  NUMBER OF LIFESTAGES & WEIGHTS

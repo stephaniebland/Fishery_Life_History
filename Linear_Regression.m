@@ -18,8 +18,8 @@
 % regression.
 
 %function [output]= LifeHistories(input)
-function[R_squared,Adj_Rsq,lin_regr]=Linear_Regression(Mvec,n_new,isfish,nicheweb)
-
+function[R_squared,Adj_Rsq,lin_regr]=Linear_Regression(orig.web,n_new)
+attach(orig.web);
     %Exclude plants and fish from model
     no_plants = find(sum(nicheweb,2)~=0);
     no_fish=find(1-isfish);

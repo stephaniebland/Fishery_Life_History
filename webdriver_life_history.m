@@ -8,17 +8,13 @@
 clear;
 beep off
 warning off MATLAB:divideByZero;
-S_0=30;% Number of original nodes (species)
 global fish_gain;
 %--------------------------------------------------------------------------
 % Protocol parameters
 %--------------------------------------------------------------------------
+Parameters;
 setup;% creation of a new food web
 B_orig=B0;
-
-
-N_years=5;%Total number of years to run simulation for
-L_year=100;% Number of (days?) in a year (check units!!!)
 
 full_sim=nan(N_years*L_year,nichewebsize);
 full_t=nan(N_years*L_year,1);
