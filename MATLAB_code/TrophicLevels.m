@@ -12,7 +12,6 @@
 %  nichewebsize, nicheweb, basalsp
 %--------------------------------------------------------------------------
 
-% uncomment if to use as a function
 function [T, T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp)
 
 

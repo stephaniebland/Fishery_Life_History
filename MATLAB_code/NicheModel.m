@@ -13,10 +13,7 @@
 % A(i,j) = 1 if i eats j.(row eats column)
 %--------------------------------------------------------------------------
 
-% uncomment below to use as a function if called by another script:
- %function [nicheweb,Index_par]= NicheModel(num_species, connectance)%old
- %line, no idea what Index_par is even supposed to be.
- function [nicheweb,n_new,c_new,r_new]= NicheModel(num_species, connectance)
+function [nicheweb,n_new,c_new,r_new]= NicheModel(cannibal_invert,num_species, connectance)
 % or uncomment below to use as stand-alone script
 %num_species=10; %input('Enter number of species \n');
 %connectance=.1; %input('Enter connectance \n'); Usually 0.09
@@ -53,14 +50,7 @@
 
     %----------------------------------------------------------------------    
     % set center of range, uniformly distributed in [r_i/2,n_i];
-        %c = min(1-r./2,rand(num_species,1).*(n-r./2)+r./2); %CP : rand was always the same
-        %The min term (1-r/2) is just to make sure that you don't exceed
-        %the web; your predator will always prey on food in the web.  So if
-        %you look at the species with the largest niche index, the center
-        %of range can go all the way up to 1, but then the predator will be
-        %deprived of half of it's food. So set min to guarantee it gets
-        %fed. I still think this probably is biased though.
-        c=rand(num_species,1).*(min(n,1-r./2)-r./2)+r./2; %Possible correction, because I think the first one was wrong.
+        c=rand(num_species,1).*(min(n,1-r./2)-r./2)+r./2; %Corrected distribution so the probability is uniform
      
 
     %----------------------------------------------------------------------
@@ -89,7 +79,13 @@
         web_mx=((n_mx>=preymins_mx)+(n_mx<=preymaxs_mx)==2*ones(num_species));
     %if species in the row is in the niche range of the species in the
     %column, it gets eaten
-
+    
+    
+    %% Invertebrate Cannibalism
+        if cannibal_invert==false
+            web_mx=web_mx-diag(diag(web_mx));
+        end
+    
     %----------------------------------------------------------------------
     % if there is an isolated species or something not connected to a basal
     % or a disconnected group, it's removed

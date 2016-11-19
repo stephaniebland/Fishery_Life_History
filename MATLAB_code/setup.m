@@ -14,7 +14,7 @@ while sum(orig.isfish)==0%Guarantee that the food web has at least one fish
 %%-------------------------------------------------------------------------
 %%  NICHE MODEL
 %%-------------------------------------------------------------------------
-    [orig.nicheweb,n_new,c_new,r_new] = NicheModel(S_0, connectance);%Create a connected (no infinite degrees of separation) foodweb with realistic species (eg. no predators without prey), and no isolated species.
+    [orig.nicheweb,n_new,c_new,r_new] = NicheModel(cannibal_invert,S_0, connectance);%Create a connected (no infinite degrees of separation) foodweb with realistic species (eg. no predators without prey), and no isolated species.
     nichewebsize = length(orig.nicheweb);%Steph: Find number of species (not sure why, already have S_0)
     basalsp = find(sum(orig.nicheweb,2)==0);%List the autotrophs (So whatever doesn't have prey)  Hidden assumption - can't assign negative prey values (but why would you?)
 

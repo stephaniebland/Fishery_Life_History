@@ -66,8 +66,8 @@ figure(1); hold on;
 %subplot(2,1,1); hold on;
 plot_fish=B(:,[find(isfish')]);
 plot_invert=B(:,[find(1-isfish')]);
-plot(day,log10(plot_fish),'r');
-plot(day,log10(plot_invert),'b');
+plot(day,log10(plot_fish),'r','LineWidth',1);
+plot(day,log10(plot_invert),'b','LineWidth',1);
 %plot(t,log10(B));
 xlabel('time'); ylabel('log10 biomass')
 %legend('Autotroph','Herbivore','Carnivore')
@@ -76,7 +76,7 @@ grid on;
 %% Plot Fish Species by colour (invertebrates are all same colour), and lifestage by line type
 
 figure(1); hold on;
-p=plot(day,log10(B));
+p=plot(day,log10(B),'LineWidth',1);
 [~,~,ind_species]=unique(isfish.*species');
 [~,~,ind_lifestage]=unique(lifestage);
 colours=get(gca,'colororder');
