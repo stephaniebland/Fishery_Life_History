@@ -33,12 +33,14 @@ variables=[S_0,connectance,nan_error,R_squared,Adj_Rsq,lin_regr',r_i_mean,r_i_st
 % nicheweb
 % orig.nicheweb %because it's way too complicated to figure out original fish diet, since I don't know how I'm going to split it yet.  Might as well guarantee accuracy for something as important as this.
 sim_run=[year_index,full_t,full_sim];
-% adj_list
 % max_assim
 % effic
 % c
 % Bsd
-
+%Convert Nicheweb into an adjacency list "two-column format, in which the first column lists the number of a consumer, and the second column lists the number of one of the resource species of that consumer." - Dunne 2006
+[adj_row,adj_col]=find(nicheweb);
+adj_list=[adj_row, adj_col];%indexed from 1 and up, so if you want first node to be 0, you need to subtract 1.
+    
 %% Things you can calculate later, and computationally inexpensive
 % basalsp
 % Top species (species without predators - but if you split into life histories more species will have predators!)

@@ -53,9 +53,12 @@
     L_year=100;% Number of (days?) in a year (check units!!!)
 
 %% Life History Switches
-    lifehis.lstages_maxfish=5;%NaN;%Maximum number of new fish species to create. NaN gives every fish new lifestages.
+    lifehis.lstages_maxfish=0;%NaN;%Maximum number of new fish species to create. NaN gives every fish new lifestages.
     lstages_linked=true;%Are life histories linked via leslie matrix?
     lstages_B0ratedR=true;%Start simulation with adults only.
+    lstages_create=0;%Year to create new lifestages, 0 is created at beginning
+    splitdiet=true;%Choose how to split fish diet. true=split orignal diet, false=assign new diet based on new niche values
+    fishpred=0;%Choose how to assign fish predators. 0 means only adults eaten, 1 means all stages are eaten, and true reassigns them according to nichevalues
 
 %% setup
     connectance=0.15;% initial connectance

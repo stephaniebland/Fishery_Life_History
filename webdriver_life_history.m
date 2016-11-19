@@ -20,12 +20,13 @@ full_sim=nan(N_years*L_year,nichewebsize);
 full_t=nan(N_years*L_year,1);
 year_index=nan(N_years*L_year,1);
 B_year_end=nan(N_years,nichewebsize);
+B0=B_orig;
 %Run one year at a time
 for i=1:N_years
     fish_gain=[];
     [x, t] =  dynamic_fn(K,int_growth,meta,max_assim,effic,Bsd,q,c,f_a,f_m, ...
-        ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,L_year,ext_thresh);
-    B_end=x(L_year,1:nichewebsize)'; % use the final biomasses as the initial conditions
+        ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,L_year+1,ext_thresh);
+    B_end=x(L_year+1,1:nichewebsize)'; % use the final biomasses as the initial conditions
     B0=B_end;
     if lstages_linked==true
         %% Change Biomass as Kuparinen et al. for Lake Constance.
@@ -45,11 +46,13 @@ end
     
 
 B=full_sim(:,1:nichewebsize);
+day=0:size(full_sim,1)-1;
 E=full_sim(:,nichewebsize+1:end);
 
 find(isnan(B)==1) % Check for errors that might occur
 nan_error=min(find(isnan(B)==1))
 isConnected(nicheweb)%Error with TrophicLevels.m may be because it's not connected? As a matrix that is, it was already connected before in orig web, so lifehistories connections keep it alright.
+sum(is_split)-lifehis.lstages_maxfish
 
 %fish_props;% Remember to change function so nothing is brought back [~]=fish_props;
 
@@ -63,8 +66,8 @@ figure(1); hold on;
 %subplot(2,1,1); hold on;
 plot_fish=B(:,[find(isfish')]);
 plot_invert=B(:,[find(1-isfish')]);
-plot(full_t,log10(plot_fish),'r');
-plot(full_t,log10(plot_invert),'b');
+plot(day,log10(plot_fish),'r');
+plot(day,log10(plot_invert),'b');
 %plot(t,log10(B));
 xlabel('time'); ylabel('log10 biomass')
 %legend('Autotroph','Herbivore','Carnivore')
@@ -73,7 +76,7 @@ grid on;
 %% Plot Fish Species by colour (invertebrates are all same colour), and lifestage by line type
 
 figure(1); hold on;
-p=plot(full_t,log10(B));
+p=plot(day,log10(B));
 [~,~,ind_species]=unique(isfish.*species');
 [~,~,ind_lifestage]=unique(lifestage);
 colours=get(gca,'colororder');
@@ -102,8 +105,8 @@ B_species=B_species';
 
 figure(1); hold on;
 fish_only=B_species(:,2:end);
-plot(full_t,log10(B_species));%Including Inverts & Plants
-plot(full_t,log10(fish_only));%Only Fish
+plot(day,log10(B_species));%Including Inverts & Plants
+plot(day,log10(fish_only));%Only Fish
 xlabel('time'); ylabel('log10 biomass')
 grid on;
 
