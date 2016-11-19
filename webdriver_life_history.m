@@ -8,7 +8,7 @@
 clear;
 beep off
 warning off MATLAB:divideByZero;
-global fish_gain;
+global fish_gain reprod;
 %--------------------------------------------------------------------------
 % Protocol parameters
 %--------------------------------------------------------------------------
@@ -23,6 +23,20 @@ B_year_end=nan(N_years,nichewebsize);
 B0=B_orig;
 %Run one year at a time
 for i=1:N_years
+    %% Calculate Prob of Maturity and invest
+    attach(leslie);
+    reprod=zeros(nichewebsize,1);
+    for j=find(is_split')
+        stages=N_stages(j);
+        %% Probability of Maturity (P)
+        a50 = starta50*(1- 0.005)^0;% a50 is age at which 50 reach maturity
+        %a50 = 3*(1- 0.005)^year;%For years after evolution starts
+        sumL = 1 + exp(-3*((2:stages)-a50));
+        P =[0, 1./sumL];
+        mature_reprod=1-invest(1:stages);%percent invested in reproduction
+        reprod(find(species==j))=P.*mature_reprod;
+    end
+    %% ODE
     fish_gain=[];
     [x, t] =  dynamic_fn(K,int_growth,meta,max_assim,effic,Bsd,q,c,f_a,f_m, ...
         ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,L_year+1,ext_thresh);
