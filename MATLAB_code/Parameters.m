@@ -53,10 +53,10 @@
     L_year=100;% Number of (days?) in a year (check units!!!)
 
 %% Life History Switches
-    lifehis.lstages_maxfish=0;%NaN;%Maximum number of new fish species to create. NaN gives every fish new lifestages.
+    lifehis.lstages_maxfish=3;%NaN;%Maximum number of new fish species to create. NaN gives every fish new lifestages.
     lstages_linked=true;%Are life histories linked via leslie matrix?
     lstages_B0ratedR=true;%Start simulation with adults only.
-    lstages_create=0;%Year to create new lifestages, 0 is created at beginning
+    lstages_ycreate=0;%Year to create new lifestages, 0 is created at beginning
     splitdiet=true;%Choose how to split fish diet. true=split orignal diet, false=assign new diet based on new niche values
     fishpred=0;%Choose how to assign fish predators. 0 means only adults eaten, 1 means all stages are eaten, and true reassigns them according to nichevalues
 
@@ -72,7 +72,7 @@
     
 %% LifeHistories
     lifehis.maxweight=100000;%Factor by which you can scale all the weights, so that the maximum fish weight is *exactly* this number.  So every ecosystem will always have top predator that weighs exactly that amount (unless it goes extinct). Important because Von-Bert growth model doesn't work for species over certain weight.
-    lifehis.agerange=[3, 3]; %Additional lifestages to add to fish.  You can choose any number within that range. %BE CAREFUL - THIS IS LIKE NUMBER OF ADDITIONAL LIFE STAGES (you may want N_stages instead) %Jeff said most fish are within 2-6 [1 5] years for age at maturity (and t_max excludes the first year, so it's fine.)
+    lifehis.agerange=[3, 3]; %WARNING!!!: only works right now for [3 3] (fix LeslieMatrix). %Additional lifestages to add to fish.  You can choose any number within that range. %BE CAREFUL - THIS IS LIKE NUMBER OF ADDITIONAL LIFE STAGES (you may want N_stages instead) %Jeff said most fish are within 2-6 [1 5] years for age at maturity (and t_max excludes the first year, so it's fine.)
     lifehis.growth_exp=3;%Growth exponent, 3 is for isometric growth (Sangun et al. 2007)
     lifehis.q=0.0125;%Conversion factor from weight to length
     

@@ -23,6 +23,10 @@ B_year_end=nan(N_years,nichewebsize);
 B0=B_orig;
 %Run one year at a time
 for i=1:N_years
+    if i==lstages_ycreate
+        year=i;
+        MakeHistory;
+    end
     fish_gain=[];
     [x, t] =  dynamic_fn(K,int_growth,meta,max_assim,effic,Bsd,q,c,f_a,f_m, ...
         ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,L_year+1,ext_thresh);

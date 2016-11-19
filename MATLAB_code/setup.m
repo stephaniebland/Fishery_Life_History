@@ -8,17 +8,12 @@
 % All dynamics parameters are set here.
 %--------------------------------------------------------------------------
 
-
+orig.isfish=0;
+while sum(orig.isfish)==0
 %%-------------------------------------------------------------------------
 %%  NICHE MODEL
 %%-------------------------------------------------------------------------
-
-%to construct niche web, uncomment the following lines.
     [orig.nicheweb,n_new,c_new,r_new] = NicheModel(S_0, connectance);%Create a connected (no infinite degrees of separation) foodweb with realistic species (eg. no predators without prey), and no isolated species.
-
-%or enter custom web (rows eats column)
-    %nicheweb = [0 0 0; 1 0 0; 0 1 0];
-
     nichewebsize = length(orig.nicheweb);%Steph: Find number of species (not sure why, already have S_0)
     basalsp = find(sum(orig.nicheweb,2)==0);%List the autotrophs (So whatever doesn't have prey)  Hidden assumption - can't assign negative prey values (but why would you?)
 
@@ -29,37 +24,18 @@
 %"meta", "TrophLevel" & "T1", "IsFish" and "Z"
     [TrophLevel,orig.T1,orig.T2]= TrophicLevels(nichewebsize,orig.nicheweb,basalsp);
     [orig.Z,orig.Mvec,orig.isfish]= MassCalc(masscalc,nichewebsize,basalsp,TrophLevel);
+    end    
+%%-------------------------------------------------------------------------
+%%  LINEAR REGRESSION
+%%-------------------------------------------------------------------------    
     % Use Linear regression to estimate slope of mass-niche relationship:
     [R_squared,Adj_Rsq,lin_regr]=Linear_Regression(orig,n_new);
 
 %%-------------------------------------------------------------------------
 %%  LIFE HISTORY
 %%-------------------------------------------------------------------------
-    [nicheweb,lifehistory_table,Mass,orig.nodes,species,N_stages,is_split]= LifeHistories(lifehis,leslie,orig,nichewebsize,n_new,c_new,r_new);
-    %Update all the output to reflect new web
-    nichewebsize = length(nicheweb);
-    isfish=repelem(orig.isfish,N_stages);
-    meta_N_stages=repelem(N_stages,N_stages);
-    lifestage=[];
-    for i=1:S_0
-        lifestage=[lifestage 1:N_stages(i)];
-    end
-    Mvec=Mass;
-    basalsp = find(sum(nicheweb,2)==0);%List the autotrophs (So whatever doesn't have prey)  Hidden assumption - can't assign negative prey values (but why would you?)
-
-%%-------------------------------------------------------------------------
-%%  SET DYNAMICS PARAMETERS
-%%-------------------------------------------------------------------------
-
-%"meta", "TrophLevel" & "T1", "IsFish" and "Z"
-%---------------------------------------------
-%1) set manually
-    %meta = [0; .15; .02];    
-%2) Can be scaled with body size
-    [TrophLevel,T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp);%Recalculate trophic levels for new nicheweb
-    %YES BUT NOW I DON'T KNOW IF I SHOULD USE OLD TROPHIC LEVEL OR NEW TROPHIC LEVELS IN METABOLIC SCALING
-    [meta,Z]=metabolic_scaling(meta_scale,nichewebsize,basalsp,isfish,TrophLevel,Mass,orig.Z,orig.nodes);
-    
+    year=0;
+    MakeHistory;
 
 %Intrinsic growth parameter "r" for basal species only
 %-----------------------------------------------------
@@ -69,21 +45,6 @@
         to_replace=((int_growth~=0 & int_growth<r_i_min) | int_growth>r_i_max);
         int_growth(to_replace)=r_i_mean+r_i_std*randn(sum(to_replace),1); 
     end
-
-%Other dynamic parameters
-%------------------------
-    K = ones(nichewebsize,1) .*K_param;
-
-    max_assim=assim.max_rate*ones(nichewebsize);% max rate i assimilates j per unit metabolic rate of i
-
-    effic=assim.effic_nonplants*ones(nichewebsize);%assimilation efficiency of i for j
-    effic(:,basalsp) = assim.effic_basal;
-
-%Half saturation density "Bsd" and predator interference "c"  
-%-----------------------------------------------------------
-    %Bsd = 1.5*ones(nichewebsize);
-    %c = ones(nichewebsize,nichewebsize)*0.5;
-    [Bsd, c]=func_resp_scaling(func_resp,nicheweb,nichewebsize,isfish,Z,basalsp);
 
 %set initial and final integration times
 %---------------------------------------
@@ -108,7 +69,8 @@
     %p_a=1000;
     %p_b=10; % set to zero to fix the price
  
-%assign harvesting link to a top species
+%DOESNT EVEN MAKE SENSE TO DO THIS BEFORE YOU KNOW WHICH SPECIES SURVIVE!!!
+%assign harvesting link to a top species 
 %---------------------------------------
 %1) randomly among top or nonbasal species
     %possib_harv=logical(sum(nicheweb,2)~=0); %nonbasal species
@@ -139,12 +101,13 @@
 
 %initial Biomass
 %---------------
-%1) randomly set between 0.02 and 20, from a uniform distb:
-     B0 = (999*rand(nichewebsize,1)+1)*.01;
-     %B0(find(is_split))=B0(find(is_split))/60;% Maybe try to tweak original fish densities
-     if lstages_B0ratedR==true
-         B0=B0.*orig.nodes';%Start with adults only.
-     end
+%1) Random uniform distribution in interval (0.01,10)
+    B0 = (999*rand(nichewebsize,1)+1)*.01;
+    if lstages_B0ratedR==true
+        B0=B0.*orig.nodes';%Start with adults only.
+    elseif lstages_B0ratedR~=false
+        clear B0;%Make sure there's an error if you misspell setting
+    end
 %2) from uniform distribution in the ranges 5-500, 2-200 and 1-100 
     %B0 = (99*rand(nichewebsize,1)+1).*[5; 2; 1];
 %3) set manually, example on 2 species
