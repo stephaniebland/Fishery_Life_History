@@ -52,6 +52,11 @@
     N_years=5;%Total number of years to run simulation for
     L_year=100;% Number of (days?) in a year (check units!!!)
 
+%% Life History Switches
+    lifehis.lstages_maxfish=5;%NaN;%Maximum number of new fish species to create. NaN gives every fish new lifestages.
+    lstages_linked=true;%Are life histories linked via leslie matrix?
+    lstages_B0ratedR=true;%Start simulation with adults only.
+
 %% setup
     connectance=0.15;% initial connectance
 

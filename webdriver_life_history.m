@@ -27,12 +27,14 @@ for i=1:N_years
         ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,L_year,ext_thresh);
     B_end=x(L_year,1:nichewebsize)'; % use the final biomasses as the initial conditions
     B0=B_end;
-    %% Change Biomass as Kuparinen et al. for Lake Constance.
-    [lifehistory_table,aging_table,fecund_table]= LeslieMatrix(leslie,nichewebsize,N_stages,i,orig.isfish,species);
-    %% Move biomass from one life history to the next
-    fish_gain_tot=sum(fish_gain,2);
-    fish_gain_tot(find(1-isfish))=1;
-    B0=aging_table*B_end+fecund_table*B_end.*fish_gain_tot; %Split lifehistory_table into two parts.
+    if lstages_linked==true
+        %% Change Biomass as Kuparinen et al. for Lake Constance.
+        [lifehistory_table,aging_table,fecund_table]= LeslieMatrix(leslie,nichewebsize,N_stages,i,is_split,species);
+        %% Move biomass from one life history to the next
+        fish_gain_tot=sum(fish_gain,2);
+        fish_gain_tot(find(1-isfish))=1;%This line is almost def unecessary because fecund_table is 0s for species without lifehistories - switch to gain_tot. But prob req'd in ODE to track fish biomass loss to reproduction
+        B0=aging_table*B_end+fecund_table*B_end.*fish_gain_tot; %Split lifehistory_table into two parts.
+    end
     %% Concatenate Data for all years
     full_sim((1:L_year)+(i-1)*L_year,1:nichewebsize)=x(1:L_year,1:nichewebsize);
     t=t+L_year*(i-1);
@@ -47,6 +49,7 @@ E=full_sim(:,nichewebsize+1:end);
 
 find(isnan(B)==1) % Check for errors that might occur
 nan_error=min(find(isnan(B)==1))
+isConnected(nicheweb)%Error with TrophicLevels.m may be because it's not connected? As a matrix that is, it was already connected before in orig web, so lifehistories connections keep it alright.
 
 %fish_props;% Remember to change function so nothing is brought back [~]=fish_props;
 

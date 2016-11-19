@@ -17,6 +17,7 @@
 clear;
 beep off
 warning off MATLAB:divideByZero;
+global fish_gain;
 Parameters;
 
 

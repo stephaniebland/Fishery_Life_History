@@ -11,9 +11,10 @@
 % orig.T1',orig.T2 Trophic levels change with a new foodweb
 % orig.Z should be saved because I don't know if I will change Z for new nodes yet.
 % orig.Mvec Save old mass because you scale it before applying lifehistory
+%N_stages,is_split obvious
 l10_Mvec=log10(orig.Mvec);%Calculate now because it's more accurate this way
 ln_Mvec=log(orig.Mvec);
-orig_vec=[n_new,c_new,r_new,orig.T1',orig.T2,orig.Z,orig.Mvec,l10_Mvec,ln_Mvec,N_stages];
+orig_vec=[n_new,c_new,r_new,orig.T1',orig.T2,orig.Z,orig.Mvec,l10_Mvec,ln_Mvec,N_stages,is_split];
 
 %% Vectors of length nichewebsize (number of nodes)
 % B_orig I don't know how much it will change in the first time step of ODE

@@ -15,7 +15,7 @@
 %--------------------------------------------------------------------------
 %Leslie Matrix can change every year
 
-function [lifehistory_table,aging_table,fecund_table]= LeslieMatrix(leslie,newwebsize,N_stages,year,isfish_orig,species)
+function [lifehistory_table,aging_table,fecund_table]= LeslieMatrix(leslie,newwebsize,N_stages,year,is_split,species)
 attach(leslie); 
 
 %%-------------------------------------------------------------------------
@@ -39,7 +39,7 @@ P =[0, 1./sumL];
 lifehistory_table=eye(newwebsize);%Identity Matrix for life history table, so non-fish are untransformed by matrix
 aging_table=eye(newwebsize);
 fecund_table=zeros(newwebsize);
-for i=find(isfish_orig')
+for i=find(is_split')%Only change values for fish with life histories.
     stages=N_stages(i);%Number of fish life history stages
     if stages~=1
         aging=1*ones(1,stages-1);%length of stages-1, some sort of distribution

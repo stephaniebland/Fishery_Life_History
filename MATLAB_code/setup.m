@@ -35,7 +35,7 @@
 %%-------------------------------------------------------------------------
 %%  LIFE HISTORY
 %%-------------------------------------------------------------------------
-    [nicheweb,lifehistory_table,Mass,orig.nodes,species,N_stages]= LifeHistories(lifehis,leslie,orig,nichewebsize,n_new,c_new,r_new);
+    [nicheweb,lifehistory_table,Mass,orig.nodes,species,N_stages,is_split]= LifeHistories(lifehis,leslie,orig,nichewebsize,n_new,c_new,r_new);
     %Update all the output to reflect new web
     nichewebsize = length(nicheweb);
     isfish=repelem(orig.isfish,N_stages);
@@ -145,7 +145,10 @@
 %---------------
 %1) randomly set between 0.02 and 20, from a uniform distb:
      B0 = (999*rand(nichewebsize,1)+1)*.01;
-     %B0(find(isfish))=B0(find(isfish))/60;% Maybe try to tweak original fish densities
+     %B0(find(is_split))=B0(find(is_split))/60;% Maybe try to tweak original fish densities
+     if lstages_B0ratedR==true
+         B0=B0.*orig.nodes';%Start with adults only.
+     end
 %2) from uniform distribution in the ranges 5-500, 2-200 and 1-100 
     %B0 = (99*rand(nichewebsize,1)+1).*[5; 2; 1];
 %3) set manually, example on 2 species
