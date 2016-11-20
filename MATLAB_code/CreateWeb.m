@@ -1,0 +1,59 @@
+%--------------------------------------------------------------------------
+% Program by: Rosalyn Rael
+% Barbara Bauer added a part removing species not connected to a basal
+% and changed the output to a 'row eats column' type matrix
+% Coralie Picoche and Perrine Tonin changed the 'removing part' in 
+% order not to change the connectance
+% Ref: Williams and Martinez, Nature, 2000.
+% Last modification : June 2011
+%--------------------------------------------------------------------------
+% This function produces a niche model food web.
+% Input: number of species, connectance
+% Output: adjacency matrix called 'nicheweb' 
+% A(i,j) = 1 if i eats j.(row eats column)
+%--------------------------------------------------------------------------
+
+function [web_mx,n_new,r_new,c_new]=CreateWeb(num_nodes,connectance)
+
+n = rand(num_nodes,1);
+
+%----------------------------------------------------------------------
+% designate range for each species
+% parameters for beta distribution:
+alpha = 1;
+beta = (1-2*connectance)/(2*connectance); %Coralie : ???
+r = betarnd(alpha,beta,num_nodes,1);    %vector of ranges
+r = r.*n;
+
+%----------------------------------------------------------------------
+% set center of range, uniformly distributed in [r_i/2,n_i];
+c=rand(num_nodes,1).*(min(n,1-r./2)-r./2)+r./2; %Corrected distribution so the probability is uniform
+
+
+%----------------------------------------------------------------------
+% sort everything
+[n_new Indx] = sort(n);
+%n_new: niche values in ascending order
+%Indx: indexes of species in descending order
+%(-> 1 is the index of the smallest niche range, 10 is the index of
+%the largest)
+r_new = r(Indx); %the smallest r to highest index species
+c_new = c(Indx);
+r_new(1) = 0; %change the r of lowest index species to 0
+%so we have a basal species in every web
+
+%----------------------------------------------------------------------
+% Construct the web adjacency matrix
+web_mx = zeros(num_nodes);
+
+preymins = c_new - r_new/2; %lower border of niche range for every prey
+preymaxs = c_new + r_new/2; %upper border of niche range for every predator
+
+n_mx = n_new*ones(1,num_nodes); %fills the empty matrix with niche ranges
+preymins_mx = ones(num_nodes,1)*preymins'; %matrix with the lowest points of ranges in every column
+preymaxs_mx = ones(num_nodes,1)*preymaxs'; %same, with highest
+
+web_mx=((n_mx>=preymins_mx)+(n_mx<=preymaxs_mx)==2*ones(num_nodes));
+%if species in the row is in the niche range of the species in the
+%column, it gets eaten
+end
