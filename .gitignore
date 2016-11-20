@@ -7,6 +7,7 @@
 /PAPER/**.gz
 /PAPER/**.lof
 /PAPER/**.fff
+/PAPER/**.aux
 /PAPER/**.tex
 /PAPER/cache
 
@@ -26,5 +27,5 @@
 # Modified Code Files #
 #######################
 *.m~
-webdriver_Efix_halfdensity.m~
+
 

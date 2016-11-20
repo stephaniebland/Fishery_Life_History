@@ -139,13 +139,17 @@ end
 % nicheweb_new(:,indexfish_new);
 % nicheweb(:,fish2div);
 
-%First approximation is just that if something preys on a species, it will prey on all of the lifestages
-%newnodes=1-orig_nodes;
-% for i=fish2div
-%     fishpred=nicheweb_new(:,find(species==i));
-%     fishpred(:,1:end-1)=fishpred(:,1:end-1)+fishpred(:,end);
-%     nicheweb_new(:,find(species==i))=fishpred;
-% end
+switch fishpred
+    case 1
+        %First approximation is just that if something preys on a species, it will prey on all of the lifestages
+        newnodes=1-orig_nodes;
+        for i=fish2div
+            fishpred=nicheweb_new(:,find(species==i));
+            fishpred(:,1:end-1)=fishpred(:,1:end-1)+fishpred(:,end);
+            nicheweb_new(:,find(species==i))=fishpred;
+        end
+end
+
 
 end
 

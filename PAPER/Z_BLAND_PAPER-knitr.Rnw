@@ -178,6 +178,43 @@ This is why I normalize/standardize data before fitting it, they wouldn't withou
 \subsubsection*{Instead of Linear Regression...}
 Since I already have such a large data set, and a regression would just give me deterministic values anyhow, unless I artificially add stochasticity, I could just be lazy instead. I think I'll just take my new relationship between niche and mass and split it into niche value groups. Then I can get the average and standard deviation for any particular range, turn that into a matrix with columns niche value range, average, standard deviation, and use that to find new niche values for any new lifestages. Fitting it to a curve with artificial stochasticity will probably just add error from a poor fitting curve, and there's no reason to talk about the linear regression in the paper anyhow because niche value doesn't mean anything. Of course, if the data set is homoscedastic, then you might as well just use a lin. regression, but I'm expecting it to be heteroscedastic, from what I saw with invertebrates.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage \noindent\hrulefill
+\section*{Tables and References}
+\hrulefill
+
+\begin{table}[ht]
+\caption{Parameters}% title of Table
+\centering % used for centering table
+\begin{tabular}{c c c c c}% centered columns (4 columns)
+\hline\hline                        %inserts double horizontal lines
+Symbol & Description & Value & Unit & Reference \\ [0.5ex]% inserts table heading
+\hline                 % inserts single horizontal line
+$$  & Number of species in original Niche web &  & - &  \\% inserting body of the table
+$$  & Number of years to run simulation for &  & years &  \\
+$$  & Number of days in a year &  & days &  \\
+$$  & connectance &  &  &  \\
+$$  & Weight of largest fish in web &  &  &  \\
+$$  & Growth Exponent &  &  & \cite{Sangun2007} \\
+$$  & Conversion factor from fish weight to length &  &  &  \\
+$$  & Age at which 50\% of fish reach maturity &  &  &  \\
+$$  &  &  &  &  \\
+$$  &  &  &  &  \\
+$$  &  &  &  &  \\
+$$  &  &  &  &  \\
+$$  &  &  &  &  \\
+$$  &  &  &  &  \\
+$$  &  &  &  &  \\
+$$  &  &  &  &  \\
+$$  &  &  &  &  \\
+$$  &  &  &  &  \\
+$$  &  &  &  &  \\ [1ex]      % [1ex] adds vertical space
+\hline %inserts single line
+\end{tabular}
+\label{table:weight}% is used to refer this table in the text
+\end{table}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
