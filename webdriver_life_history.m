@@ -47,7 +47,6 @@ for i=1:N_years
         [lifehistory_table,aging_table,fecund_table]= LeslieMatrix(leslie,nichewebsize,N_stages,i,is_split,species);
         %% Move biomass from one life history to the next
         fish_gain_tot=sum(fish_gain,2);
-        fish_gain_tot(find(1-isfish))=1;%This line is almost def unecessary because fecund_table is 0s for species without lifehistories - switch to gain_tot. But prob req'd in ODE to track fish biomass loss to reproduction
         B0=aging_table*B_end+fecund_table*B_end.*fish_gain_tot; %Split lifehistory_table into two parts.
     end
     %% Concatenate Data for all years
