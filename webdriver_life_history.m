@@ -8,7 +8,7 @@
 clear;
 beep off
 warning off MATLAB:divideByZero;
-global fish_gain reprod;
+global fish_gain reprod cont_reprod;
 %--------------------------------------------------------------------------
 % Protocol parameters
 %--------------------------------------------------------------------------
@@ -47,6 +47,9 @@ for i=1:N_years
         [lifehistory_table,aging_table,fecund_table]= LeslieMatrix(leslie,nichewebsize,N_stages,i,is_split,species);
         %% Move biomass from one life history to the next
         fish_gain_tot=sum(fish_gain,2);
+        if cont_reprod==false
+            fish_gain_tot=1;
+        end
         B0=aging_table*B_end+fecund_table*B_end.*fish_gain_tot; %Split lifehistory_table into two parts.
     end
     %% Concatenate Data for all years
