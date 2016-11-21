@@ -23,7 +23,7 @@ while sum(orig.isfish)==0%Guarantee that the food web has at least one fish
 %%-------------------------------------------------------------------------
 %Calculates species weight -> so you know how many life stages it needs
     [TrophLevel,orig.T1,orig.T2]= TrophicLevels(nichewebsize,orig.nicheweb,basalsp);
-    [orig.Z,orig.Mvec,orig.isfish]= MassCalc(masscalc,nichewebsize,basalsp,TrophLevel);
+    [orig.Z,orig.Mvec,orig.isfish,W_scaled]= MassCalc(masscalc,nichewebsize,basalsp,TrophLevel);
 end    
 %%-------------------------------------------------------------------------
 %%  LINEAR REGRESSION
@@ -34,7 +34,7 @@ end
 %%-------------------------------------------------------------------------
 %%  LIFE HISTORY
 %%-------------------------------------------------------------------------
-    [nicheweb,lifehistory_table,Mass,orig.nodes,species,N_stages,is_split]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance);
+    [nicheweb,lifehistory_table,Mass,orig.nodes,species,N_stages,is_split]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance,W_scaled);
     %Update all the output to reflect new web
     nichewebsize = length(nicheweb);
     isfish=repelem(orig.isfish,N_stages);

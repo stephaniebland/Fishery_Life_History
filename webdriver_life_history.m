@@ -102,6 +102,7 @@ for i=1:nichewebsize
     %p(i).Marker=char(mark(ind(i)))
     p(i).LineStyle=char(line_lifestage(lifestage(i)));%Youngest lifestage is given same line type as non-fish species
 end
+xlabel('time'); ylabel('log10 biomass')
 grid on;
     
 %% Individual Fish Species, by total biomass

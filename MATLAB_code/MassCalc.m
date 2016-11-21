@@ -13,7 +13,7 @@
 %--------------------------------------------------------------------------
 
 % uncomment if to use as a function
-function [Z,Mvec,isfish]= MassCalc(masscalc,nichewebsize,basalsp,T)
+function [Z,Mvec,isfish,W_scaled]= MassCalc(masscalc,nichewebsize,basalsp,T)
 attach(masscalc);
 %--------------------------------------------------------------------------
 %Fish or invertebrate
@@ -53,4 +53,13 @@ attach(masscalc);
 %--------------------------------------------------------------------------
     Mvec = zeros(nichewebsize,1); %mass per individual
     Mvec=Z.^(T-1);  %T-1 used since basal level is 1.
+
+%--------------------------------------------------------------------------
+%Scale mass so that von-bert function works
+%--------------------------------------------------------------------------
+    %Calculate Life history mass for all fish species
+    W_scalar=max(Mvec)/maxweight;%Factor by which you can scale all the weights, so that the maximum fish weight is *exactly* the denominator.  So every ecosystem will always have top predator that weighs exactly that amount (unless it goes extinct)
+    %May want to consider adding some stochasticity to this scalar.
+    W_scaled=Mvec/W_scalar;%Scale the weight of all species
+    
     end

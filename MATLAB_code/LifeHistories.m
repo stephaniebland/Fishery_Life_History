@@ -21,7 +21,7 @@
 %old nicheweb, so as to not mess up the entire model.  (So you are
 %basically just adding rows and columns for your new life stages).
 
-function [nicheweb_new,lifehistory_table,Mass,orig_nodes,species,N_stages,is_split]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance)
+function [nicheweb_new,lifehistory_table,Mass,orig_nodes,species,N_stages,is_split]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance,W_scaled)
 attach(orig); attach(lifehis);
 %%-------------------------------------------------------------------------
 %%  SELECT FISH SPECIES TO BE SPLIT
@@ -39,10 +39,6 @@ end
 %%-------------------------------------------------------------------------
 %%  NUMBER OF LIFESTAGES & WEIGHTS
 %%-------------------------------------------------------------------------
-%Calculate Life history mass for all fish species
-W_scalar=max(Mvec)/maxweight;%Factor by which you can scale all the weights, so that the maximum fish weight is *exactly* the denominator.  So every ecosystem will always have top predator that weighs exactly that amount (unless it goes extinct)
-%May want to consider adding some stochasticity to this scalar.
-W_scaled=Mvec/W_scalar;%Scale the weight of all species
 W_max=W_scaled.*is_split;%You only want to add lifestages to fish. This is their adult weight.
 t_max=ones(nichewebsize,1);%set to ones because dividing by zero is a pain.
 t_max(fish2div)=randi(agerange,sum(is_split),1);%BE CAREFUL - THIS IS LIKE NUMBER OF ADDITIONAL LIFE STAGES (you may want N_stages instead)
@@ -127,8 +123,30 @@ end
 %%-------------------------------------------------------------------------
 
 if (fishpred==true | splitdiet==false)
-    n=(1:sum(N_stages))'/sum(N_stages)*0.5;%n isn't good yet
-    [web_mx]=CreateWeb(sum(N_stages),connectance,n,n_new,r_new,c_new,orig_index);
+    %Standardize niche values and mass here,then you can use intercept of -4.744e-17, and slope of 2.338e-01 to calculate new niche values for new nodes,then you transform it back to reg.
+    fish_n=n_new(find(isfish));%only use adult fish data (all fish, not just is_split)
+    fish_w=log10(W_max(find(isfish)));%log the weight first
+    f_mean_n=mean(fish_n);%We will be standardizing the weights and niche values by the mean & std for adult fish, because that's how I calculated the linear regression.
+    f_std_n=std(fish_n);
+    f_mean_w=mean(fish_w);
+    f_std_w=std(fish_w);
+    
+    stand_w=log10(Mass);%log the weight, because that's how I found the linear regression
+    stand_w=(stand_w-f_mean_w)/f_std_w;%standardize all weights by adult fish values
+    
+    n=zeros(sum(N_stages),1);
+    n(orig_index)=n_new;
+    stand_n=(n-f_mean_n)/f_std_n;%standardize all niche values by adult fish niche values
+    for i=fish2div
+        x=stand_w(find(species==i));
+        y=stand_n(find(species==i));
+        alignx=x-x(end);
+        find_y_vals=alignx*2.338e-01;
+        fixedy=find_y_vals+y(end);
+        stand_n(find(species==i))=fixedy;
+    end
+    n=stand_n*f_std_n+f_mean_n;%Transform niche values back to original values.
+    [web_mx]=CreateWeb(sum(N_stages),connectance,n,n_new,r_new,c_new,orig_index);%Create a new web with the new niche values
 end
 
 switch fishpred
