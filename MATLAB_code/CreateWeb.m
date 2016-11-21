@@ -64,7 +64,7 @@ web_mx=((n_mx>=preymins_mx)+(n_mx<=preymaxs_mx)==2*ones(num_nodes));
 
 web_mx = web_mx'; %transposing the matrix (in the following codes we need that format)
 
-%% If you're running the loop for the second time, to get an extended food web, save the old niche values.
+%% If you're running the loop for the second time, to get an extended food web, preserve the order of the nodes.
 if exist('n_old')==1
     keepindex(Indx)=1:num_nodes;
     web_mx=web_mx(keepindex,keepindex);

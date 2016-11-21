@@ -147,6 +147,7 @@ if (fishpred==true | splitdiet==false)
     end
     n=stand_n*f_std_n+f_mean_n;%Transform niche values back to original values.
     [web_mx]=CreateWeb(sum(N_stages),connectance,n,n_new,r_new,c_new,orig_index);%Create a new web with the new niche values
+    givediet=find(repelem(is_split,N_stages));%Find all lifestages that were split, and give them a new diet.  This includes adults in both fishpred AND splitdiet, because new lifestages might eat them. Esp. important for splitdiet though, so that adults actually have food.
 end
 
 switch fishpred
@@ -159,10 +160,10 @@ switch fishpred
             nicheweb_new(:,find(species==i))=fishpred;
         end
     case true %reassigns them according to nichevalues
-        nicheweb_new(:,find(1-orig_nodes))=web_mx(:,find(1-orig_nodes));
+        nicheweb_new(:,givediet)=web_mx(:,givediet);
 end
 if splitdiet==false%assign new diet based on new niche values
-    nicheweb_new(find(1-orig_nodes),:)=web_mx(find(1-orig_nodes),:);
+    nicheweb_new(givediet,:)=web_mx(givediet,:);%Also need to reassign diet for adult lifestages,
 end
 
 
