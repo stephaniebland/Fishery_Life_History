@@ -74,7 +74,7 @@
     masscalc.v_fish   =100;   % standard deviation for fishes
     masscalc.m_invert =100;   % mean for invertebrates
     masscalc.v_invert =100;   % standard deviation for invertebrates
-    masscalc.maxweight=100000;%Factor by which you can scale all the weights, so that the maximum fish weight is *exactly* this number.  So every ecosystem will always have top predator that weighs exactly that amount (unless it goes extinct). Important because Von-Bert growth model doesn't work for species over certain weight.
+    masscalc.maxweight=100000;%false means you skip this step (risky, bc von-bert wants it scaled) %Factor by which you can scale all the weights, so that the maximum fish weight is *exactly* this number.  So every ecosystem will always have top predator that weighs exactly that amount (unless it goes extinct). Important because Von-Bert growth model doesn't work for species over certain weight. 
     
 %% LifeHistories
     lifehis.agerange=[3, 3]; %WARNING!!!: only works right now for [3 3] (fix LeslieMatrix). %Additional lifestages to add to fish.  You can choose any number within that range. %BE CAREFUL - THIS IS LIKE NUMBER OF ADDITIONAL LIFE STAGES (you may want N_stages instead) %Jeff said most fish are within 2-6 [1 5] years for age at maturity (and t_max excludes the first year, so it's fine.)

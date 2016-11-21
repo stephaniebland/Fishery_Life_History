@@ -57,9 +57,14 @@ attach(masscalc);
 %--------------------------------------------------------------------------
 %Scale mass so that von-bert function works
 %--------------------------------------------------------------------------
-    %Calculate Life history mass for all fish species
-    W_scalar=max(Mvec)/maxweight;%Factor by which you can scale all the weights, so that the maximum fish weight is *exactly* the denominator.  So every ecosystem will always have top predator that weighs exactly that amount (unless it goes extinct)
-    %May want to consider adding some stochasticity to this scalar.
-    W_scaled=Mvec/W_scalar;%Scale the weight of all species
+switch maxweight
+    case false %Don't scale the weight if maxweight is set to false.
+        W_scaled=Mvec;
+    otherwise
+        %Calculate Life history mass for all fish species
+        W_scalar=max(Mvec)/maxweight;%Factor by which you can scale all the weights, so that the maximum fish weight is *exactly* the denominator.  So every ecosystem will always have top predator that weighs exactly that amount (unless it goes extinct)
+        %May want to consider adding some stochasticity to this scalar.
+        W_scaled=Mvec/W_scalar;%Scale the weight of all species
+end
     
     end
