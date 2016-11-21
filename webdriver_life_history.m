@@ -67,6 +67,7 @@ find(isnan(B)==1) % Check for errors that might occur
 nan_error=min(find(isnan(B)==1))
 isConnected(nicheweb)%Error with TrophicLevels.m may be because it's not connected? As a matrix that is, it was already connected before in orig web, so lifehistories connections keep it alright.
 sum(is_split)-lifehis.lstages_maxfish
+sum(B_orig)-sum(B_end)
 
 %fish_props;% Remember to change function so nothing is brought back [~]=fish_props;
 

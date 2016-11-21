@@ -23,7 +23,7 @@ while sum(orig.isfish)==0%Guarantee that the food web has at least one fish
 %%-------------------------------------------------------------------------
 %Calculates species weight -> so you know how many life stages it needs
     [TrophLevel,orig.T1,orig.T2]= TrophicLevels(nichewebsize,orig.nicheweb,basalsp);
-    [orig.Z,orig.Mvec,orig.isfish,W_scaled]= MassCalc(masscalc,nichewebsize,basalsp,TrophLevel);
+    [orig.Z,orig.Mvec,orig.isfish,W_scaled,W_scalar]= MassCalc(masscalc,nichewebsize,basalsp,TrophLevel);
 end    
 %%-------------------------------------------------------------------------
 %%  LINEAR REGRESSION
@@ -43,6 +43,9 @@ end
     for i=1:S_0
         lifestage=[lifestage 1:N_stages(i)];
     end
+    if (rescalemass==true && masscalc.maxweight~=false)
+        Mass=Mass*W_scalar;
+    end;
     Mvec=Mass;
     basalsp = find(sum(nicheweb,2)==0);%List the autotrophs (So whatever doesn't have prey)  Hidden assumption - can't assign negative prey values (but why would you?)
 

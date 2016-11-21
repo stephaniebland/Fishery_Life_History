@@ -59,7 +59,8 @@
     cannibal_invert=true;%Cannibalism for all species
     lifehis.fishpred=true;%Choose how to assign fish predators. 0 means only adults eaten, 1 means all stages are eaten, and true reassigns them according to nichevalues
     lifehis.splitdiet=false;%Choose how to split fish diet. true=split orignal diet, false=assign new diet based on new niche values
-
+    rescalemass=true;%simulations only look nice if set to true, but be careful, true means von-bert scaling is invalid since it reverts weights (temp bug bandage)%rescales mass back to original weights after scaled from masscalc.maxweight.  So it only works if maxweight is a value (not "false").
+    
     %% DON'T WORK YET:
     lstages_ycreate=0;%Year to create new lifestages, 0 is created at beginning
     cannibal_fish=false;%false=none,true=yes & any stage can cannibalize larger stages, 2=cannibalism on strictly smaller stages,3=cannibalism on own stages and smaller stages

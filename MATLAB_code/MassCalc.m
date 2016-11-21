@@ -13,7 +13,7 @@
 %--------------------------------------------------------------------------
 
 % uncomment if to use as a function
-function [Z,Mvec,isfish,W_scaled]= MassCalc(masscalc,nichewebsize,basalsp,T)
+function [Z,Mvec,isfish,W_scaled,W_scalar]= MassCalc(masscalc,nichewebsize,basalsp,T)
 attach(masscalc);
 %--------------------------------------------------------------------------
 %Fish or invertebrate
