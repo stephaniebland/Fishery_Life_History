@@ -38,8 +38,10 @@ function [orig]= NicheModel(cannibal_invert,num_species, connectance)
     while (tries>0 & ok_n==0)
         tries=tries-1;
         ok_n=1;
+        n = rand(num_species,1);
+        
        
-        [web_mx,orig.n_new,orig.r_new,orig.c_new]=CreateWeb(num_species,connectance);
+        [web_mx,orig.n_new,orig.r_new,orig.c_new]=CreateWeb(num_species,connectance,n);
     
     %% Invertebrate Cannibalism
         if cannibal_invert==false
@@ -51,7 +53,7 @@ function [orig]= NicheModel(cannibal_invert,num_species, connectance)
     % or a disconnected group, it's removed
         
         %1. removal if isolates
-        nicheweb = web_mx'; %transposing the matrix (in the following codes we need that format)
+        nicheweb=web_mx;
         nichewebsize=size(nicheweb,2);
 
         testmx1 = (nicheweb==zeros(nichewebsize)); %find zeros

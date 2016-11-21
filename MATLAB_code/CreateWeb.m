@@ -13,9 +13,8 @@
 % A(i,j) = 1 if i eats j.(row eats column)
 %--------------------------------------------------------------------------
 
-function [web_mx,n_new,r_new,c_new]=CreateWeb(num_nodes,connectance)
+function [web_mx,n_new,r_new,c_new]=CreateWeb(num_nodes,connectance,n,n_old,r_old,c_old,orig_index)
 
-n = rand(num_nodes,1);
 
 %----------------------------------------------------------------------
 % designate range for each species
@@ -23,12 +22,18 @@ n = rand(num_nodes,1);
 alpha = 1;
 beta = (1-2*connectance)/(2*connectance); %Coralie : ???
 r = betarnd(alpha,beta,num_nodes,1);    %vector of ranges
-r = r.*n;
+r = r.*n;%second run of this will give new life stages new ranges; I think we can give it that freedom, but we could also constrain it more (as if a species doesn't change level of specialism as it ages).
 
 %----------------------------------------------------------------------
 % set center of range, uniformly distributed in [r_i/2,n_i];
 c=rand(num_nodes,1).*(min(n,1-r./2)-r./2)+r./2; %Corrected distribution so the probability is uniform
 
+%% If you're running the loop for the second time, to get an extended food web, save the old niche values.
+if exist('n_old')==1
+    n(orig_index)=n_old;
+    r(orig_index)=r_old;
+    c(orig_index)=c_old;
+end
 
 %----------------------------------------------------------------------
 % sort everything
@@ -56,4 +61,14 @@ preymaxs_mx = ones(num_nodes,1)*preymaxs'; %same, with highest
 web_mx=((n_mx>=preymins_mx)+(n_mx<=preymaxs_mx)==2*ones(num_nodes));
 %if species in the row is in the niche range of the species in the
 %column, it gets eaten
+
+web_mx = web_mx'; %transposing the matrix (in the following codes we need that format)
+
+%% If you're running the loop for the second time, to get an extended food web, save the old niche values.
+if exist('n_old')==1
+    keepindex(Indx)=1:num_nodes;
+    web_mx=web_mx(keepindex,keepindex);
+end
+
+
 end

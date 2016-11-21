@@ -21,7 +21,7 @@
 %old nicheweb, so as to not mess up the entire model.  (So you are
 %basically just adding rows and columns for your new life stages).
 
-function [nicheweb_new,lifehistory_table,Mass,orig_nodes,species,N_stages,is_split]= LifeHistories(lifehis,leslie,orig,nichewebsize,n_new,c_new,r_new)
+function [nicheweb_new,lifehistory_table,Mass,orig_nodes,species,N_stages,is_split]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance)
 attach(orig); attach(lifehis);
 %%-------------------------------------------------------------------------
 %%  SELECT FISH SPECIES TO BE SPLIT
@@ -122,22 +122,14 @@ for i=fish2div%This loop will give a broader overlap
     nicheweb_new(find(species==i),:)=prey_split;
 end
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%-------------------------------------------------------------------------
+%%  NEW NICHEWEB - ALTERNATIVE METHODS & ASSIGNING PREDATORS FOR NEW STAGES
+%%-------------------------------------------------------------------------
 
-%PROBLEM: NOTHING PREYS ON THE JUVENILES
-%Currently the fish prey is split correctly, but the only fish lifestage
-%that is predated are the adults.
-
-%[n_new, c_new, r_new]
-
-
-
-
-
-% %Species that eat fish
-% indexfish_new=find(ismember(species, fish2div));%Index of fish species for new web
-% nicheweb_new(:,indexfish_new);
-% nicheweb(:,fish2div);
+if (fishpred==true | splitdiet==false)
+    n=(1:sum(N_stages))'/sum(N_stages)*0.5;%n isn't good yet
+    [web_mx]=CreateWeb(sum(N_stages),connectance,n,n_new,r_new,c_new,orig_index);
+end
 
 switch fishpred
     case 1
@@ -148,6 +140,11 @@ switch fishpred
             fishpred(:,1:end-1)=fishpred(:,1:end-1)+fishpred(:,end);
             nicheweb_new(:,find(species==i))=fishpred;
         end
+    case true %reassigns them according to nichevalues
+        nicheweb_new(:,find(1-orig_nodes))=web_mx(:,find(1-orig_nodes));
+end
+if splitdiet==false%assign new diet based on new niche values
+    nicheweb_new(find(1-orig_nodes),:)=web_mx(find(1-orig_nodes),:);
 end
 
 
