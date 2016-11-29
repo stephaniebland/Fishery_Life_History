@@ -12,11 +12,8 @@
 % Output: adjacency matrix called 'nicheweb' 
 % A(i,j) = 1 if i eats j.(row eats column)
 %--------------------------------------------------------------------------
-
-% uncomment below to use as a function if called by another script:
- %function [nicheweb,Index_par]= NicheModel(num_species, connectance)%old
- %line, no idea what Index_par is even supposed to be.
- function [nicheweb,n_new,c_new,r_new]= NicheModel(num_species, connectance)
+%nicheweb,n_new,c_new,r_new
+function [orig]= NicheModel(cannibal_invert,num_species, connectance)
 % or uncomment below to use as stand-alone script
 %num_species=10; %input('Enter number of species \n');
 %connectance=.1; %input('Enter connectance \n'); Usually 0.09
@@ -41,61 +38,22 @@
     while (tries>0 & ok_n==0)
         tries=tries-1;
         ok_n=1;
-        n = rand(num_species,1); 
-
-    %----------------------------------------------------------------------
-    % designate range for each species
-    % parameters for beta distribution:
-        alpha = 1;
-        beta = (1-2*connectance)/(2*connectance); %Coralie : ???
-        r = betarnd(alpha,beta,num_species,1);    %vector of ranges
-        r = r.*n; 
-
-    %----------------------------------------------------------------------    
-    % set center of range, uniformly distributed in [r_i/2,n_i];
-        %c = min(1-r./2,rand(num_species,1).*(n-r./2)+r./2); %CP : rand was always the same
-        %The min term (1-r/2) is just to make sure that you don't exceed
-        %the web; your predator will always prey on food in the web.  So if
-        %you look at the species with the largest niche index, the center
-        %of range can go all the way up to 1, but then the predator will be
-        %deprived of half of it's food. So set min to guarantee it gets
-        %fed. I still think this probably is biased though.
-        c=rand(num_species,1).*(min(n,1-r./2)-r./2)+r./2; %Possible correction, because I think the first one was wrong.
-     
-
-    %----------------------------------------------------------------------
-    % sort everything
-        [n_new Indx] = sort(n);
-        %n_new: niche values in ascending order
-        %Indx: indexes of species in descending order
-        %(-> 1 is the index of the smallest niche range, 10 is the index of
-        %the largest)
-        r_new = r(Indx); %the smallest r to highest index species
-        c_new = c(Indx);
-        r_new(1) = 0; %change the r of lowest index species to 0
-        %so we have a basal species in every web
-
-    %----------------------------------------------------------------------
-    % Construct the web adjacency matrix
-        web_mx = zeros(num_species);
-
-        preymins = c_new - r_new/2; %lower border of niche range for every prey
-        preymaxs = c_new + r_new/2; %upper border of niche range for every predator
-
-        n_mx = n_new*ones(1,num_species); %fills the empty matrix with niche ranges
-        preymins_mx = ones(num_species,1)*preymins'; %matrix with the lowest points of ranges in every column
-        preymaxs_mx = ones(num_species,1)*preymaxs'; %same, with highest
-
-        web_mx=((n_mx>=preymins_mx)+(n_mx<=preymaxs_mx)==2*ones(num_species));
-    %if species in the row is in the niche range of the species in the
-    %column, it gets eaten
-
+        n = rand(num_species,1);
+        
+       
+        [web_mx,orig.n_new,orig.r_new,orig.c_new]=CreateWeb(num_species,connectance,n);
+    
+    %% Invertebrate Cannibalism
+        if cannibal_invert==false
+            web_mx=web_mx-diag(diag(web_mx));
+        end
+    
     %----------------------------------------------------------------------
     % if there is an isolated species or something not connected to a basal
     % or a disconnected group, it's removed
         
         %1. removal if isolates
-        nicheweb = web_mx'; %transposing the matrix (in the following codes we need that format)
+        nicheweb=web_mx;
         nichewebsize=size(nicheweb,2);
 
         testmx1 = (nicheweb==zeros(nichewebsize)); %find zeros
@@ -159,7 +117,7 @@
             end
         end
     end
-    
+    orig.nicheweb=nicheweb;
 %--------------------------------------------------------------------------
 % stop searching for a possible web after too many tries
     if tries==0

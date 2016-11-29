@@ -8,34 +8,50 @@
 clear;
 beep off
 warning off MATLAB:divideByZero;
-S_0=30;% Number of original nodes (species)
-
+global fish_gain reprod cont_reprod;
 %--------------------------------------------------------------------------
 % Protocol parameters
 %--------------------------------------------------------------------------
+Parameters;
 setup;% creation of a new food web
-
-
-N_years=5;%Total number of years to run simulation for
-L_year=100;% Number of (days?) in a year (check units!!!)
-t_final=L_year; % Number of timesteps in a year
+B_orig=B0;
 
 full_sim=nan(N_years*L_year,nichewebsize);
 full_t=nan(N_years*L_year,1);
 year_index=nan(N_years*L_year,1);
 B_year_end=nan(N_years,nichewebsize);
+B0=B_orig;
 %Run one year at a time
 for i=1:N_years
-    
+    %% Calculate Prob of Maturity and invest
+    attach(leslie);
+    reprod=zeros(nichewebsize,1);
+    for j=find(is_split')
+        stages=N_stages(j);
+        %% Probability of Maturity (P)
+        a50 = starta50*(1- 0.005)^0;% a50 is age at which 50 reach maturity
+        %a50 = 3*(1- 0.005)^year;%For years after evolution starts
+        sumL = 1 + exp(-3*((2:stages)-a50));
+        P =[0, 1./sumL];
+        mature_reprod=1-invest(1:stages);%percent invested in reproduction
+        reprod(find(species==j))=P.*mature_reprod;
+    end
+    %% ODE
+    fish_gain=[];
     [x, t] =  dynamic_fn(K,int_growth,meta,max_assim,effic,Bsd,q,c,f_a,f_m, ...
-        ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,t_final,ext_thresh);
-    B_end=x(L_year,1:nichewebsize)'; % use the final biomasses as the initial conditions
+        ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,L_year+1,ext_thresh);
+    B_end=x(L_year+1,1:nichewebsize)'; % use the final biomasses as the initial conditions
     B0=B_end;
-    %% Move biomass from one life history to the next
-    %B0(find(isfish))=B_end(find(isfish))+x(1,find(isfish))';%new biomasses for new year (Simple solution where you just add extra fish stock each year - where you add the amount of fish that the model originally produced)
-    B0=lifehistory_table*B_end;
-    %% Change Biomass as Kuparinen et al. for Lake Constance.
-    
+    if lstages_linked==true
+        %% Change Biomass as Kuparinen et al. for Lake Constance.
+        [lifehistory_table,aging_table,fecund_table]= LeslieMatrix(leslie,nichewebsize,N_stages,i,is_split,species);
+        %% Move biomass from one life history to the next
+        fish_gain_tot=sum(fish_gain,2);
+        if cont_reprod==false
+            fish_gain_tot=1;
+        end
+        B0=aging_table*B_end+fecund_table*B_end.*fish_gain_tot; %Split lifehistory_table into two parts.
+    end
     %% Concatenate Data for all years
     full_sim((1:L_year)+(i-1)*L_year,1:nichewebsize)=x(1:L_year,1:nichewebsize);
     t=t+L_year*(i-1);
@@ -46,32 +62,42 @@ end
     
 
 B=full_sim(:,1:nichewebsize);
+day=0:size(full_sim,1)-1;
 E=full_sim(:,nichewebsize+1:end);
+
+find(isnan(B)==1) % Check for errors that might occur
+nan_error=min(find(isnan(B)==1))
+isConnected(nicheweb)%Error with TrophicLevels.m may be because it's not connected? As a matrix that is, it was already connected before in orig web, so lifehistories connections keep it alright.
+sum(is_split)-lifehis.lstages_maxfish
+sum(B_orig)-sum(B_end)
+
+%fish_props;% Remember to change function so nothing is brought back [~]=fish_props;
 
 %--------------------------------------------------------------------------
 % plot the dynamics
 %--------------------------------------------------------------------------
 %% Fish vs Invertebrates
 
-figure(1); hold on;
-
-%subplot(2,1,1); hold on;
-plot_fish=B(:,[find(isfish')]);
-plot_invert=B(:,[find(1-isfish')]);
-plot(full_t,log10(plot_fish),'r');
-plot(full_t,log10(plot_invert),'b');
-%plot(t,log10(B));
-xlabel('time'); ylabel('log10 biomass')
-%legend('Autotroph','Herbivore','Carnivore')
-grid on;
+% figure(1); hold on;
+% 
+% %subplot(2,1,1); hold on;
+% plot_fish=B(:,[find(isfish')]);
+% plot_invert=B(:,[find(1-isfish')]);
+% plot(day,log10(plot_fish),'r','LineWidth',1);
+% plot(day,log10(plot_invert),'b','LineWidth',1);
+% %plot(t,log10(B));
+% xlabel('time'); ylabel('log10 biomass')
+% %legend('Autotroph','Herbivore','Carnivore')
+% grid on;
 
 %% Plot Fish Species by colour (invertebrates are all same colour), and lifestage by line type
 
 figure(1); hold on;
-p=plot(full_t,log10(B));
+p=plot(day,log10(B),'LineWidth',1);
 [~,~,ind_species]=unique(isfish.*species');
 [~,~,ind_lifestage]=unique(lifestage);
 colours=get(gca,'colororder');
+colours=parula(sum(orig.isfish)+1);
 %mark={'o', '+', '*', '.', 'x', 's', 'd', '^', 'v', '>', '<', 'p', 'h'}
 line_lifestage={'-','--',':','-.','-.','-.'};
 for i=1:nichewebsize
@@ -79,6 +105,7 @@ for i=1:nichewebsize
     %p(i).Marker=char(mark(ind(i)))
     p(i).LineStyle=char(line_lifestage(lifestage(i)));%Youngest lifestage is given same line type as non-fish species
 end
+xlabel('time (1/100 years)'); ylabel('log10 biomass')
 grid on;
     
 %% Individual Fish Species, by total biomass
@@ -96,8 +123,8 @@ B_species=B_species';
 
 figure(1); hold on;
 fish_only=B_species(:,2:end);
-plot(full_t,log10(B_species));%Including Inverts & Plants
-plot(full_t,log10(fish_only));%Only Fish
+plot(day,log10(B_species),'LineWidth',1.5);%Including Inverts & Plants
+plot(day,log10(fish_only),'LineWidth',1.5);%Only Fish
 xlabel('time'); ylabel('log10 biomass')
 grid on;
 

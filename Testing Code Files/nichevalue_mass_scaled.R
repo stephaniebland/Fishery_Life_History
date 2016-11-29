@@ -35,14 +35,14 @@ for (i in 1:n_webs){
   temp=read.csv(x,header=F)
   n_mass=rbind(n_mass,temp)
 }
-colnames(n_mass)=c("N","niche","mass","ln_m","log_m","isfish","plant","either","Troph","meta","T1","T2")
+colnames(n_mass)=c("N","niche","mass","ln_m","log_m","isfish","plant","either","Troph","Z","T1","T2")
 
 #Import Data - All
 setwd("/Users/JurassicPark/Documents/Testing code")
 n_mass=read.csv("fixed_data_everything_multifish.txt",header=T)
 head(n_mass)
 n_mass=n_mass[,3:14]
-colnames(n_mass)=c("N","niche","mass","ln_m","log_m","isfish","plant","either","Troph","meta","T1","T2")
+colnames(n_mass)=c("N","niche","mass","ln_m","log_m","isfish","plant","either","Troph","Z","T1","T2")
 
 neither=n_mass[n_mass$either==0,]#only use invertebrates
 fish_only=n_mass[n_mass$isfish==1,]#only use fish
@@ -62,7 +62,7 @@ detach(no_plants)
 reduced_fish=A[A[,3]==1,]
 reduced_fish=as.data.frame(reduced_fish)
 colnames(reduced_fish)=c("xvar","yvar","isfish","N")
-attach(no_plants)
+attach(fish_only)
 indep_var=log_m
 x=tapply(niche,N,std.fun)
 y=tapply(indep_var,N,std.fun)

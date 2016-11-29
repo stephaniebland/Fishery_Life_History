@@ -17,12 +17,13 @@
 clear;
 beep off
 warning off MATLAB:divideByZero;
-% Number of original nodes (species)
-S_0=30;
+global fish_gain;
+Parameters;
 
 
 setup; % to set all the parameters and simulate a nicheweb
 
+fish_gain=[];
 [x, t] =  dynamic_fn(K,int_growth,meta,max_assim,effic,Bsd,q,c,f_a,f_m, ...
     ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,t_final,ext_thresh);
 

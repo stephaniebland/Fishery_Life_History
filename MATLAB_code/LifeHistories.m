@@ -21,32 +21,34 @@
 %old nicheweb, so as to not mess up the entire model.  (So you are
 %basically just adding rows and columns for your new life stages).
 
-%function [output]= LifeHistories(input)
-function [nicheweb_new,lifehistory_table,Mass,orig_nodes,species,N_stages]= LifeHistories(nicheweb,nichewebsize,Mvec,isfish,n_new,c_new,r_new)
-
+function [nicheweb_new,lifehistory_table,Mass,orig_nodes,species,N_stages,is_split]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance,W_scaled)
+attach(orig); attach(lifehis);
+%%-------------------------------------------------------------------------
+%%  SELECT FISH SPECIES TO BE SPLIT
+%%-------------------------------------------------------------------------
+is_split=isfish;
+fish2div=find(is_split');
+if isnan(lstages_maxfish)==0  
+    can_split=min(lstages_maxfish,sum(isfish));%limit to total number of fish.
+    split_fish_i=randsample(sum(isfish),can_split);%Choose which fish species to split, indexed by fish species
+    is_split=zeros(nichewebsize,1);
+    is_split(fish2div(split_fish_i))=1;%fish that will be split are 1s, species that aren't are 0.
+    fish2div=find(is_split');
+end
 
 %%-------------------------------------------------------------------------
 %%  NUMBER OF LIFESTAGES & WEIGHTS
 %%-------------------------------------------------------------------------
-%Calculate Life history mass for all fish species
-W_scalar=max(Mvec)/100000;%Factor by which you can scale all the weights, so that the maximum fish weight is *exactly* the denominator.  So every ecosystem will always have top predator that weighs exactly that amount (unless it goes extinct)
-%May want to consider adding some stochasticity to this scalar.
-lifestage_mass=Mvec.*isfish;% You only want to add lifestages to fish
-W_max=lifestage_mass/W_scalar;%So adult weight of all the fish species.
-t_max=ones(nichewebsize,1);
-t_max(find(isfish))=randi([1 5],sum(isfish),1);%BE CAREFUL - THIS IS LIKE NUMBER OF ADDITIONAL LIFE STAGES (you may want N_stages instead)
-%Jeff said most fish are within 2-6 years for age at maturity (and t_max
-%excludes the first year, so it's fine.)
+W_max=W_scaled.*is_split;%You only want to add lifestages to fish. This is their adult weight.
+t_max=ones(nichewebsize,1);%set to ones because dividing by zero is a pain.
+t_max(fish2div)=randi(agerange,sum(is_split),1);%BE CAREFUL - THIS IS LIKE NUMBER OF ADDITIONAL LIFE STAGES (you may want N_stages instead)
+%Jeff said most fish are within 2-6 [1 5] years for age at maturity (and t_max excludes the first year, so it's fine.)
 
-
-growth_exp=3;%Growth exponent, 3 is for isometric growth (Sangun et al. 2007)
-q=0.0125;%Conversion factor from weight to length
 L_max=(W_max/q).^(1/growth_exp);%(Sangun et al. 2007)
 L_inf=(10^0.044)*(L_max.^0.9841);
 K=3./t_max;% Set according to W_inf
 t_0=t_max+((1./K).*log(1-(L_max./L_inf)));%For small adult weights (ex: W_max=88.7630), this breaks down and starts giving positive t_0
-%Temporary solution to K being too large.  I'll just force it to be small
-%enough to get a negative t_0
+%Temporary solution to K being too large.  I'll just force it to be small enough to get a negative t_0
 for i=find(t_0>0)'
     K(i)=-log(1-(L_max(i)/L_inf(i)))/t_max(i);
     K(i)=0.9*K(i);%I had no justification for choosing 90%
@@ -56,10 +58,10 @@ t_0=t_max+((1./K).*log(1-(L_max./L_inf)));%Recalculate t_0 now that K is correct
 %Create a matrix lifestage_Mass/Mass_matrix that describes the weight of each life stage j
 %for each fish i (so fish species are in rows, and lifestages are in
 %columns.
-newwebsize=nichewebsize+sum(isfish.*t_max);%Size of new web, including 
-Mass_matrix=zeros(nichewebsize,1+max(t_max))/0;%Just want NAN matrix of correct dimensions.
-Mass_matrix(:,1)=Mvec/W_scalar;%First column is just the weight of all species (fish rows will be overwritten with weight of youngest lifestage)
-for i=find(isfish')%only does the loop for fish species
+newwebsize=nichewebsize+sum(is_split.*t_max);%Size of new web, including new lifestages
+Mass_matrix=nan(nichewebsize,1+max(t_max));%Just want NAN matrix of correct dimensions.
+Mass_matrix(:,1)=W_scaled;%First column is just the weight of all species (fish rows will be overwritten with weight of youngest lifestage)
+for i=find(is_split')%only does the loop for fish species that you split
     for t=0:t_max(i)
         L_t=L_inf(i)*(1-exp(-K(i)*(t-t_0(i))));%von-Bertalanffy growth model
         W_t=q*(L_t^growth_exp);%(Sangun et al. 2007)
@@ -67,10 +69,10 @@ for i=find(isfish')%only does the loop for fish species
     end
 end
 %Now convert to a vector.
-Mass=reshape(Mass_matrix',1,numel(Mass_matrix));
+Mass=reshape(Mass_matrix',numel(Mass_matrix),1);
 Mass(isnan(Mass))=[];%Alternate identical method: Mass=Mass(find(isnan(Mass)==0));
 %Get a vector that says what species each lifestage is part of
-N_stages=isfish+t_max;%Number of lifestages for each species. Necessary because fish with t_max=1 means it has 2 lifestages, and didn't want to use 0 for other species because K=3/t_max doesn't like it.
+N_stages=is_split+t_max;%Number of lifestages for each species. Necessary because fish with t_max=1 means it has 2 lifestages, and didn't want to use 0 for other species because K=3/t_max doesn't like it.
 species=[];%Vector saying what species each new node is part of.
 orig_nodes=[];%Vector that says which nodes are original nodes (so new lifestages are 0, and species that were in the original model are 1.
 for i=1:nichewebsize
@@ -84,30 +86,8 @@ orig_index=find(orig_nodes');%index of original species
 %%-------------------------------------------------------------------------
 %%  LIFE HISTORY MATRIX - LESLIE MATRIX
 %%-------------------------------------------------------------------------
-%Suppose you have a fish with 4 life stages.  Then you can create a
-%lifehistory matrix for it.  Find correlations from Hutchings, J. A., Myers, R. A., García, V. B., Lucifora, L. O., & Kuparinen, A. (2012). Life-history correlates of extinction risk and recovery potential. Ecological Applications, 22(4), 1061–1067. Retrieved from http://www.esajournals.org/doi/abs/10.1890/11-1313.1
-%This relates age at maturity, max litter size, and weight to growth rate.
-%But since both weight and age are fixed, well, you could either adjust age
-%accordingly (you just calculated age). Are you sure you want to use this,
-%or is there something better?
-
-%Fish life history tables:  Creates a Leslie matrix where aij is the contribution of life stage j to life stage i.
-lifehistory_table=eye(newwebsize);%Identity Matrix for life history table, so non-fish are untransformed by matrix
-for i=1:nichewebsize
-    stages=N_stages(i);%Number of fish life history stages
-    if stages~=1
-        aging=1*ones(1,stages-1);%length of stages-1, some sort of distribution
-        fert=.5*ones(1,stages);%length of stages, some sort of distribution
-        non_mature=zeros(1,stages);%Default for fish that don't mature is 0, they either mature or die.
-        %NOTE!  The order of the following lines IS important!!!
-        %lifehis_breed=zeros(stages);%Reset matrix from last run.
-        lifehis_breed=diag(aging,-1);%Set the subdiagonal to the probability of maturing to the next stage
-        lifehis_breed(1,:)=fert;%Set the first row to the fertility rate;
-        lifehis_breed=lifehis_breed+diag(non_mature);%Set the diagonal to the probability of not maturing to the next stage, but staying the same age.
-        %So now, incorporate it into life history table
-        lifehistory_table(i:(i+stages-1),i:(i+stages-1))=lifehis_breed;
-    end
-end
+year=1;%Because leslie matrix will soon be time dependent, I want to preserve functionality in original file
+[lifehistory_table,~,~]= LeslieMatrix(leslie,newwebsize,N_stages,year,is_split,species);
 
 %%-------------------------------------------------------------------------
 %%  NEW NICHEWEB - NEO'S METHOD - SPLIT OLD DIET
@@ -116,18 +96,17 @@ end
 %or we can run the model again and just give new lifestages new diets.
 N_prey=sum(nicheweb,2);%Vector saying how many prey species each species has.
 Nprey_per_stage=ceil(N_prey./N_stages);%Minimum number of prey each lifestage needs to eat to cover entire diet
-%        diet_selec(find(isfish'))
 %Create new nicheweb
 nicheweb_new=zeros(newwebsize);
-nonfish=1-isfish;
-nicheweb_new(orig_index,orig_index)=nicheweb.*nonfish;%Rows for invertebrate species that you wish to preserve
+nonsplit=1-is_split;
+nicheweb_new(orig_index,orig_index)=nicheweb.*nonsplit;%Rows for invertebrate species that you wish to preserve
 %PROBLEM:  INVERTEBRATES CURRENTLY DONT PREY ON ANY FISH SPECIES
-for i=find(isfish')%This loop will give a broader overlap
+for i=fish2div%This loop will give a broader overlap
     selec=find(nicheweb(i,:));
     selec=find(ismember(orig_species, selec));%convert old species index into the new species index
     k=(Nprey_per_stage(i)*N_stages(i))-N_prey(i);%How many prey will need to be assigned to two lifestages.
     n=N_stages(i)-1;%number of neighbouring lifestages.
-    y=randsample(n,k);%Which pairs of lifestages will share a prey species.  with or without replacement
+    y=randsample(n,k);%Which pairs of lifestages will share a prey species.  with or without replacement. Currently without replacement
     prey_split=zeros(N_stages(i),newwebsize);
     u=1;
     for j=1:N_stages(i)
@@ -139,30 +118,54 @@ for i=find(isfish')%This loop will give a broader overlap
     nicheweb_new(find(species==i),:)=prey_split;
 end
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%-------------------------------------------------------------------------
+%%  NEW NICHEWEB - ALTERNATIVE METHODS & ASSIGNING PREDATORS FOR NEW STAGES
+%%-------------------------------------------------------------------------
 
-%PROBLEM: NOTHING PREYS ON THE JUVENILES
-%Currently the fish prey is split correctly, but the only fish lifestage
-%that is predated are the adults.
-
-%[n_new, c_new, r_new]
-
-
-
-
-
-% %Species that eat fish
-% indexfish_new=find(ismember(species, find(isfish)));%Index of fish species for new web
-% nicheweb_new(:,indexfish_new);
-% nicheweb(:,find(isfish'));
-
-%First approximation is just that if something preys on a species, it will prey on all of the lifestages
-%newnodes=1-orig_nodes;
-for i=find(isfish')
-    fishpred=nicheweb_new(:,find(species==i));
-    fishpred(:,1:end-1)=fishpred(:,1:end-1)+fishpred(:,end);
-    nicheweb_new(:,find(species==i))=fishpred;
+if (fishpred==true | splitdiet==false)
+    %Standardize niche values and mass here,then you can use intercept of -4.744e-17, and slope of 2.338e-01 to calculate new niche values for new nodes,then you transform it back to reg.
+    fish_n=n_new(find(isfish));%only use adult fish data (all fish, not just is_split)
+    fish_w=log10(W_max(find(isfish)));%log the weight first
+    f_mean_n=mean(fish_n);%We will be standardizing the weights and niche values by the mean & std for adult fish, because that's how I calculated the linear regression.
+    f_std_n=std(fish_n);
+    f_mean_w=mean(fish_w);
+    f_std_w=std(fish_w);
+    
+    stand_w=log10(Mass);%log the weight, because that's how I found the linear regression
+    stand_w=(stand_w-f_mean_w)/f_std_w;%standardize all weights by adult fish values
+    
+    n=zeros(sum(N_stages),1);
+    n(orig_index)=n_new;
+    stand_n=(n-f_mean_n)/f_std_n;%standardize all niche values by adult fish niche values
+    for i=fish2div
+        x=stand_w(find(species==i));
+        y=stand_n(find(species==i));
+        alignx=x-x(end);
+        find_y_vals=alignx*2.338e-01;
+        fixedy=find_y_vals+y(end);
+        stand_n(find(species==i))=fixedy;
+    end
+    n=stand_n*f_std_n+f_mean_n;%Transform niche values back to original values.
+    [web_mx]=CreateWeb(sum(N_stages),connectance,n,n_new,r_new,c_new,orig_index);%Create a new web with the new niche values
+    givediet=find(repelem(is_split,N_stages));%Find all lifestages that were split, and give them a new diet.  This includes adults in both fishpred AND splitdiet, because new lifestages might eat them. Esp. important for splitdiet though, so that adults actually have food.
 end
+
+switch fishpred
+    case 1
+        %First approximation is just that if something preys on a species, it will prey on all of the lifestages
+        newnodes=1-orig_nodes;
+        for i=fish2div
+            fishpred=nicheweb_new(:,find(species==i));
+            fishpred(:,1:end-1)=fishpred(:,1:end-1)+fishpred(:,end);
+            nicheweb_new(:,find(species==i))=fishpred;
+        end
+    case true %reassigns them according to nichevalues
+        nicheweb_new(:,givediet)=web_mx(:,givediet);
+end
+if splitdiet==false%assign new diet based on new niche values
+    nicheweb_new(givediet,:)=web_mx(givediet,:);%Also need to reassign diet for adult lifestages,
+end
+
 
 end
 
