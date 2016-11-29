@@ -53,14 +53,14 @@
     L_year=100;% Number of (days?) in a year (check units!!!)
 
 %% Life History Switches
-    lifehis.lstages_maxfish=3;%NaN;%Maximum number of fish species to create new lifestages for. NaN gives every fish new lifestages.
+    lifehis.lstages_maxfish=NaN;%NaN;%Maximum number of fish species to create new lifestages for. NaN gives every fish new lifestages.
     lstages_linked=true;%Are life histories linked via leslie matrix?
     lstages_B0ratedR=true;%Start simulation with adults only.
     cannibal_invert=true;%Cannibalism for all species
     lifehis.fishpred=true;%Choose how to assign fish predators. 0 means only adults eaten, 1 means all stages are eaten, and true reassigns them according to nichevalues
     lifehis.splitdiet=false;%Choose how to split fish diet. true=split orignal diet, false=assign new diet based on new niche values
     rescalemass=true;%simulations only look nice if set to true, but be careful, true means von-bert scaling is invalid since it reverts weights (temp bug bandage)%rescales mass back to original weights after scaled from masscalc.maxweight.  So it only works if maxweight is a value (not "false").
-    cont_reprod=false;%does reproductive effort account for growth on daily timesteps.
+    cont_reprod=true;%does reproductive effort account for growth on daily timesteps.
     
     %% DON'T WORK YET:
     lstages_ycreate=0;%Year to create new lifestages, 0 is created at beginning
@@ -86,6 +86,7 @@
 %% LeslieMatrix
     leslie.invest=[1,0.9,0.85,0.8]; % allocation to growth for class 1,2 and 3
     leslie.starta50=3;%Age at which 50% of fish reach maturity BEFORE evolution starts.
+    leslie.forced=0.1;%How much do you force last life stage to contribute to reproduction? 0 is nothing (they'll stay adults forever), and 1 is everything.
     
 %% metabolic_scaling
     % Allometric scaling exponent (Boit et al. in prep.)

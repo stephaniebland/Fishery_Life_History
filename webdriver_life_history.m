@@ -78,17 +78,17 @@ sum(B_orig)-sum(B_end)
 %--------------------------------------------------------------------------
 %% Fish vs Invertebrates
 
-figure(1); hold on;
-
-%subplot(2,1,1); hold on;
-plot_fish=B(:,[find(isfish')]);
-plot_invert=B(:,[find(1-isfish')]);
-plot(day,log10(plot_fish),'r','LineWidth',1);
-plot(day,log10(plot_invert),'b','LineWidth',1);
-%plot(t,log10(B));
-xlabel('time'); ylabel('log10 biomass')
-%legend('Autotroph','Herbivore','Carnivore')
-grid on;
+% figure(1); hold on;
+% 
+% %subplot(2,1,1); hold on;
+% plot_fish=B(:,[find(isfish')]);
+% plot_invert=B(:,[find(1-isfish')]);
+% plot(day,log10(plot_fish),'r','LineWidth',1);
+% plot(day,log10(plot_invert),'b','LineWidth',1);
+% %plot(t,log10(B));
+% xlabel('time'); ylabel('log10 biomass')
+% %legend('Autotroph','Herbivore','Carnivore')
+% grid on;
 
 %% Plot Fish Species by colour (invertebrates are all same colour), and lifestage by line type
 
@@ -105,7 +105,7 @@ for i=1:nichewebsize
     %p(i).Marker=char(mark(ind(i)))
     p(i).LineStyle=char(line_lifestage(lifestage(i)));%Youngest lifestage is given same line type as non-fish species
 end
-xlabel('time'); ylabel('log10 biomass')
+xlabel('time (1/100 years)'); ylabel('log10 biomass')
 grid on;
     
 %% Individual Fish Species, by total biomass
@@ -123,8 +123,8 @@ B_species=B_species';
 
 figure(1); hold on;
 fish_only=B_species(:,2:end);
-plot(day,log10(B_species));%Including Inverts & Plants
-plot(day,log10(fish_only));%Only Fish
+plot(day,log10(B_species),'LineWidth',1.5);%Including Inverts & Plants
+plot(day,log10(fish_only),'LineWidth',1.5);%Only Fish
 xlabel('time'); ylabel('log10 biomass')
 grid on;
 

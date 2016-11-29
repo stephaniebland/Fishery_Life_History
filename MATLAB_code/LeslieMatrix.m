@@ -45,7 +45,7 @@ for i=find(is_split')%Only change values for fish with life histories.
         aging=1*ones(1,stages-1);%length of stages-1, some sort of distribution
         P_mat=P(1:stages);%Works for any number of lifestages (but check that equation makes sense!)
         fert=P_mat.*(1-invest(1:stages));
-        non_mature=[zeros(1,stages-1), 1];%Keeps last life history stage alive.
+        non_mature=[zeros(1,stages-1), 1-forced];%Keeps last life history stage alive.
         %NOTE!  The order of the following lines IS important!!!
         %lifehis_breed=zeros(stages);%Reset matrix from last run. (not necessary because next line does it automatically)
         lifehis_breed=diag(aging,-1);%Set the subdiagonal to the probability of maturing to the next stage
@@ -57,6 +57,7 @@ for i=find(is_split')%Only change values for fish with life histories.
         %% Split lifehistory_table into two matrices, where aging_table+fecund_table=lifehistory_table. This way you can multiply fecund_table by additional factors.
         fecund_table(fish_index(1),fish_index)=fert;
         aging_table(fish_index,fish_index)=diag(aging,-1)+diag(non_mature);
+        aging_table(fish_index(1),fish_index(end))=forced;
     end
 end
 
