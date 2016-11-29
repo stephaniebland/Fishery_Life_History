@@ -49,7 +49,7 @@
 
 %% Webdriver
     S_0=30;% Number of original nodes (species)
-    N_years=5;%Total number of years to run simulation for
+    N_years=10;%Total number of years to run simulation for
     L_year=100;% Number of (days?) in a year (check units!!!)
 
 %% Life History Switches
@@ -86,7 +86,7 @@
 %% LeslieMatrix
     leslie.invest=[1,0.9,0.85,0.8]; % allocation to growth for class 1,2 and 3
     leslie.starta50=3;%Age at which 50% of fish reach maturity BEFORE evolution starts.
-    leslie.forced=0.1;%How much do you force last life stage to contribute to reproduction? 0 is nothing (they'll stay adults forever), and 1 is everything.
+    leslie.forced=0.5;%How much do you force last life stage to contribute to reproduction? 0 is nothing (they'll stay adults forever), and 1 is everything.
     
 %% metabolic_scaling
     % Allometric scaling exponent (Boit et al. in prep.)
