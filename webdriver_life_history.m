@@ -50,7 +50,7 @@ for i=1:N_years
         if cont_reprod==false
             fish_gain_tot=1;
         end
-        B0=aging_table*B_end+fecund_table*B_end.*fish_gain_tot; %Split lifehistory_table into two parts.
+        B0=aging_table*B_end+fecund_table*(B_end.*reprod.*fish_gain_tot); %Last step is adding contribution from all lifestages, so put the rest in brackets! %Split lifehistory_table into two parts.
     end
     %% Concatenate Data for all years
     full_sim((1:L_year)+(i-1)*L_year,1:nichewebsize)=x(1:L_year,1:nichewebsize);
