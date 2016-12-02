@@ -166,6 +166,18 @@ if splitdiet==false%assign new diet based on new niche values
     nicheweb_new(givediet,:)=web_mx(givediet,:);%Also need to reassign diet for adult lifestages,
 end
 
+%%-------------------------------------------------------------------------
+%%  LIFE HISTORY MATRIX - CANNIBALISM SWITCH FOR FISH
+%%-------------------------------------------------------------------------
+ 
+for i=fish2div %Case true=yes & any stage can cannibalize larger stage (so this loop won't change anything for case true
+    fishweb=find(species==i);
+    if cannibal_fish==false %no cannibalism
+        nicheweb_new(fishweb,fishweb)=0;
+    elseif isnumeric(cannibal_fish)==1 %Are fish species partially cannibalistic? The number for cannibal_fish indicates how much younger conspecifics need to be to be cannibalized.  Of note: -1 means strictly younger, 0 means same lifestage or younger
+        nicheweb_new(fishweb,fishweb)=tril(nicheweb_new(fishweb,fishweb),cannibal_fish);
+    end
+end
 
 end
 
