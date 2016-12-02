@@ -21,7 +21,7 @@
 %old nicheweb, so as to not mess up the entire model.  (So you are
 %basically just adding rows and columns for your new life stages).
 
-function [nicheweb_new,lifehistory_table,Mass,orig_nodes,species,N_stages,is_split]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance,W_scaled)
+function [nicheweb_new,lifehistory_table,Mass,orig_nodes,species,N_stages,is_split,aging_table,fecund_table]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance,W_scaled)
 attach(orig); attach(lifehis);
 %%-------------------------------------------------------------------------
 %%  SELECT FISH SPECIES TO BE SPLIT
@@ -87,7 +87,7 @@ orig_index=find(orig_nodes');%index of original species
 %%  LIFE HISTORY MATRIX - LESLIE MATRIX
 %%-------------------------------------------------------------------------
 year=1;%Because leslie matrix will soon be time dependent, I want to preserve functionality in original file
-[lifehistory_table,~,~]= LeslieMatrix(leslie,newwebsize,N_stages,year,is_split,species);
+[lifehistory_table,aging_table,fecund_table]= LeslieMatrix(leslie,newwebsize,N_stages,year,is_split,species);
 
 %%-------------------------------------------------------------------------
 %%  NEW NICHEWEB - NEO'S METHOD - SPLIT OLD DIET
