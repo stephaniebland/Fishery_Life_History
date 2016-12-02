@@ -34,7 +34,7 @@ end
 %%-------------------------------------------------------------------------
 %%  LIFE HISTORY
 %%-------------------------------------------------------------------------
-    [nicheweb,lifehistory_table,Mass,orig.nodes,species,N_stages,is_split]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance,W_scaled);
+    [nicheweb,lifehistory_table,Mass,orig.nodes,species,N_stages,is_split,aging_table,fecund_table]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance,W_scaled);
     %Update all the output to reflect new web
     nichewebsize = length(nicheweb);
     isfish=repelem(orig.isfish,N_stages);

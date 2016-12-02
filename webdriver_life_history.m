@@ -43,14 +43,12 @@ for i=1:N_years
     B_end=x(L_year+1,1:nichewebsize)'; % use the final biomasses as the initial conditions
     B0=B_end;
     if lstages_linked==true
-        %% Change Biomass as Kuparinen et al. for Lake Constance.
-        [lifehistory_table,aging_table,fecund_table]= LeslieMatrix(leslie,nichewebsize,N_stages,i,is_split,species);
         %% Move biomass from one life history to the next
         fish_gain_tot=sum(fish_gain,2);
         if cont_reprod==false
             fish_gain_tot=1;
         end
-        B0=aging_table*B_end+fecund_table*B_end.*fish_gain_tot; %Split lifehistory_table into two parts.
+        B0=aging_table*B_end+fecund_table*(B_end.*reprod.*fish_gain_tot); %Last step is adding contribution from all lifestages, so put the rest in brackets! %Split lifehistory_table into two parts.
     end
     %% Concatenate Data for all years
     full_sim((1:L_year)+(i-1)*L_year,1:nichewebsize)=x(1:L_year,1:nichewebsize);

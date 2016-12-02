@@ -55,7 +55,7 @@ for i=find(is_split')%Only change values for fish with life histories.
         fish_index=find(species==i);
         lifehistory_table(fish_index,fish_index)=lifehis_breed;
         %% Split lifehistory_table into two matrices, where aging_table+fecund_table=lifehistory_table. This way you can multiply fecund_table by additional factors.
-        fecund_table(fish_index(1),fish_index)=fert;
+        fecund_table(fish_index(1),fish_index)=1;
         aging_table(fish_index,fish_index)=diag(aging,-1)+diag(non_mature);
         aging_table(fish_index(1),fish_index(end))=forced;
     end
