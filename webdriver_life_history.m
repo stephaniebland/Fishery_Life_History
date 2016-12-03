@@ -5,7 +5,7 @@
 % ATN Model with life histories linked.
 %--------------------------------------------------------------------------
 
-clear;
+clear; clear global;
 beep off
 warning off MATLAB:divideByZero;
 global fish_gain reprod cont_reprod;
@@ -21,20 +21,26 @@ full_t=nan(N_years*L_year,1);
 year_index=nan(N_years*L_year,1);
 B_year_end=nan(N_years,nichewebsize);
 B0=B_orig;
-%Run one year at a time
-    for i=1:N_years
-        %% Calculate Prob of Maturity and invest
-        attach(leslie);
-        reprod=zeros(nichewebsize,1);
-        for j=find(is_split')
-            stages=N_stages(j);
-            %% Probability of Maturity (P)
-            a50 = starta50*(1- 0.005)^0;% a50 is age at which 50 reach maturity
-            %a50 = 3*(1- 0.005)^year;%For years after evolution starts
-            sumL = 1 + exp(-3*((2:stages)-a50));
-            P =[0, 1./sumL];
-            mature_reprod=1-invest(1:stages);%percent invested in reproduction
-            reprod(find(species==j))=P.*mature_reprod;
+t_days=0;
+quit_sim=false;
+%Run one time phase at a time, each phase has different conditions
+for phase=1:4
+    switch phase
+        case 1 % before lifehistory starts
+            n_years_in_phase=num_years.prelifehist;
+            evolve=false;%initialize the evolution setting, needs to be done every time you run the loop
+        case 2 %{insert lifehistory}
+            n_years_in_phase=num_years.pre_fish;
+        case 3 %{insert fishing}
+            n_years_in_phase=num_years.fishing;
+            evolve=true;
+        case 4 %{quit fishing}
+            n_years_in_phase=num_years.post_fish;
+            evolve=false;
+    end
+    for i=1:n_years_in_phase
+        if (evolve==true || t_days==0)%For years after evolution starts
+            [reprod]=prob_of_maturity(prob_mat,nichewebsize,is_split,N_stages,species,i);
         end
         %% ODE
         fish_gain=[];
@@ -51,16 +57,17 @@ B0=B_orig;
             B0=aging_table*B_end+fecund_table*(B_end.*reprod.*fish_gain_tot); %Last step is adding contribution from all lifestages, so put the rest in brackets! %Split lifehistory_table into two parts.
         end
         %% Concatenate Data for all years
-        full_sim((1:L_year)+(i-1)*L_year,1:nichewebsize)=x(1:L_year,1:nichewebsize);
-        t=t+L_year*(i-1);
-        full_t((1:L_year)+(i-1)*L_year)=t(1:L_year);
-        year_index((1:L_year)+(i-1)*L_year)=repelem(i,L_year);
-        B_year_end(i,1:nichewebsize)=B_end;
+        full_sim((1:L_year)+t_days,1:nichewebsize)=x(1:L_year,1:nichewebsize);
+        full_t((1:L_year)+t_days)=t(1:L_year)+t_days;%full_t does not have timesteps that are *exactly* 1, so numbers don't look to nice.  keep anyhow.
+        year_index((1:L_year)+t_days)=repelem(i,L_year);%Pointless really, just the year of each time step. good for checking data
+        B_year_end(i,1:nichewebsize)=B_end;%For matlab graphs- just year end biomasses
+        t_days=t_days+L_year;%Index Number of days that passed, because loop repeated for cases
     end
-    
+end
+
 
 B=full_sim(:,1:nichewebsize);
-day=0:size(full_sim,1)-1;
+day=0:size(full_sim,1)-1;%Use this for graphs instead of full_t because full_t has gaps and is not perfect
 E=full_sim(:,nichewebsize+1:end);
 
 find(isnan(B)==1) % Check for errors that might occur
@@ -83,7 +90,7 @@ sum(B_orig)-sum(B_end)
 % plot_invert=B(:,[find(1-isfish')]);
 % plot(day,log10(plot_fish),'r','LineWidth',1);
 % plot(day,log10(plot_invert),'b','LineWidth',1);
-% %plot(t,log10(B));
+% %plot(day,log10(B));
 % xlabel('time'); ylabel('log10 biomass')
 % %legend('Autotroph','Herbivore','Carnivore')
 % grid on;

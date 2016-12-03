@@ -49,8 +49,12 @@
 
 %% Webdriver
     S_0=30;% Number of original nodes (species)
-    N_years=10;%Total number of years to run simulation for
     L_year=100;% Number of (days?) in a year (check units!!!)
+    %Number of years for each phase
+    num_years.prelifehist=0;%DOESNT WORK YET%Years Before lifehistories are created
+    num_years.pre_fish=10;%Years of normal pre-fishing simulation
+    num_years.fishing=10;%Years of fishing simulation
+    num_years.post_fish=10;%Years of post-fishing simulation
 
 %% Life History Switches
     lifehis.lstages_maxfish=NaN;%NaN;%Maximum number of fish species to create new lifestages for. NaN gives every fish new lifestages.
@@ -64,8 +68,7 @@
     cont_reprod=true;%does reproductive effort account for growth on daily timesteps.
     
     %% DON'T WORK YET:
-    lstages_ycreate=0;%Year to create new lifestages, 0 is created at beginning
-    calc_n_val=true;%true uses bootstrap method, false uses linear regression. %Calculates new niche values for new lifestages using values I extacted from 100,000 web simulations. See nichevalue_mass_scaled.R 
+    calc_n_val=false;%true uses bootstrap method, false uses linear regression. %Calculates new niche values for new lifestages using values I extacted from 100,000 web simulations. See nichevalue_mass_scaled.R 
     
 %% setup
     connectance=0.15;% initial connectance
@@ -84,8 +87,8 @@
     lifehis.q=0.0125;%Conversion factor from weight to length
     
 %% LeslieMatrix
-    leslie.invest=[1,0.9,0.85,0.8]; % allocation to growth for class 1,2 and 3
-    leslie.starta50=3;%Age at which 50% of fish reach maturity BEFORE evolution starts.
+    prob_mat.invest=[1,0.9,0.85,0.8]; % allocation to growth for class 1,2 and 3
+    prob_mat.starta50=3;%Age at which 50% of fish reach maturity BEFORE evolution starts.
     leslie.forced=0.5;%How much do you force last life stage to contribute to reproduction? 0 is nothing (they'll stay adults forever), and 1 is everything.
     
 %% metabolic_scaling

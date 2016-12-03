@@ -8,7 +8,7 @@
 % All dynamics parameters are set here.
 %--------------------------------------------------------------------------
 
-
+N_years=sum(cell2mat(struct2cell(num_years)));%Total number of years to run simulation for
 orig.isfish=0;
 while sum(orig.isfish)==0%Guarantee that the food web has at least one fish
 %%-------------------------------------------------------------------------
@@ -34,7 +34,7 @@ end
 %%-------------------------------------------------------------------------
 %%  LIFE HISTORY
 %%-------------------------------------------------------------------------
-    [nicheweb,lifehistory_table,Mass,orig.nodes,species,N_stages,is_split,aging_table,fecund_table]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance,W_scaled);
+    [nicheweb,Mass,orig.nodes,species,N_stages,is_split,aging_table,fecund_table]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance,W_scaled);
     %Update all the output to reflect new web
     nichewebsize = length(nicheweb);
     isfish=repelem(orig.isfish,N_stages);
