@@ -22,41 +22,41 @@ year_index=nan(N_years*L_year,1);
 B_year_end=nan(N_years,nichewebsize);
 B0=B_orig;
 %Run one year at a time
-for i=1:N_years
-    %% Calculate Prob of Maturity and invest
-    attach(leslie);
-    reprod=zeros(nichewebsize,1);
-    for j=find(is_split')
-        stages=N_stages(j);
-        %% Probability of Maturity (P)
-        a50 = starta50*(1- 0.005)^0;% a50 is age at which 50 reach maturity
-        %a50 = 3*(1- 0.005)^year;%For years after evolution starts
-        sumL = 1 + exp(-3*((2:stages)-a50));
-        P =[0, 1./sumL];
-        mature_reprod=1-invest(1:stages);%percent invested in reproduction
-        reprod(find(species==j))=P.*mature_reprod;
-    end
-    %% ODE
-    fish_gain=[];
-    [x, t] =  dynamic_fn(K,int_growth,meta,max_assim,effic,Bsd,q,c,f_a,f_m, ...
-        ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,L_year+1,ext_thresh);
-    B_end=x(L_year+1,1:nichewebsize)'; % use the final biomasses as the initial conditions
-    B0=B_end;
-    if lstages_linked==true
-        %% Move biomass from one life history to the next
-        fish_gain_tot=sum(fish_gain,2);
-        if cont_reprod==false
-            fish_gain_tot=1;
+    for i=1:N_years
+        %% Calculate Prob of Maturity and invest
+        attach(leslie);
+        reprod=zeros(nichewebsize,1);
+        for j=find(is_split')
+            stages=N_stages(j);
+            %% Probability of Maturity (P)
+            a50 = starta50*(1- 0.005)^0;% a50 is age at which 50 reach maturity
+            %a50 = 3*(1- 0.005)^year;%For years after evolution starts
+            sumL = 1 + exp(-3*((2:stages)-a50));
+            P =[0, 1./sumL];
+            mature_reprod=1-invest(1:stages);%percent invested in reproduction
+            reprod(find(species==j))=P.*mature_reprod;
         end
-        B0=aging_table*B_end+fecund_table*(B_end.*reprod.*fish_gain_tot); %Last step is adding contribution from all lifestages, so put the rest in brackets! %Split lifehistory_table into two parts.
+        %% ODE
+        fish_gain=[];
+        [x, t] =  dynamic_fn(K,int_growth,meta,max_assim,effic,Bsd,q,c,f_a,f_m, ...
+            ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,L_year+1,ext_thresh);
+        B_end=x(L_year+1,1:nichewebsize)'; % use the final biomasses as the initial conditions
+        B0=B_end;
+        if lstages_linked==true
+            %% Move biomass from one life history to the next
+            fish_gain_tot=sum(fish_gain,2);
+            if cont_reprod==false
+                fish_gain_tot=1;
+            end
+            B0=aging_table*B_end+fecund_table*(B_end.*reprod.*fish_gain_tot); %Last step is adding contribution from all lifestages, so put the rest in brackets! %Split lifehistory_table into two parts.
+        end
+        %% Concatenate Data for all years
+        full_sim((1:L_year)+(i-1)*L_year,1:nichewebsize)=x(1:L_year,1:nichewebsize);
+        t=t+L_year*(i-1);
+        full_t((1:L_year)+(i-1)*L_year)=t(1:L_year);
+        year_index((1:L_year)+(i-1)*L_year)=repelem(i,L_year);
+        B_year_end(i,1:nichewebsize)=B_end;
     end
-    %% Concatenate Data for all years
-    full_sim((1:L_year)+(i-1)*L_year,1:nichewebsize)=x(1:L_year,1:nichewebsize);
-    t=t+L_year*(i-1);
-    full_t((1:L_year)+(i-1)*L_year)=t(1:L_year);
-    year_index((1:L_year)+(i-1)*L_year)=repelem(i,L_year);
-    B_year_end(i,1:nichewebsize)=B_end;
-end
     
 
 B=full_sim(:,1:nichewebsize);
