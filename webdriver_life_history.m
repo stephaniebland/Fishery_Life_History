@@ -22,7 +22,7 @@ year_index=nan(N_years*L_year,1);
 B_year_end=nan(N_years,nichewebsize);
 B0=B_orig;
 t_days=0;
-quit_sim=false;
+abort_sim=false;
 %Run one time phase at a time, each phase has different conditions
 for phase=1:4
     switch phase
@@ -62,6 +62,17 @@ for phase=1:4
         year_index((1:L_year)+t_days)=repelem(i,L_year);%Pointless really, just the year of each time step. good for checking data
         B_year_end(i,1:nichewebsize)=B_end;%For matlab graphs- just year end biomasses
         t_days=t_days+L_year;%Index Number of days that passed, because loop repeated for cases
+        %% Aborts simulation early if there aren't enough fish for it to continue
+        surv_sp=find(B0>ext_thresh);%Index of all surviving nodes (indexed by newwebsize)
+        surv_fish_stages=intersect(find(isfish),surv_sp);%Surviving fish lifestages (indexed by new newwebsize)
+        surv_fish=unique(species(surv_fish_stages));%The original species number of each surviving fish (indexed as one of S_0)
+        if (length(surv_fish)<3 && phase<3)
+            abort_sim=true;
+            break
+        end
+    end
+    if abort_sim==true
+        break
     end
 end
 
@@ -101,7 +112,7 @@ figure(1); hold on;
 p=plot(day,log10(B),'LineWidth',1);
 [~,~,ind_species]=unique(isfish.*species');
 [~,~,ind_lifestage]=unique(lifestage);
-colours=get(gca,'colororder');
+%colours=get(gca,'colororder');
 colours=parula(sum(orig.isfish)+1);
 %mark={'o', '+', '*', '.', 'x', 's', 'd', '^', 'v', '>', '<', 'p', 'h'}
 line_lifestage={'-','--',':','-.','-.','-.'};

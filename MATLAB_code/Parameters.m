@@ -50,7 +50,7 @@
 %% Webdriver
     S_0=30;% Number of original nodes (species)
     L_year=100;% Number of (days?) in a year (check units!!!)
-    %Number of years for each phase
+    %Number of years for each phase%IMPORTANT: IF YOU ADD ANOTHER PHASE YOU NEED TO FIX THE PHASE LOOPS
     num_years.prelifehist=0;%DOESNT WORK YET%Years Before lifehistories are created
     num_years.pre_fish=10;%Years of normal pre-fishing simulation
     num_years.fishing=10;%Years of fishing simulation
