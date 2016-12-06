@@ -5,7 +5,7 @@
 % ATN Model with life histories linked.
 %--------------------------------------------------------------------------
 
-clear; clear global;
+clearvars -except abort_sim; clear global;
 beep off
 warning off MATLAB:divideByZero;
 global fish_gain reprod cont_reprod;
@@ -22,6 +22,7 @@ year_index=nan(N_years*L_year,1);
 B_year_end=nan(N_years,nichewebsize);
 B0=B_orig;
 t_days=0;
+t_year=1;
 abort_sim=false;
 %Run one time phase at a time, each phase has different conditions
 for phase=1:4
@@ -59,9 +60,10 @@ for phase=1:4
         %% Concatenate Data for all years
         full_sim((1:L_year)+t_days,1:nichewebsize)=x(1:L_year,1:nichewebsize);
         full_t((1:L_year)+t_days)=t(1:L_year)+t_days;%full_t does not have timesteps that are *exactly* 1, so numbers don't look to nice.  keep anyhow.
-        year_index((1:L_year)+t_days)=repelem(i,L_year);%Pointless really, just the year of each time step. good for checking data
-        B_year_end(i,1:nichewebsize)=B_end;%For matlab graphs- just year end biomasses
+        year_index((1:L_year)+t_days)=repelem(t_year,L_year);%Pointless really, just the year of each time step. good for checking data
+        B_year_end(t_year,1:nichewebsize)=B_end;%For matlab graphs- just year end biomasses
         t_days=t_days+L_year;%Index Number of days that passed, because loop repeated for cases
+        t_year=t_year+1;%Index Number of years that passed, because loop repeated for cases
         %% Aborts simulation early if there aren't enough fish for it to continue
         surv_sp=find(B0>ext_thresh);%Index of all surviving nodes (indexed by newwebsize)
         surv_fish_stages=intersect(find(isfish),surv_sp);%Surviving fish lifestages (indexed by new newwebsize)
@@ -76,6 +78,14 @@ for phase=1:4
     end
 end
 
+%% Temporary test code while I figure out where it goes - fishing mortality
+F50=3;
+trial=[];
+for age=0:10
+    fishing_mort=1/(1+exp(-2*(age-F50)));
+    trial=[trial; [age fishing_mort]];
+end
+trial
 
 B=full_sim(:,1:nichewebsize);
 day=0:size(full_sim,1)-1;%Use this for graphs instead of full_t because full_t has gaps and is not perfect
@@ -157,7 +167,7 @@ B_year_mean = accumarray(labels,B_as_vector(:),[],@mean);  %# I used "totals" in
 %PLOT IT
 
 figure(1); hold on;
-plot(1:N_years,log10(B_year_mean));%Annual Means for all nodes
+plot(1:N_years,log10(B_year_mean),'LineWidth',1.5);%Annual Means for all nodes
 xlabel('time'); ylabel('log10 biomass')
 grid on;
 
@@ -177,15 +187,15 @@ B_ann_species=B_ann_species';
 %PLOT IT
 figure(1); hold on;
 fish_ann_only=B_ann_species(:,2:end);
-plot(1:N_years,log10(B_ann_species));%Including Inverts & Plants
-%plot(1:N_years,log10(fish_ann_only));%Only Fish
+plot(1:N_years,log10(B_ann_species),'LineWidth',2);%Including Inverts & Plants
+%plot(1:N_years,log10(fish_ann_only),'LineWidth',2);%Only Fish
 xlabel('time'); ylabel('log10 biomass')
 grid on;
 
 %% Plot Year ends
 %PLOT IT
 figure(1); hold on;
-plot(1:N_years,log10(B_year_end));%Including Inverts & Plants
+plot(1:N_years,log10(B_year_end),'LineWidth',1.5);%Including Inverts & Plants
 xlabel('time'); ylabel('log10 biomass')
 grid on;
 
@@ -203,8 +213,8 @@ B_end_species=B_end_species';
 %PLOT IT
 figure(1); hold on;
 fish_end_only=B_end_species(:,2:end);
-plot(1:N_years,log10(B_end_species));%Including Inverts & Plants
-plot(1:N_years,log10(fish_end_only));%Only Fish
+plot(1:N_years,log10(B_end_species),'LineWidth',1.5);%Including Inverts & Plants
+plot(1:N_years,log10(fish_end_only),'LineWidth',1.5);%Only Fish
 xlabel('time'); ylabel('log10 biomass')
 grid on;
 

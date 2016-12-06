@@ -69,6 +69,7 @@
     
     %% DON'T WORK YET:
     calc_n_val=false;%true uses bootstrap method, false uses linear regression. %Calculates new niche values for new lifestages using values I extacted from 100,000 web simulations. See nichevalue_mass_scaled.R 
+    evolv_diet=0;%Fishing evolution induced dietary shifts, so shifts diet to the left or right.  positive numbers make fish eat smaller things, negative numbers make them eat larger (to test whether it's just a matter of messing up the food web). 0 is no diet shift. if diet is already eating smallest node then untransformed.   
     
 %% setup
     connectance=0.15;% initial connectance
