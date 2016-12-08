@@ -17,13 +17,17 @@
 clear;
 beep off
 warning off MATLAB:divideByZero;
-global fish_gain;
+global fish_gain reprod cont_reprod;
 Parameters;
-
+lifehis.lstages_maxfish=0;
+clear num_years; num_years.simple=10;%total number of years to run simulation for, complicated because whatever, no one likes webdriver anyhow... YOU SHOULD BE USING THE LIFE HISTORY VERSION BECAUSE ALL THE COOL KIDS USE IT
 
 setup; % to set all the parameters and simulate a nicheweb
 B0=B_orig;
 
+
+reprod=zeros(nichewebsize,1);
+cont_reprod=false;
 fish_gain=[];
 [x, t] =  dynamic_fn(K,int_growth,meta,max_assim,effic,Bsd,q,c,f_a,f_m, ...
     ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,t_final,ext_thresh);
