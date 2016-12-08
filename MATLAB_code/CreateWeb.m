@@ -67,12 +67,12 @@ web_mx = web_mx'; %transposing the matrix (in the following codes we need that f
 %% If you're running the loop for the second time:
 if exist('n_old','var')==1
     %% Ensure all new lifestages have prey (some fish will accidentally have such a narrow range that they don't have any prey)
-    [~, fish_reordered]=intersect(Indx,allfish);
-    reassign=intersect(find(sum(web_mx,2)==0),fish_reordered); 
+    [~, fish_reordered]=intersect(Indx,allfish);%Find the new index of fish nodes, because you reordered them when you sorted by niche index
+    reassign=intersect(find(sum(web_mx,2)==0),fish_reordered); %Find all fish nodes that have no prey species, need to give them food
     for i=reassign'
         n_selec=n_new;
-        n_selec(i)=NaN;%Prevent cannibalism in forced diet selection
-        [~,pickyfishfood]=min(abs(n_selec-c_new(i)));
+        n_selec(i)=NaN;%Prevent fish nodes without prey from selecting themselves as prey species (cannibalism), because that would just be a simple loop, and isn't very realistic
+        [~,pickyfishfood]=min(abs(n_selec-c_new(i)));%Find prey species that's the closest to the center of the new lifestage's diet. 
         web_mx(i,pickyfishfood)=1;
     end
     
