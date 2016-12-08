@@ -22,6 +22,7 @@ Parameters;
 
 
 setup; % to set all the parameters and simulate a nicheweb
+B0=B_orig;
 
 fish_gain=[];
 [x, t] =  dynamic_fn(K,int_growth,meta,max_assim,effic,Bsd,q,c,f_a,f_m, ...

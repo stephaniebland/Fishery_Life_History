@@ -52,9 +52,9 @@
     L_year=100;% Number of (days?) in a year (check units!!!)
     %Number of years for each phase%IMPORTANT: IF YOU ADD ANOTHER PHASE YOU NEED TO FIX THE PHASE LOOPS
     num_years.prelifehist=0;%DOESNT WORK YET%Years Before lifehistories are created
-    num_years.pre_fish=10;%Years of normal pre-fishing simulation
-    num_years.fishing=10;%Years of fishing simulation
-    num_years.post_fish=10;%Years of post-fishing simulation
+    num_years.pre_fish=20;%Years of normal pre-fishing simulation
+    num_years.fishing=20;%Years of fishing simulation
+    num_years.post_fish=20;%Years of post-fishing simulation
 
 %% Life History Switches
     lifehis.lstages_maxfish=NaN;%NaN;%Maximum number of fish species to create new lifestages for. NaN gives every fish new lifestages.
@@ -66,10 +66,10 @@
     lifehis.splitdiet=false;%Choose how to split fish diet. true=split orignal diet, false=assign new diet based on new niche values
     rescalemass=true;%simulations only look nice if set to true, but be careful, true means von-bert scaling is invalid since it reverts weights (temp bug bandage)%rescales mass back to original weights after scaled from masscalc.maxweight.  So it only works if maxweight is a value (not "false").
     cont_reprod=true;%does reproductive effort account for growth on daily timesteps.
+    evolv_diet=5;%Fishing evolution induced dietary shifts, so shifts diet to the left or right.  negative numbers make fish eat smaller things, positive numbers make them eat larger (to test whether it's just a matter of messing up the food web). 0 is no diet shift. if diet is already eating smallest node then untransformed.   
     
     %% DON'T WORK YET:
     calc_n_val=false;%true uses bootstrap method, false uses linear regression. %Calculates new niche values for new lifestages using values I extacted from 100,000 web simulations. See nichevalue_mass_scaled.R 
-    evolv_diet=0;%Fishing evolution induced dietary shifts, so shifts diet to the left or right.  positive numbers make fish eat smaller things, negative numbers make them eat larger (to test whether it's just a matter of messing up the food web). 0 is no diet shift. if diet is already eating smallest node then untransformed.   
     
 %% setup
     connectance=0.15;% initial connectance

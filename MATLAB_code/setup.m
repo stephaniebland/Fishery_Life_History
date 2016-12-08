@@ -34,9 +34,10 @@ end
 %%-------------------------------------------------------------------------
 %%  LIFE HISTORY
 %%-------------------------------------------------------------------------
-    [nicheweb,Mass,orig.nodes,species,N_stages,is_split,aging_table,fecund_table]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance,W_scaled);
+    [nicheweb,Mass,orig.nodes,species,N_stages,is_split,aging_table,fecund_table,extended_n]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance,W_scaled);
     %Update all the output to reflect new web
     nichewebsize = length(nicheweb);
+    extended_web=nicheweb;%Save backup of extended web before dietary shift
     isfish=repelem(orig.isfish,N_stages);
     meta_N_stages=repelem(N_stages,N_stages);
     lifestage=[];
@@ -143,16 +144,16 @@ end
 %initial Biomass
 %---------------
 %1) Random uniform distribution in interval (0.01,10)
-    B0 = (999*rand(nichewebsize,1)+1)*.01;
+    B_orig = (999*rand(nichewebsize,1)+1)*.01;
     if lstages_B0ratedR==true
-        B0=B0.*orig.nodes';%Start with adults only.
+        B_orig=B_orig.*orig.nodes';%Start with adults only.
     elseif lstages_B0ratedR~=false
-        clear B0;%Make sure there's an error if you misspell setting
+        clear B_orig;%Make sure there's an error if you misspell setting
     end
 %2) from uniform distribution in the ranges 5-500, 2-200 and 1-100 
-    %B0 = (99*rand(nichewebsize,1)+1).*[5; 2; 1];
+    %B_orig = (99*rand(nichewebsize,1)+1).*[5; 2; 1];
 %3) set manually, example on 2 species
-    %B0= [250 50 1]';
+    %B_orig= [250 50 1]';
 
 %initial Effort
 %--------------

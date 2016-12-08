@@ -21,7 +21,7 @@
 %old nicheweb, so as to not mess up the entire model.  (So you are
 %basically just adding rows and columns for your new life stages).
 
-function [nicheweb_new,Mass,orig_nodes,species,N_stages,is_split,aging_table,fecund_table]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance,W_scaled)
+function [nicheweb_new,Mass,orig_nodes,species,N_stages,is_split,aging_table,fecund_table,n]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance,W_scaled)
 attach(orig); attach(lifehis);
 %%-------------------------------------------------------------------------
 %%  SELECT FISH SPECIES TO BE SPLIT
@@ -145,7 +145,8 @@ if (fishpred==true | splitdiet==false)
         stand_n(find(species==i))=fixedy;
     end
     n=stand_n*f_std_n+f_mean_n;%Transform niche values back to original values.
-    [web_mx]=CreateWeb(sum(N_stages),connectance,n,n_new,r_new,c_new,orig_index);%Create a new web with the new niche values
+    allfish=find(repelem(is_split,N_stages));
+    [web_mx]=CreateWeb(sum(N_stages),connectance,n,n_new,r_new,c_new,orig_index,allfish);%Create a new web with the new niche values
     givediet=find(repelem(is_split,N_stages));%Find all lifestages that were split, and give them a new diet.  This includes adults in both fishpred AND splitdiet, because new lifestages might eat them. Esp. important for splitdiet though, so that adults actually have food.
 end
 

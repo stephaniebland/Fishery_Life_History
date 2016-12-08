@@ -14,7 +14,6 @@ global fish_gain reprod cont_reprod;
 %--------------------------------------------------------------------------
 Parameters;
 setup;% creation of a new food web
-B_orig=B0;
 
 full_sim=nan(N_years*L_year,nichewebsize);
 full_t=nan(N_years*L_year,1);
@@ -30,11 +29,20 @@ for phase=1:4
         case 1 % before lifehistory starts
             n_years_in_phase=num_years.prelifehist;
             evolve=false;%initialize the evolution setting, needs to be done every time you run the loop
+            nicheweb=extended_web;%Set nicheweb to the original web before fishing induced dietary shifts
         case 2 %{insert lifehistory}
             n_years_in_phase=num_years.pre_fish;
         case 3 %{insert fishing}
             n_years_in_phase=num_years.fishing;
-            evolve=true;
+            evolve=true; % Fecundity evolves (fish reach maturity at a younger age)
+            %% Shift fish diet according to evolution
+            if exist('extended_n','var')==1
+                reorder_by_size=extended_n;
+            else
+                reorder_by_size=1:nichewebsize;%eh, just don't bother reordering if you dont use an extended web that starts with new niche values.
+            end
+            [shifted_web]=Dietary_evolution(nicheweb,isfish,evolv_diet,reorder_by_size);
+            nicheweb=shifted_web;
         case 4 %{quit fishing}
             n_years_in_phase=num_years.post_fish;
             evolve=false;
@@ -132,6 +140,7 @@ for i=1:nichewebsize
     p(i).LineStyle=char(line_lifestage(lifestage(i)));%Youngest lifestage is given same line type as non-fish species
 end
 xlabel('time (1/100 years)'); ylabel('log10 biomass')
+title('Fish Species by colour (invertebrates are all same colour), and lifestage by line type')
 grid on;
     
 %% Individual Fish Species, by total biomass
