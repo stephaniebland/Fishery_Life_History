@@ -8,7 +8,7 @@
 clearvars -except abort_sim; clear global;
 beep off
 warning off MATLAB:divideByZero;
-global fish_gain reprod cont_reprod;
+global fish_gain reprod cont_reprod Effort SeasonsCatch fishing_scenario;
 %--------------------------------------------------------------------------
 % Protocol parameters
 %--------------------------------------------------------------------------
@@ -19,6 +19,7 @@ full_sim=nan(N_years*L_year,nichewebsize);
 full_t=nan(N_years*L_year,1);
 year_index=nan(N_years*L_year,1);
 B_year_end=nan(N_years,nichewebsize);
+AllCatch=nan(nichewebsize,N_years*L_year);
 B0=B_orig;
 t_days=0;
 t_year=1;
@@ -30,8 +31,10 @@ for phase=1:4
             n_years_in_phase=num_years.prelifehist;
             evolve=false;%initialize the evolution setting, needs to be done every time you run the loop
             nicheweb=extended_web;%Set nicheweb to the original web before fishing induced dietary shifts
+            Effort=0;
         case 2 %{insert lifehistory}
             n_years_in_phase=num_years.pre_fish;
+            Effort=0;
         case 3 %{insert fishing}
             n_years_in_phase=num_years.fishing;
             evolve=true; % Fecundity evolves (fish reach maturity at a younger age)
@@ -43,33 +46,36 @@ for phase=1:4
             end
             [shifted_web]=Dietary_evolution(nicheweb,isfish,evolv_diet,reorder_by_size);
             nicheweb=shifted_web;
+            Effort=catchrate*isfish'*hmax./(1+exp(-2*((lifestage-1)-F50)));
         case 4 %{quit fishing}
             n_years_in_phase=num_years.post_fish;
             evolve=false;
+            Effort=0;
     end
     for i=1:n_years_in_phase
         if (evolve==true || t_days==0)%For years after evolution starts
             [reprod]=prob_of_maturity(prob_mat,nichewebsize,is_split,N_stages,species,i);
         end
         %% ODE
-        fish_gain=[];
+        fish_gain=[];SeasonsCatch=[];
         [x, t] =  dynamic_fn(K,int_growth,meta,max_assim,effic,Bsd,q,c,f_a,f_m, ...
             ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,L_year+1,ext_thresh);
         B_end=x(L_year+1,1:nichewebsize)'; % use the final biomasses as the initial conditions
         B0=B_end;
         if lstages_linked==true
             %% Move biomass from one life history to the next
-            fish_gain_tot=sum(fish_gain,2);
+            fish_gain_tot=sum(fish_gain(:,1:L_year),2);%modified to only add fish_gain in the time steps that make up a year
             if cont_reprod==false
                 fish_gain_tot=1;
             end
             B0=aging_table*B_end+fecund_table*(B_end.*reprod.*fish_gain_tot); %Last step is adding contribution from all lifestages, so put the rest in brackets! %Split lifehistory_table into two parts.
         end
         %% Concatenate Data for all years
-        full_sim((1:L_year)+t_days,1:nichewebsize)=x(1:L_year,1:nichewebsize);
+        full_sim((1:L_year)+t_days,:)=x(1:L_year,1:nichewebsize);
         full_t((1:L_year)+t_days)=t(1:L_year)+t_days;%full_t does not have timesteps that are *exactly* 1, so numbers don't look to nice.  keep anyhow.
         year_index((1:L_year)+t_days)=repelem(t_year,L_year);%Pointless really, just the year of each time step. good for checking data
-        B_year_end(t_year,1:nichewebsize)=B_end;%For matlab graphs- just year end biomasses
+        B_year_end(t_year,:)=B_end;%For matlab graphs- just year end biomasses
+        AllCatch(:,(1:L_year)+t_days)=SeasonsCatch(:,1:L_year);
         t_days=t_days+L_year;%Index Number of days that passed, because loop repeated for cases
         t_year=t_year+1;%Index Number of years that passed, because loop repeated for cases
         %% Aborts simulation early if there aren't enough fish for it to continue
@@ -159,7 +165,7 @@ B_species=B_species';
 figure(1); hold on;
 fish_only=B_species(:,2:end);
 plot(day,log10(B_species),'LineWidth',1.5);%Including Inverts & Plants
-plot(day,log10(fish_only),'LineWidth',1.5);%Only Fish
+%plot(day,log10(fish_only),'LineWidth',1.5);%Only Fish
 xlabel('time'); ylabel('log10 biomass')
 grid on;
 

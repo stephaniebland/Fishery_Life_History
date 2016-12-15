@@ -142,6 +142,11 @@
     mu=0; % stiffness parameter (set mu to 0 to fix the harvest)
     ca=0.01; % catchability coefficient
     co=1; % cost per unit effort
+    hmax=2.5;
+    F50=3;
+    catchrate=1;%fraction of adult fish that die due to fishery; AK: set to 1 if using standard F for hmax
+    fishing_scenario=0;%0 is Constant effort scenario; 1 is Negative-density dependent scenario
+
     
 
     
