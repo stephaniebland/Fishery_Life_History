@@ -21,7 +21,7 @@
 %old nicheweb, so as to not mess up the entire model.  (So you are
 %basically just adding rows and columns for your new life stages).
 
-function [nicheweb_new,lifehistory_table,Mass,orig_nodes,species,N_stages,is_split,aging_table,fecund_table]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance,W_scaled)
+function [nicheweb_new,Mass,orig_nodes,species,N_stages,is_split,aging_table,fecund_table,n]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance,W_scaled)
 attach(orig); attach(lifehis);
 %%-------------------------------------------------------------------------
 %%  SELECT FISH SPECIES TO BE SPLIT
@@ -86,8 +86,7 @@ orig_index=find(orig_nodes');%index of original species
 %%-------------------------------------------------------------------------
 %%  LIFE HISTORY MATRIX - LESLIE MATRIX
 %%-------------------------------------------------------------------------
-year=1;%Because leslie matrix will soon be time dependent, I want to preserve functionality in original file
-[lifehistory_table,aging_table,fecund_table]= LeslieMatrix(leslie,newwebsize,N_stages,year,is_split,species);
+[aging_table,fecund_table]= LeslieMatrix(leslie,newwebsize,N_stages,is_split,species);
 
 %%-------------------------------------------------------------------------
 %%  NEW NICHEWEB - NEO'S METHOD - SPLIT OLD DIET
@@ -146,7 +145,8 @@ if (fishpred==true | splitdiet==false)
         stand_n(find(species==i))=fixedy;
     end
     n=stand_n*f_std_n+f_mean_n;%Transform niche values back to original values.
-    [web_mx]=CreateWeb(sum(N_stages),connectance,n,n_new,r_new,c_new,orig_index);%Create a new web with the new niche values
+    allfish=find(repelem(is_split,N_stages));
+    [web_mx]=CreateWeb(sum(N_stages),connectance,n,n_new,r_new,c_new,orig_index,allfish);%Create a new web with the new niche values
     givediet=find(repelem(is_split,N_stages));%Find all lifestages that were split, and give them a new diet.  This includes adults in both fishpred AND splitdiet, because new lifestages might eat them. Esp. important for splitdiet though, so that adults actually have food.
 end
 
@@ -166,6 +166,18 @@ if splitdiet==false%assign new diet based on new niche values
     nicheweb_new(givediet,:)=web_mx(givediet,:);%Also need to reassign diet for adult lifestages,
 end
 
+%%-------------------------------------------------------------------------
+%%  LIFE HISTORY MATRIX - CANNIBALISM SWITCH FOR FISH
+%%-------------------------------------------------------------------------
+ 
+for i=fish2div %Case true=yes & any stage can cannibalize larger stage (so this loop won't change anything for case true
+    fishweb=find(species==i);
+    if cannibal_fish==false %no cannibalism
+        nicheweb_new(fishweb,fishweb)=0;
+    elseif isnumeric(cannibal_fish)==1 %Are fish species partially cannibalistic? The number for cannibal_fish indicates how much younger conspecifics need to be to be cannibalized.  Of note: -1 means strictly younger, 0 means same lifestage or younger
+        nicheweb_new(fishweb,fishweb)=tril(nicheweb_new(fishweb,fishweb),cannibal_fish);
+    end
+end
 
 end
 

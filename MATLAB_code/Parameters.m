@@ -49,23 +49,27 @@
 
 %% Webdriver
     S_0=30;% Number of original nodes (species)
-    N_years=10;%Total number of years to run simulation for
     L_year=100;% Number of (days?) in a year (check units!!!)
+    %Number of years for each phase%IMPORTANT: IF YOU ADD ANOTHER PHASE YOU NEED TO FIX THE PHASE LOOPS
+    num_years.prelifehist=0;%DOESNT WORK YET%Years Before lifehistories are created
+    num_years.pre_fish=20;%Years of normal pre-fishing simulation
+    num_years.fishing=20;%Years of fishing simulation
+    num_years.post_fish=20;%Years of post-fishing simulation
 
 %% Life History Switches
     lifehis.lstages_maxfish=NaN;%NaN;%Maximum number of fish species to create new lifestages for. NaN gives every fish new lifestages.
     lstages_linked=true;%Are life histories linked via leslie matrix?
     lstages_B0ratedR=true;%Start simulation with adults only.
     cannibal_invert=true;%Cannibalism for all species
+    lifehis.cannibal_fish=false;%false=none,true=yes & any stage can cannibalize larger stages, -1=cannibalism on strictly smaller stages,0=cannibalism on own stages and smaller stages.% The number for cannibal_fish indicates how much younger conspecifics need to be to be cannibalized.  Of note: -1 means strictly younger, 0 means same lifestage or younger
     lifehis.fishpred=true;%Choose how to assign fish predators. 0 means only adults eaten, 1 means all stages are eaten, and true reassigns them according to nichevalues
     lifehis.splitdiet=false;%Choose how to split fish diet. true=split orignal diet, false=assign new diet based on new niche values
     rescalemass=true;%simulations only look nice if set to true, but be careful, true means von-bert scaling is invalid since it reverts weights (temp bug bandage)%rescales mass back to original weights after scaled from masscalc.maxweight.  So it only works if maxweight is a value (not "false").
     cont_reprod=true;%does reproductive effort account for growth on daily timesteps.
+    evolv_diet=5;%Fishing evolution induced dietary shifts, so shifts diet to the left or right.  negative numbers make fish eat smaller things, positive numbers make them eat larger (to test whether it's just a matter of messing up the food web). 0 is no diet shift. if diet is already eating smallest node then untransformed.   
     
     %% DON'T WORK YET:
-    lstages_ycreate=0;%Year to create new lifestages, 0 is created at beginning
-    cannibal_fish=false;%false=none,true=yes & any stage can cannibalize larger stages, 2=cannibalism on strictly smaller stages,3=cannibalism on own stages and smaller stages
-    calc_n_val=true;%true uses bootstrap method, false uses linear regression. %Calculates new niche values for new lifestages using values I extacted from 100,000 web simulations. See nichevalue_mass_scaled.R 
+    calc_n_val=false;%true uses bootstrap method, false uses linear regression. %Calculates new niche values for new lifestages using values I extacted from 100,000 web simulations. See nichevalue_mass_scaled.R 
     
 %% setup
     connectance=0.15;% initial connectance
@@ -84,8 +88,8 @@
     lifehis.q=0.0125;%Conversion factor from weight to length
     
 %% LeslieMatrix
-    leslie.invest=[1,0.9,0.85,0.8]; % allocation to growth for class 1,2 and 3
-    leslie.starta50=3;%Age at which 50% of fish reach maturity BEFORE evolution starts.
+    prob_mat.invest=[1,0.9,0.85,0.8]; % allocation to growth for class 1,2 and 3
+    prob_mat.starta50=3;%Age at which 50% of fish reach maturity BEFORE evolution starts.
     leslie.forced=0.5;%How much do you force last life stage to contribute to reproduction? 0 is nothing (they'll stay adults forever), and 1 is everything.
     
 %% metabolic_scaling
@@ -138,6 +142,11 @@
     mu=0; % stiffness parameter (set mu to 0 to fix the harvest)
     ca=0.01; % catchability coefficient
     co=1; % cost per unit effort
+    hmax=2.5;
+    F50=3;
+    catchrate=1;%fraction of adult fish that die due to fishery; AK: set to 1 if using standard F for hmax
+    fishing_scenario=0;%0 is Constant effort scenario; 1 is Negative-density dependent scenario
+
     
 
     

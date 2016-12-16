@@ -13,7 +13,7 @@
 % A(i,j) = 1 if i eats j.(row eats column)
 %--------------------------------------------------------------------------
 
-function [web_mx,n_new,r_new,c_new]=CreateWeb(num_nodes,connectance,n,n_old,r_old,c_old,orig_index)
+function [web_mx,n_new,r_new,c_new]=CreateWeb(num_nodes,connectance,n,n_old,r_old,c_old,orig_index,allfish)
 
 
 %----------------------------------------------------------------------
@@ -37,7 +37,7 @@ end
 
 %----------------------------------------------------------------------
 % sort everything
-[n_new Indx] = sort(n);
+[n_new, Indx] = sort(n);
 %n_new: niche values in ascending order
 %Indx: indexes of species in descending order
 %(-> 1 is the index of the smallest niche range, 10 is the index of
@@ -64,8 +64,19 @@ web_mx=((n_mx>=preymins_mx)+(n_mx<=preymaxs_mx)==2*ones(num_nodes));
 
 web_mx = web_mx'; %transposing the matrix (in the following codes we need that format)
 
-%% If you're running the loop for the second time, to get an extended food web, preserve the order of the nodes.
-if exist('n_old')==1
+%% If you're running the loop for the second time:
+if exist('n_old','var')==1
+    %% Ensure all new lifestages have prey (some fish will accidentally have such a narrow range that they don't have any prey)
+    [~, fish_reordered]=intersect(Indx,allfish);%Find the new index of fish nodes, because you reordered them when you sorted by niche index
+    reassign=intersect(find(sum(web_mx,2)==0),fish_reordered); %Find all fish nodes that have no prey species, need to give them food
+    for i=reassign'
+        n_selec=n_new;
+        n_selec(i)=NaN;%Prevent fish nodes without prey from selecting themselves as prey species (cannibalism), because that would just be a simple loop, and isn't very realistic
+        [~,pickyfishfood]=min(abs(n_selec-c_new(i)));%Find prey species that's the closest to the center of the new lifestage's diet. 
+        web_mx(i,pickyfishfood)=1;
+    end
+    
+    %% If you're running the loop for the second time, to get an extended food web, preserve the order of the nodes.
     keepindex(Indx)=1:num_nodes;
     web_mx=web_mx(keepindex,keepindex);
 end

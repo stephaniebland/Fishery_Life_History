@@ -11,7 +11,7 @@
 
 function [growth_vec]= gr_func(x,b_size,K,int_growth,meta,max_assim,...
     effic,Bsd,nicheweb,q,c,f_a,f_m,ca)
-global fish_gain reprod cont_reprod;
+global fish_gain reprod cont_reprod Effort SeasonsCatch fishing_scenario;
 
 B=x(1:b_size);
 E=x(b_size+1:end);
@@ -76,6 +76,16 @@ B2mx = B1mx';         %% B in rows (one column=one species, rows are identical)
     
 
 %--------------------------------------------------------------------------
+%  Fishing Loss
+%--------------------------------------------------------------------------
+switch fishing_scenario
+    case 0
+        fishery=Effort'.*B;% Constant effort scenario
+    case 1
+        fishery=Effort'.*(B.^2./(B+50000));% Negative-density dependent scenario
+end
+
+%--------------------------------------------------------------------------
 %  Set the equations
 %--------------------------------------------------------------------------
 
@@ -100,7 +110,8 @@ B2mx = B1mx';         %% B in rows (one column=one species, rows are identical)
     %have to divide by prey biomass because the functional response already contains
     %it, but we want to multiply by it only in biomass.m
     loss(deadpreds_j) = 0;  % results of previous row cleared for dead
-    NRG = gain - loss';     % consumption - being consumed
+    NRG = gain - loss' - fishery;     % consumption - being consumed
+    SeasonsCatch=[SeasonsCatch, fishery]; %Track amount being fished each day of the year
     
     net_growth=max(NRG,0);%biomass increase if positive, 0 if negative.
     fish_gain_timestep=net_growth./B;
