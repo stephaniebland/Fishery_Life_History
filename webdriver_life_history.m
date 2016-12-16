@@ -92,15 +92,6 @@ for phase=1:4
     end
 end
 
-%% Temporary test code while I figure out where it goes - fishing mortality
-F50=3;
-trial=[];
-for age=0:10
-    fishing_mort=1/(1+exp(-2*(age-F50)));
-    trial=[trial; [age fishing_mort]];
-end
-trial
-
 B=full_sim(:,1:nichewebsize);
 day=0:size(full_sim,1)-1;%Use this for graphs instead of full_t because full_t has gaps and is not perfect
 E=full_sim(:,nichewebsize+1:end);
