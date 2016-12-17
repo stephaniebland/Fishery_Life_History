@@ -105,6 +105,13 @@ sum(B_orig)-sum(B_end)
 %fish_props;% Remember to change function so nothing is brought back [~]=fish_props;
 
 %--------------------------------------------------------------------------
+% Export Data
+%--------------------------------------------------------------------------
+if abort_sim==false %If the food web is stable enough & has enough fish species before fishing starts, can export it for analysis in R
+    %Export Data
+end
+
+%--------------------------------------------------------------------------
 % plot the dynamics
 %--------------------------------------------------------------------------
 %% Fish vs Invertebrates
