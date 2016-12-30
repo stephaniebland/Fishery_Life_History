@@ -14,7 +14,7 @@ function [growth_vec]= gr_func(x,b_size,K,int_growth,meta,max_assim,...
 global fish_gain reprod cont_reprod Effort SeasonsCatch fishing_scenario;
 
 B=x(1:b_size);
-E=x(b_size+1:end);
+E=x((1:b_size)+3*b_size);
 
 basalsp = find(int_growth ~= 0); %% indices of basal species
 N_s = length(nicheweb);
@@ -124,6 +124,6 @@ end
     end
     
     % Total growth
-    growth_vec = GPP - MetabLoss - Loss_H + NRG - spent_reprod;
+    growth_vec = [GPP - MetabLoss - Loss_H + NRG - spent_reprod;fish_gain_timestep;fishery];
 
 

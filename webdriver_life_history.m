@@ -15,7 +15,7 @@ global fish_gain reprod cont_reprod Effort SeasonsCatch fishing_scenario;
 Parameters;
 setup;% creation of a new food web
 
-full_sim=nan(N_years*L_year,nichewebsize);
+full_sim=nan(N_years*L_year,4*nichewebsize);
 full_t=nan(N_years*L_year,1);
 year_index=nan(N_years*L_year,1);
 B_year_end=nan(N_years,nichewebsize);
@@ -34,6 +34,7 @@ for phase=1:4
             Effort=0;
         case 2 %{insert lifehistory}
             n_years_in_phase=num_years.pre_fish;
+            evolve=false;
             Effort=0;
         case 3 %{insert fishing}
             n_years_in_phase=num_years.fishing;
@@ -64,18 +65,21 @@ for phase=1:4
         B0=B_end;
         if lstages_linked==true
             %% Move biomass from one life history to the next
-            fish_gain_tot=sum(fish_gain(:,1:L_year),2);%modified to only add fish_gain in the time steps that make up a year
+            %fish_gain_tot=sum(fish_gain,2);%(:,1:L_year),2);%modified to only add fish_gain in the time steps that make up a year
+            fish_gain_tot=sum(x(1:L_year,(1:nichewebsize)+nichewebsize),1)';
             if cont_reprod==false
                 fish_gain_tot=1;
             end
-            B0=aging_table*B_end+fecund_table*(B_end.*reprod.*fish_gain_tot); %Last step is adding contribution from all lifestages, so put the rest in brackets! %Split lifehistory_table into two parts.
+            %DOUBLE CHECK THAT YOU TAKE B OUT OF FOLLOWING LINE
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            B0=aging_table*B_end+fecund_table*(reprod.*fish_gain_tot); %Last step is adding contribution from all lifestages, so put the rest in brackets! %Split lifehistory_table into two parts.
         end
         %% Concatenate Data for all years
-        full_sim((1:L_year)+t_days,:)=x(1:L_year,1:nichewebsize);
+        full_sim((1:L_year)+t_days,:)=x(1:L_year,:);
         full_t((1:L_year)+t_days)=t(1:L_year)+t_days;%full_t does not have timesteps that are *exactly* 1, so numbers don't look to nice.  keep anyhow.
         year_index((1:L_year)+t_days)=repelem(t_year,L_year);%Pointless really, just the year of each time step. good for checking data
         B_year_end(t_year,:)=B_end;%For matlab graphs- just year end biomasses
-        AllCatch(:,(1:L_year)+t_days)=SeasonsCatch(:,1:L_year);
+        %AllCatch(:,(1:L_year)+t_days)=SeasonsCatch(:,1:L_year);
         t_days=t_days+L_year;%Index Number of days that passed, because loop repeated for cases
         t_year=t_year+1;%Index Number of years that passed, because loop repeated for cases
         %% Aborts simulation early if there aren't enough fish for it to continue
@@ -94,7 +98,8 @@ end
 
 B=full_sim(:,1:nichewebsize);
 day=0:size(full_sim,1)-1;%Use this for graphs instead of full_t because full_t has gaps and is not perfect
-E=full_sim(:,nichewebsize+1:end);
+AllCatch=full_sim(:,2*nichewebsize+(1:nichewebsize));
+E=full_sim(:,3*nichewebsize+(1:nichewebsize));
 
 find(isnan(B)==1) % Check for errors that might occur
 nan_error=min(find(isnan(B)==1))
