@@ -8,7 +8,7 @@
 clearvars -except abort_sim; clear global;
 beep off
 warning off MATLAB:divideByZero;
-global fish_gain reprod cont_reprod Effort SeasonsCatch fishing_scenario;
+global reprod cont_reprod Effort;
 %--------------------------------------------------------------------------
 % Protocol parameters
 %--------------------------------------------------------------------------
@@ -58,14 +58,12 @@ for phase=1:4
             [reprod]=prob_of_maturity(prob_mat,nichewebsize,is_split,N_stages,species,i);
         end
         %% ODE
-        fish_gain=[];SeasonsCatch=[];
         [x, t] =  dynamic_fn(K,int_growth,meta,max_assim,effic,Bsd,q,c,f_a,f_m, ...
             ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,L_year+1,ext_thresh);
         B_end=x(L_year+1,1:nichewebsize)'; % use the final biomasses as the initial conditions
         B0=B_end;
         if lstages_linked==true
             %% Move biomass from one life history to the next
-            %fish_gain_tot=sum(fish_gain,2);%(:,1:L_year),2);%modified to only add fish_gain in the time steps that make up a year
             fish_gain_tot=sum(x(1:L_year,(1:nichewebsize)+nichewebsize),1)';
             if cont_reprod==false
                 fish_gain_tot=1;
@@ -79,7 +77,6 @@ for phase=1:4
         full_t((1:L_year)+t_days)=t(1:L_year)+t_days;%full_t does not have timesteps that are *exactly* 1, so numbers don't look to nice.  keep anyhow.
         year_index((1:L_year)+t_days)=repelem(t_year,L_year);%Pointless really, just the year of each time step. good for checking data
         B_year_end(t_year,:)=B_end;%For matlab graphs- just year end biomasses
-        %AllCatch(:,(1:L_year)+t_days)=SeasonsCatch(:,1:L_year);
         t_days=t_days+L_year;%Index Number of days that passed, because loop repeated for cases
         t_year=t_year+1;%Index Number of years that passed, because loop repeated for cases
         %% Aborts simulation early if there aren't enough fish for it to continue

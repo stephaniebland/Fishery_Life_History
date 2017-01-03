@@ -11,7 +11,7 @@
 
 function [growth_vec]= gr_func(x,b_size,K,int_growth,meta,max_assim,...
     effic,Bsd,nicheweb,q,c,f_a,f_m,ca)
-global fish_gain reprod cont_reprod Effort SeasonsCatch fishing_scenario;
+global reprod cont_reprod Effort fishing_scenario;
 
 B=x(1:b_size);
 E=x((1:b_size)+3*b_size);
@@ -111,12 +111,10 @@ end
     %it, but we want to multiply by it only in biomass.m
     loss(deadpreds_j) = 0;  % results of previous row cleared for dead
     NRG = gain - loss' - fishery;     % consumption - being consumed
-    SeasonsCatch=[SeasonsCatch, fishery]; %Track amount being fished each day of the year
     
     net_growth=max(NRG,0);%biomass increase if positive, 0 if negative.
     fish_gain_timestep=net_growth./B;
     fish_gain_timestep(find(B==0))=0;%Set inf values to 0.
-    fish_gain=[fish_gain, fish_gain_timestep];
     
     spent_reprod=reprod.*net_growth;%Fish Biomass Lost due to reproduction
     if cont_reprod==false
