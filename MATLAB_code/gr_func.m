@@ -14,7 +14,7 @@ function [growth_vec]= gr_func(x,b_size,K,int_growth,meta,max_assim,...
 global reprod cont_reprod Effort fishing_scenario;
 
 B=x(1:b_size);
-E=x((1:b_size)+3*b_size);
+E=x((1:b_size)+4*b_size);
 
 basalsp = find(int_growth ~= 0); %% indices of basal species
 N_s = length(nicheweb);
@@ -115,6 +115,8 @@ end
     net_growth=max(NRG,0);%biomass increase if positive, 0 if negative.
     fish_gain_timestep=net_growth./B;
     fish_gain_timestep(find(B==0))=0;%Set inf values to 0.
+    calvin=net_growth;
+    calvin(find(B==0))=0;%Set inf values to 0.
     
     spent_reprod=reprod.*net_growth;%Fish Biomass Lost due to reproduction
     if cont_reprod==false
@@ -122,6 +124,6 @@ end
     end
     
     % Total growth
-    growth_vec = [GPP - MetabLoss - Loss_H + NRG - spent_reprod;fish_gain_timestep;fishery];
+    growth_vec = [GPP - MetabLoss - Loss_H + NRG - spent_reprod;fish_gain_timestep;fishery;calvin];
 
 

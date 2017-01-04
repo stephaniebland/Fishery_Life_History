@@ -14,7 +14,7 @@ function [xout, tout] =  dynamic_fn(K,int_growth,meta,max_assim,effic,Bsd,q,c,f_
                    ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,t_final,ext_thresh)
 
 b_size=length(B0);
-x0=[B0;zeros(b_size*2,1);E0];%Initial Biomass, initial Effort
+x0=[B0;zeros(b_size*3,1);E0];%Initial Biomass, initial Effort
 
 %--------------------------------------------------------------------------
 % Uncomment to run without stopping for extinction threshold
@@ -30,7 +30,7 @@ x0=[B0;zeros(b_size*2,1);E0];%Initial Biomass, initial Effort
 % Takes into account the extinction threshold
 
     refine  = 4;
-    options = odeset('Events',@events,'NonNegative',1:4*b_size,'Refine',refine);%StephHWK:  Figure out what @events does.
+    options = odeset('Events',@events,'NonNegative',1:5*b_size,'Refine',refine);%StephHWK:  Figure out what @events does.
     tout  = t_init;
     xout  = x0';
 

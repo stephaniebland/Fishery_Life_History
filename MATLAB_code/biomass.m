@@ -15,7 +15,7 @@ function [dxdt] = biomass(t,x,b_size,K,int_growth,meta,max_assim,...
 x=max(0,x);
 
 B=x(1:b_size);
-E=x((1:b_size)+3*b_size);     
+E=x((1:b_size)+4*b_size);     
 
 %--------------------------------------------------------------------------
 % price model
@@ -39,7 +39,14 @@ E=x((1:b_size)+3*b_size);
 dBdt = growth_vec(1:b_size).* B;
 fish_revenue = growth_vec((1:b_size)+b_size).* B;
 fish_catch = growth_vec((1:b_size)+2*b_size).* B;
+calvin=growth_vec((1:b_size)+3*b_size);
+hobbes=calvin-fish_revenue;
+%[fish_revenue, calvin]
+%[fish_revenue, calvin, hobbes]
+if max(abs(hobbes))>1e-16
+    max(abs(hobbes))
+end
 dEdt = mu.*(p.*ca.*B-co).*E;
 
-dxdt=[dBdt;fish_revenue;fish_catch;dEdt];
+dxdt=[dBdt;fish_revenue;fish_catch;calvin;dEdt];
 

@@ -15,7 +15,7 @@ global reprod cont_reprod Effort;
 Parameters;
 setup;% creation of a new food web
 
-full_sim=nan(N_years*L_year,4*nichewebsize);
+full_sim=nan(N_years*L_year,5*nichewebsize);
 full_t=nan(N_years*L_year,1);
 year_index=nan(N_years*L_year,1);
 B_year_end=nan(N_years,nichewebsize);
@@ -96,12 +96,12 @@ end
 B=full_sim(:,1:nichewebsize);
 day=0:size(full_sim,1)-1;%Use this for graphs instead of full_t because full_t has gaps and is not perfect
 AllCatch=full_sim(:,2*nichewebsize+(1:nichewebsize));
-E=full_sim(:,3*nichewebsize+(1:nichewebsize));
+E=full_sim(:,4*nichewebsize+(1:nichewebsize));
 
-find(isnan(B)==1) % Check for errors that might occur
-nan_error=min(find(isnan(B)==1))
-isConnected(nicheweb)%Error with TrophicLevels.m may be because it's not connected? As a matrix that is, it was already connected before in orig web, so lifehistories connections keep it alright.
-sum(is_split)-lifehis.lstages_maxfish
+%find(isnan(B)==1) % Check for errors that might occur
+%nan_error=min(find(isnan(B)==1))
+%isConnected(nicheweb)%Error with TrophicLevels.m may be because it's not connected? As a matrix that is, it was already connected before in orig web, so lifehistories connections keep it alright.
+%sum(is_split)-lifehis.lstages_maxfish
 sum(B_orig)-sum(B_end)
 
 %fish_props;% Remember to change function so nothing is brought back [~]=fish_props;
