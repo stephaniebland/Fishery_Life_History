@@ -145,7 +145,7 @@
     hmax=2.5;
     F50=3;
     catchrate=1;%fraction of adult fish that die due to fishery; AK: set to 1 if using standard F for hmax
-    fishing_scenario=0;%0 is Constant effort scenario; 1 is Negative-density dependent scenario
+    global fishing_scenario; fishing_scenario=0;%0 is Constant effort scenario; 1 is Negative-density dependent scenario
 
     
 

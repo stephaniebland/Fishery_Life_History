@@ -15,7 +15,7 @@ function [dxdt] = biomass(t,x,b_size,K,int_growth,meta,max_assim,...
 x=max(0,x);
 
 B=x(1:b_size);
-E=x(b_size+1:end);     
+E=x((1:b_size)+3*b_size);     
 
 %--------------------------------------------------------------------------
 % price model
@@ -36,8 +36,10 @@ E=x(b_size+1:end);
 [growth_vec] = gr_func(x,b_size,K,int_growth,meta,max_assim,...
     effic,Bsd,nicheweb,q,c,f_a,f_m,ca); %calculates the growth vector for B
 
-dBdt = growth_vec.* B;
+dBdt = growth_vec(1:b_size).* B;
+fish_revenue = growth_vec((1:b_size)+b_size);
+fish_catch = growth_vec((1:b_size)+2*b_size).* B;
 dEdt = mu.*(p.*ca.*B-co).*E;
 
-dxdt=[dBdt; dEdt];
+dxdt=[dBdt;fish_revenue;fish_catch;dEdt];
 
