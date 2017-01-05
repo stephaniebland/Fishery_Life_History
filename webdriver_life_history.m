@@ -70,7 +70,7 @@ for phase=1:4
             end
             %DOUBLE CHECK THAT YOU TAKE B OUT OF FOLLOWING LINE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            B0=aging_table*B_end+fecund_table*(reprod.*fish_gain_tot); %Last step is adding contribution from all lifestages, so put the rest in brackets! %Split lifehistory_table into two parts.
+            B0=aging_table*B_end+fecund_table*(reprod.*fish_gain_tot.*B_end); %Last step is adding contribution from all lifestages, so put the rest in brackets! %Split lifehistory_table into two parts.
         end
         %% Concatenate Data for all years
         full_sim((1:L_year)+t_days,:)=x(1:L_year,:);
@@ -103,6 +103,12 @@ nan_error=min(find(isnan(B)==1))
 isConnected(nicheweb)%Error with TrophicLevels.m may be because it's not connected? As a matrix that is, it was already connected before in orig web, so lifehistories connections keep it alright.
 sum(is_split)-lifehis.lstages_maxfish
 sum(B_orig)-sum(B_end)
+
+%Plot Total Biomass 
+delta_biomass=sum(B,2)-sum(B_orig);
+find(delta_biomass==max(delta_biomass));
+find(delta_biomass==min(delta_biomass));
+plot(day,delta_biomass);
 
 %fish_props;% Remember to change function so nothing is brought back [~]=fish_props;
 
