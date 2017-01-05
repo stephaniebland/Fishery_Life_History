@@ -9,6 +9,7 @@
 %\usepackage[hidelinks]{hyperref} % Hyperref package for url's and [hidelinks] option to remove collouring
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage[capitalise]{cleveref} % when you reference a table or figure, automatically format as "Table 1" rather than "table 1" or "1".
+\usepackage{amsmath} % Math: For Matrices (matrix)
 \usepackage{authblk} % allows pretty formatting of author lists
 \usepackage[margin=0.25in]{geometry}
 \usepackage{color}
@@ -161,6 +162,35 @@ I'm not really sure if any of this is good enough. It seems to work, but I want 
 \newpage \noindent\hrulefill
 \section*{Stuff that's too messy still}
 \hrulefill
+\section*{Equation for email:}
+\begin{equation}
+  \overbrace{\begin{bmatrix}
+    \text{Youngest Lifestage}\\\text{Stage 2}\\\text{Stage 3}\\\text{Adults}
+  \end{bmatrix}}^\text{Biomass for new growth season}=
+  \overbrace{\overbrace{\begin{pmatrix}
+        0 & 0 & 0 & 0.5\\ 1 & 0 & 0 & 0\\ 0 & 1 & 0 & 0\\ 0 & 0 & 1 & 0.5 
+  \end{pmatrix}}^\text{aging table}
+   \overbrace{\begin{bmatrix}
+        B_1 \\ B_2\\ B_3\\ B_4 
+  \end{bmatrix}}^\text{B end}}^\text{Shifted Biomass (Aging)}+
+  \overbrace{\overbrace{\begin{pmatrix}
+        1 1 1 1 \\ 0 0 0 0\\ 0 0 0 0\\ 0 0 0 0 
+  \end{pmatrix}}^\text{fecund table}
+  \left(
+  \overbrace{\begin{bmatrix}
+    0\\ 0.0047\\ 0.0750\\ 0.1905
+  \end{bmatrix}}^\text{reprod}
+  \odot
+  \overbrace{\begin{bmatrix}
+        a_1 \\ a_2\\ a_3\\ a_4 
+  \end{bmatrix}}^\text{fish gain tot}
+  %\iffalse
+  \odot\textcolor{red}{\overbrace{\begin{bmatrix}
+        B_1 \\ B_2\\ B_3\\ B_4
+  \end{bmatrix}}^\text{B end}}
+  %\fi
+  \right)}^\text{Offspring}
+\end{equation}
 \section*{Correlation between K and $L_\infty$}
 According to proba mature.m in the lake constance model, correlation is given by following equation, log is base 10. Double check before using.
 \begin{equation}
