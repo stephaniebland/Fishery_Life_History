@@ -113,7 +113,7 @@ end
     NRG = gain - loss' - fishery;     % consumption - being consumed
     
     net_growth=max(NRG,0);%biomass increase if positive, 0 if negative.
-    fish_gain_timestep=net_growth./B;
+    fish_gain_timestep=net_growth;%./B;
     fish_gain_timestep(find(B==0))=0;%Set inf values to 0.
     
     spent_reprod=reprod.*net_growth;%Fish Biomass Lost due to reproduction

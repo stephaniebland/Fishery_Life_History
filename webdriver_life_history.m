@@ -70,7 +70,7 @@ for phase=1:4
             end
             %DOUBLE CHECK THAT YOU TAKE B OUT OF FOLLOWING LINE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            B0=aging_table*B_end+fecund_table*(reprod.*fish_gain_tot.*B_end); %Last step is adding contribution from all lifestages, so put the rest in brackets! %Split lifehistory_table into two parts.
+            B0=aging_table*B_end+fecund_table*(reprod.*fish_gain_tot);%.*B_end); %Last step is adding contribution from all lifestages, so put the rest in brackets! %Split lifehistory_table into two parts.
         end
         %% Concatenate Data for all years
         full_sim((1:L_year)+t_days,:)=x(1:L_year,:);
