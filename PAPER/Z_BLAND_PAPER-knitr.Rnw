@@ -1,8 +1,7 @@
 \documentclass[12pt]{article}
-%Following lines are for citations
-\usepackage{natbib}
-\bibliographystyle{apalike}
-\setcitestyle{authoryear}%,open={(},close={)}}
+\newcommand{\CustomPackage}{"/Users/JurassicPark/Google Drive/GIT/LaTeX_Packages/"}
+\usepackage{\CustomPackage citations}
+\usepackage{\CustomPackage nicequotes}
 %\usepackage[T1]{fontenc}
 %\usepackage[utf8]{inputenc}
 %usepackage{lmodern}
@@ -14,16 +13,15 @@
 \usepackage[margin=0.25in]{geometry}
 \usepackage{color}
 \usepackage[nomarkers,figuresonly]{endfloat}
-%Following three lines set quotes to automatically format to regular quotes
-\usepackage [english]{babel} 
-\usepackage [autostyle, english = american]{csquotes}
-\MakeOuterQuote{"}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \title{Fisheries Induced Life History Changes}
-\author[2,1]{Stephanie Bland, Anna Kuparinen, Jeff Hutchings, Neo Martinez}
+\author[1]{Stephanie Bland}%\thanks{A.A@university.edu}}
+\author[1]{Jeff Hutchings}%\thanks{B.B@university.edu}}
+\author[1]{Anna Kuparinen}%\thanks{C.C@university.edu}}
+\author[2]{Neo Martinez}%\thanks{D.D@university.edu}}
+\affil[1]{Department of Biology, Dalhousie University}
 \date{\today}
 \begin{document}
-% \SweaveOpts{concordance=TRUE}
 \maketitle
 
 <<include=FALSE>>=
@@ -36,6 +34,7 @@ options(xtable.comment = FALSE)
 read_chunk('Fig_lifestage_prey.R')
 read_chunk('Fig_Von_Bert.R')
 read_chunk('Global_Parameters.R')
+#read_chunk('Analysis.R')
 @
 
 
@@ -220,8 +219,32 @@ Since I already have such a large data set, and a regression would just give me 
 \hrulefill
 
 <<embedded-latex, echo = FALSE, results = 'asis'>>=  
+setwd("/Users/JurassicPark/Google Drive/GIT/Masters Project")
+library(R.matlab)
+test=readMat("garbage.mat")
+masscalc=as.data.frame(test$masscalc)$`1.1`
+lifehis=as.data.frame(test$lifehis)$`1.1`
+prob_mat=as.data.frame(test$prob.mat)$`1.1`
+num_years=as.data.frame(test$num.years)$`1.1`
+leslie=as.data.frame(test$leslie)$`1.1`
+meta_scale=as.data.frame(test$meta.scale)$`1.1`
+assim=as.data.frame(test$assim)$`1.1`
+func_resp=as.data.frame(test$func.resp)$`1.1`
+invert=as.data.frame(func_resp$invert)$`1.1`
+fish=as.data.frame(func_resp$fish)$`1.1`
+herb=as.data.frame(fish$herb)$`1.1`
+
+
+thingity=5
+
+
+Params=c(test,masscalc,lifehis,prob_mat,num_years,leslie,meta_scale,assim,invert,fish,herb)
+#rm(list=setdiff(ls(),c('Params','test')))
+x=names(Params)
+
+xkcd=unique(x)
 library(xtable)
-el <- matrix(rep(1, 20), ncol=5)
+el <- matrix(NA,length(xkcd),5)
 colnames(el) <- c("Symbol", "Description", "Value", "Unit", "Reference")
 #rownames(el) <- c("$\\alpha$", "$\\beta$", "$\\gamma$")
 el[1,1] <- "$\\alpha^2$"
@@ -231,6 +254,7 @@ el[1,2] <- el[2,1] <- "$\\alpha\\beta$"
 el[1,3] <- el[3,1] <- "$\\alpha\\gamma$"
 el[2,3] <- el[3,2] <- "$\\beta\\gamma$"
 el[4,]=2
+el[,1]=xkcd
 print(xtable(el), sanitize.text.function = function(x){x}, include.rownames=F)
 @
 
@@ -244,7 +268,7 @@ Symbol & Description & Value & Unit & Reference \\ [0.5ex]% inserts table headin
 $$  & Number of species in original Niche web & $\Sexpr{test$S.0}$ & - &  \\% inserting body of the table
 $$  & Number of years to run simulation for & $\Sexpr{test$N.years}$ & years &  \\
 $$  & Number of days in a year & $\Sexpr{test$L.year}$ & days &  \\
-$$  & connectance & $\Sexpr{test$connectance}$ &  &  \\
+$$  & Connectance & $\Sexpr{test$connectance}$ &  &  \\
 $$  & Weight of largest fish in web & $\Sexpr{masscalc$maxweight}$ &  &  \\
 $$  & Growth Exponent & $\Sexpr{lifehis$growth.exp}$ &  & \cite{Sangun2007} \\
 $$  & Conversion factor from fish weight to length & $\Sexpr{lifehis$q}$ &  &  \\
