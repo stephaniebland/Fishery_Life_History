@@ -15,10 +15,10 @@
 \usepackage[nomarkers,figuresonly]{endfloat}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \title{Fisheries Induced Life History Changes}
-\author[1]{Stephanie Bland}%\thanks{A.A@university.edu}}
-\author[1]{Jeff Hutchings}%\thanks{B.B@university.edu}}
-\author[1]{Anna Kuparinen}%\thanks{C.C@university.edu}}
-\author[2]{Neo Martinez}%\thanks{D.D@university.edu}}
+\author[1]{Stephanie Bland}
+\author[1]{Jeff Hutchings}
+\author[2]{Anna Kuparinen}
+\author[3]{Neo Martinez}
 \affil[1]{Department of Biology, Dalhousie University}
 \date{\today}
 \begin{document}
