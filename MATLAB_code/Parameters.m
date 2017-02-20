@@ -58,7 +58,7 @@
 
 %% Life History Switches
     lifehis.lstages_maxfish=NaN;%NaN;%Maximum number of fish species to create new lifestages for. NaN gives every fish new lifestages.
-    lstages_linked=true;%Are life histories linked via leslie matrix?
+    lifestages_linked=true;%Are life histories linked via leslie matrix?
     lstages_B0ratedR=true;%Start simulation with adults only.
     cannibal_invert=true;%Cannibalism for all species
     lifehis.cannibal_fish=false;%false=none,true=yes & any stage can cannibalize larger stages, -1=cannibalism on strictly smaller stages,0=cannibalism on own stages and smaller stages.% The number for cannibal_fish indicates how much younger conspecifics need to be to be cannibalized.  Of note: -1 means strictly younger, 0 means same lifestage or younger

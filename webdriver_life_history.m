@@ -32,14 +32,19 @@ for phase=1:4
         case 1 % before lifehistory starts
             n_years_in_phase=num_years.prelifehist;
             evolve=false;%initialize the evolution setting, needs to be done every time you run the loop
-            nicheweb=extended_web;%Set nicheweb to the original web before fishing induced dietary shifts
+            nicheweb=extended_web;%Set nicheweb to the original web before fishing induced dietary shifts (so has extended nodes that aren't linked by lifehistory. Important because later we set it to shifted_web)
+            lstages_linked=false;
             Effort=0;
         case 2 %{insert lifehistory}
             n_years_in_phase=num_years.pre_fish;
             evolve=false;
+            lstages_linked=lifestages_linked;
             Effort=0;
         case 3 %{insert fishing}
+            %% Save Deterministic Data For Replicates
             save(strcat('Prefishing_',num2str(simnum)))%Save the results up to now
+            B_repeat_sim=B0;%
+            %% Basic settings
             n_years_in_phase=num_years.fishing;
             evolve=true; % Fecundity evolves (fish reach maturity at a younger age)
             %% Shift fish diet according to evolution
