@@ -294,7 +294,7 @@ $$  &  & $\Sexpr{thingity}$ &  &  \\ [1ex]      % [1ex] adds vertical space
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\bibliography{/Users/JurassicPark/Documents/ZoteroCitations/ZBLANDPAPERknitr.bib}
+\bibliography{/Users/JurassicPark/Documents/ZoteroCitations/library.bib}
 
 \newpage \noindent\hrulefill
 \section*{IGNORE EVERYTHING BELOW THIS}
