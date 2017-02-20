@@ -4,11 +4,13 @@
 %--------------------------------------------------------------------------
 % ATN Model with life histories linked.
 %--------------------------------------------------------------------------
-
-clearvars -except abort_sim; clear global;
+simnum=1;
+while simnum<=1
+clearvars -except simnum; clear global;
 beep off
 warning off MATLAB:divideByZero;
 global reprod cont_reprod Effort;
+
 %--------------------------------------------------------------------------
 % Protocol parameters
 %--------------------------------------------------------------------------
@@ -30,17 +32,23 @@ for phase=1:4
         case 1 % before lifehistory starts
             n_years_in_phase=num_years.prelifehist;
             evolve=false;%initialize the evolution setting, needs to be done every time you run the loop
-            nicheweb=extended_web;%Set nicheweb to the original web before fishing induced dietary shifts
+            nicheweb=extended_web;%Set nicheweb to the original web before fishing induced dietary shifts (so has extended nodes that aren't linked by lifehistory. Important because later we set it to shifted_web)
+            lstages_linked=false;
             Effort=0;
         case 2 %{insert lifehistory}
             n_years_in_phase=num_years.pre_fish;
             evolve=false;
+            lstages_linked=lifestages_linked;
             Effort=0;
         case 3 %{insert fishing}
+            %% Save Deterministic Data For Replicates
+            save(strcat('Prefishing_',num2str(simnum)))%Save the results up to now
+            B_repeat_sim=B0;%
+            %% Basic settings
             n_years_in_phase=num_years.fishing;
             evolve=true; % Fecundity evolves (fish reach maturity at a younger age)
             %% Shift fish diet according to evolution
-            if exist('extended_n','var')==1
+            if (lifehis.fishpred==true | lifehis.splitdiet==false)
                 reorder_by_size=extended_n;
             else
                 reorder_by_size=1:nichewebsize;%eh, just don't bother reordering if you dont use an extended web that starts with new niche values.
@@ -106,6 +114,7 @@ sum(B_orig)-sum(B_end)
 
 %Plot Total Biomass 
 delta_biomass=sum(B,2)-sum(B_orig);
+delta_biomass=sum(B,2)-sum(B(100,:));
 find(delta_biomass==max(delta_biomass));
 find(delta_biomass==min(delta_biomass));
 plot(day,delta_biomass);
@@ -117,6 +126,10 @@ plot(day,delta_biomass);
 %--------------------------------------------------------------------------
 if abort_sim==false %If the food web is stable enough & has enough fish species before fishing starts, can export it for analysis in R
     %Export Data
+    save(strcat('Complete_',num2str(simnum)))
+    simnum=simnum+1;
+end
+
 end
 
 %--------------------------------------------------------------------------
@@ -154,9 +167,10 @@ end
 xlabel('time (1/100 years)'); ylabel('log10 biomass')
 title('Fish Species by colour (invertebrates are all same colour), and lifestage by line type')
 grid on;
-    
+
+
 %% Individual Fish Species, by total biomass
-[a,~,ic]=unique(species.*isfish');
+[~,~,ic]=unique(species.*isfish');
 %species_index=1:length(a);% might be useful for plotting colours later, but I doubt it.
 nCols=size(B,1);
 B_as_vector=reshape(B',nichewebsize*nCols,1);
@@ -175,8 +189,9 @@ plot(day,log10(B_species),'LineWidth',1.5);%Including Inverts & Plants
 xlabel('time'); ylabel('log10 biomass')
 grid on;
 
+
 %% Annual means for every node
-[a,~,ic]=unique(year_index);
+[~,~,ic]=unique(year_index);
 nCols=nichewebsize;
 nRows=length(B);
 B_as_vector=reshape(B,nichewebsize*nRows,1);
@@ -194,7 +209,7 @@ grid on;
 
 
 %% Annual Means for every species
-[a,~,ic]=unique(species.*isfish');
+[~,~,ic]=unique(species.*isfish');
 %species_index=1:length(a);% might be useful for plotting colours later, but I doubt it.
 nCols=size(B_year_mean,1);
 B_as_vector=reshape(B_year_mean',nichewebsize*nCols,1);
@@ -213,6 +228,8 @@ plot(1:N_years,log10(B_ann_species),'LineWidth',2);%Including Inverts & Plants
 xlabel('time'); ylabel('log10 biomass')
 grid on;
 
+
+
 %% Plot Year ends
 %PLOT IT
 figure(1); hold on;
@@ -220,8 +237,10 @@ plot(1:N_years,log10(B_year_end),'LineWidth',1.5);%Including Inverts & Plants
 xlabel('time'); ylabel('log10 biomass')
 grid on;
 
+
+
 %% Year ends for every species
-[a,~,ic]=unique(species.*isfish');
+[~,~,ic]=unique(species.*isfish');
 %species_index=1:length(a);% might be useful for plotting colours later, but I doubt it.
 nCols=size(B_year_end,1);
 B_as_vector=reshape(B_year_end',nichewebsize*nCols,1);

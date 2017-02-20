@@ -58,7 +58,7 @@
 
 %% Life History Switches
     lifehis.lstages_maxfish=NaN;%NaN;%Maximum number of fish species to create new lifestages for. NaN gives every fish new lifestages.
-    lstages_linked=true;%Are life histories linked via leslie matrix?
+    lifestages_linked=true;%Are life histories linked via leslie matrix?
     lstages_B0ratedR=true;%Start simulation with adults only.
     cannibal_invert=true;%Cannibalism for all species
     lifehis.cannibal_fish=false;%false=none,true=yes & any stage can cannibalize larger stages, -1=cannibalism on strictly smaller stages,0=cannibalism on own stages and smaller stages.% The number for cannibal_fish indicates how much younger conspecifics need to be to be cannibalized.  Of note: -1 means strictly younger, 0 means same lifestage or younger
@@ -66,7 +66,7 @@
     lifehis.splitdiet=false;%Choose how to split fish diet. true=split orignal diet, false=assign new diet based on new niche values
     rescalemass=true;%simulations only look nice if set to true, but be careful, true means von-bert scaling is invalid since it reverts weights (temp bug bandage)%rescales mass back to original weights after scaled from masscalc.maxweight.  So it only works if maxweight is a value (not "false").
     cont_reprod=true;%does reproductive effort account for growth on daily timesteps.
-    evolv_diet=5;%Fishing evolution induced dietary shifts, so shifts diet to the left or right.  negative numbers make fish eat smaller things, positive numbers make them eat larger (to test whether it's just a matter of messing up the food web). 0 is no diet shift. if diet is already eating smallest node then untransformed.   
+    evolv_diet=0;%Fishing evolution induced dietary shifts, so shifts diet to the left or right.  negative numbers make fish eat smaller things, positive numbers make them eat larger (to test whether it's just a matter of messing up the food web). 0 is no diet shift. if diet is already eating smallest node then untransformed.   
     
     %% DON'T WORK YET:
     calc_n_val=false;%true uses bootstrap method, false uses linear regression. %Calculates new niche values for new lifestages using values I extacted from 100,000 web simulations. See nichevalue_mass_scaled.R 
@@ -75,7 +75,7 @@
     connectance=0.15;% initial connectance
 
 %% MassCalc
-    masscalc.num_orig_fish=NaN; %Max number of fish species allowed in original model.  If NaN is used, you choose 60% of species with species with TL>=3 (trophic level)
+    masscalc.num_orig_fish=3; %Max number of fish species allowed in original model.  If NaN is used, you choose 60% of species with species with TL>=3 (trophic level)
     masscalc.m_fish   =5000;  % mean for fishes
     masscalc.v_fish   =100;   % standard deviation for fishes
     masscalc.m_invert =100;   % mean for invertebrates
