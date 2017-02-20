@@ -114,6 +114,7 @@ sum(B_orig)-sum(B_end)
 
 %Plot Total Biomass 
 delta_biomass=sum(B,2)-sum(B_orig);
+delta_biomass=sum(B,2)-sum(B(100,:));
 find(delta_biomass==max(delta_biomass));
 find(delta_biomass==min(delta_biomass));
 plot(day,delta_biomass);
@@ -130,6 +131,7 @@ if abort_sim==false %If the food web is stable enough & has enough fish species 
 end
 
 end
+
 %--------------------------------------------------------------------------
 % plot the dynamics
 %--------------------------------------------------------------------------
@@ -147,7 +149,6 @@ end
 % %legend('Autotroph','Herbivore','Carnivore')
 % grid on;
 
-function[]=plot_species_by_colour(day,B,isfish,species,lifestage,orig,nichewebsize)
 %% Plot Fish Species by colour (invertebrates are all same colour), and lifestage by line type
 
 figure(1); hold on;
@@ -166,9 +167,8 @@ end
 xlabel('time (1/100 years)'); ylabel('log10 biomass')
 title('Fish Species by colour (invertebrates are all same colour), and lifestage by line type')
 grid on;
-end
 
-function[]=plot_species_by_biomass(day,B,isfish,species,nichewebsize)
+
 %% Individual Fish Species, by total biomass
 [~,~,ic]=unique(species.*isfish');
 %species_index=1:length(a);% might be useful for plotting colours later, but I doubt it.
@@ -188,9 +188,8 @@ plot(day,log10(B_species),'LineWidth',1.5);%Including Inverts & Plants
 %plot(day,log10(fish_only),'LineWidth',1.5);%Only Fish
 xlabel('time'); ylabel('log10 biomass')
 grid on;
-end
 
-function[]=plot_year_node_means(nichewebsize)
+
 %% Annual means for every node
 [~,~,ic]=unique(year_index);
 nCols=nichewebsize;
@@ -207,9 +206,8 @@ figure(1); hold on;
 plot(1:N_years,log10(B_year_mean),'LineWidth',1.5);%Annual Means for all nodes
 xlabel('time'); ylabel('log10 biomass')
 grid on;
-end
 
-function[]=plot_year_species_means(isfish,species,nichewebsize,B_year_mean)
+
 %% Annual Means for every species
 [~,~,ic]=unique(species.*isfish');
 %species_index=1:length(a);% might be useful for plotting colours later, but I doubt it.
@@ -229,18 +227,18 @@ plot(1:N_years,log10(B_ann_species),'LineWidth',2);%Including Inverts & Plants
 %plot(1:N_years,log10(fish_ann_only),'LineWidth',2);%Only Fish
 xlabel('time'); ylabel('log10 biomass')
 grid on;
-end
 
-function[]=plot_year_ends(N_years,B_year_end)
+
+
 %% Plot Year ends
 %PLOT IT
 figure(1); hold on;
 plot(1:N_years,log10(B_year_end),'LineWidth',1.5);%Including Inverts & Plants
 xlabel('time'); ylabel('log10 biomass')
 grid on;
-end
 
-function[]=plot_species_year_ends(isfish,species,nichewebsize)
+
+
 %% Year ends for every species
 [~,~,ic]=unique(species.*isfish');
 %species_index=1:length(a);% might be useful for plotting colours later, but I doubt it.
@@ -259,6 +257,5 @@ plot(1:N_years,log10(B_end_species),'LineWidth',1.5);%Including Inverts & Plants
 plot(1:N_years,log10(fish_end_only),'LineWidth',1.5);%Only Fish
 xlabel('time'); ylabel('log10 biomass')
 grid on;
-end
 
 
