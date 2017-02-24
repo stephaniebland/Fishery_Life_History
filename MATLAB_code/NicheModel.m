@@ -70,37 +70,24 @@ function [orig]= NicheModel(cannibal_invert,num_species, connectance)
             nichewebsize=size(nicheweb,2);
             basalsp=find(sum(nicheweb,2)==0);
 
-            %identify list1
+            %list1 starts as the basal species and we will add species connected to it.
             list1=basalsp;
-            list2=[];
-       
-            while numel(list1)>0
-            %look for connections
+            
+            while length(list1)<nichewebsize % Each repetition of this loop adds species that are connected to the list
+                list_size=length(list1); % Measure the length of the list before you add connected species
+                
                 for whichspec=list1' %Go through all the elements in the list of species connected to basal species
-                    list2=[list2; find(nicheweb(:,whichspec)==1)];
+                    list1=[list1; find(nicheweb(:,whichspec)==1)]; % Add species connected to the species in the list
                 end
-                list2=unique(list2);
- 
-            %make species connected to list1 zeros (isolates already removed)
-                nicheweb(list1,:)=zeros(length(list1),nichewebsize);
-                nicheweb(:,list1) = zeros(nichewebsize,length(list1));
-   
-            %make list2 the new list1
-                list1=list2;
-                list2=[];
+                list1=unique(list1); % Make sure you're not adding redundant species
+                
+                if list_size==length(list1) %If the list is not increasing in size, you can quit.
+                    ok_n=0; %if there are species not connected to basal, delete the web
+                    break
+                end
             end
-
-            %find indices of species not connected to basal
-            list3=find(sum(nicheweb)>0);
-            list3=[list3 find(sum(nicheweb,2)>0)'];
-            list3=unique(list3);
        
-            nicheweb = web_mx; %putting the web with no isolates and not connected to basals to nicheweb
-       
-            %if there are species not connected to basal, delete the web
-            if numel(list3)>0
-                ok_n=0;
-            else
+            if ok_n==1
             %find if there are disconnected groups
                 if isConnected(nicheweb)==1 
                     links = sum(web_mx>0);  %% indices of links (which element in web_mx?)
