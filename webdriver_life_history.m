@@ -16,6 +16,8 @@ global reprod cont_reprod Effort;
 %--------------------------------------------------------------------------
 Parameters;
 setup;% creation of a new food web
+%% Save Deterministic Data For Replicates
+save(strcat('setup_',num2str(simnum)))%Save the results up to now
 
 full_sim=nan(N_years*L_year,4*nichewebsize);
 full_t=nan(N_years*L_year,1);
