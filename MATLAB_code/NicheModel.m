@@ -76,11 +76,10 @@ function [orig]= NicheModel(cannibal_invert,num_species, connectance)
        
             while numel(list1)>0
             %look for connections
-                for whichspec=1:length(list1)
-                    whichcol=list1(whichspec);
-                    list2=[list2; find(nicheweb(:,whichcol)==1)];
-                    list2=unique(list2);
+                for whichspec=list1' %Go through all the elements in the list of species connected to basal species
+                    list2=[list2; find(nicheweb(:,whichspec)==1)];
                 end
+                list2=unique(list2);
  
             %make species connected to list1 zeros (isolates already removed)
                 nicheweb(list1,:)=zeros(length(list1),nichewebsize);
