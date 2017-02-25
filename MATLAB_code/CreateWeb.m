@@ -14,18 +14,15 @@
 %--------------------------------------------------------------------------
 
 function [web_mx,n_new,r_new,c_new]=CreateWeb(num_nodes,connectance,n,n_old,r_old,c_old,orig_index,allfish)
-
-
-%----------------------------------------------------------------------
-% designate range for each species
-% parameters for beta distribution:
+%% Parameters for beta distribution:
 alpha = 1;
 beta = (1-2*connectance)/(2*connectance); %Coralie : ???
+
+%% Designate range for each species
 r = betarnd(alpha,beta,num_nodes,1);    %vector of ranges
 r = r.*n;%second run of this will give new life stages new ranges; I think we can give it that freedom, but we could also constrain it more (as if a species doesn't change level of specialism as it ages).
 
-%----------------------------------------------------------------------
-% set center of range, uniformly distributed in [r_i/2,n_i];
+%% set center of range, uniformly distributed in [r_i/2,n_i];
 c=rand(num_nodes,1).*(min(n,1-r./2)-r./2)+r./2; %Corrected distribution so the probability is uniform
 
 %% If you're running the loop for the second time, to get an extended food web, save the old niche values.
@@ -35,8 +32,7 @@ if exist('n_old')==1
     c(orig_index)=c_old;
 end
 
-%----------------------------------------------------------------------
-% sort everything
+%% Sort everything
 [n_new, Indx] = sort(n);
 %n_new: niche values in ascending order
 %Indx: indexes of species in descending order
@@ -47,22 +43,20 @@ c_new = c(Indx);
 r_new(1) = 0; %change the r of lowest index species to 0
 %so we have a basal species in every web
 
-%----------------------------------------------------------------------
-% Construct the web adjacency matrix
-web_mx = zeros(num_nodes);
-
+%--------------------------------------------------------------------------
+%% Construct the web adjacency matrix
+%--------------------------------------------------------------------------
 preymins = c_new - r_new/2; %lower border of niche range for every prey
 preymaxs = c_new + r_new/2; %upper border of niche range for every predator
 
-n_mx = n_new*ones(1,num_nodes); %fills the empty matrix with niche ranges
-preymins_mx = ones(num_nodes,1)*preymins'; %matrix with the lowest points of ranges in every column
-preymaxs_mx = ones(num_nodes,1)*preymaxs'; %same, with highest
+%% Set up matrices to find which species are eaten
+n_mx = ones(num_nodes,1)*n_new'; %fills the empty matrix with niche ranges
+preymins_mx = preymins*ones(1,num_nodes); %matrix with the lowest points of ranges in every column
+preymaxs_mx = preymaxs*ones(1,num_nodes); %same, with highest
 
-web_mx=((n_mx>=preymins_mx)+(n_mx<=preymaxs_mx)==2*ones(num_nodes));
-%if species in the row is in the niche range of the species in the
-%column, it gets eaten
+%% Species are prey if their niche value is in the predator's niche range
+web_mx=(n_mx>=preymins_mx)&(n_mx<=preymaxs_mx);
 
-web_mx = web_mx'; %transposing the matrix (in the following codes we need that format)
 
 %% If you're running the loop for the second time:
 if exist('n_old','var')==1
@@ -80,6 +74,5 @@ if exist('n_old','var')==1
     keepindex(Indx)=1:num_nodes;
     web_mx=web_mx(keepindex,keepindex);
 end
-
 
 end
