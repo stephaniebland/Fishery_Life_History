@@ -28,23 +28,19 @@ function [T, T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp)
 %Compute shortest path to basal species for each species.
 %Note: the matrix 'nicheweb' is oriented rows eat columns. 
 %--------------------------------------------------------------------------
-    T1=zeros(1,nichewebsize);
+    T1=NaN(1,nichewebsize);
 
     %Compute shortest trophic level.
-    %Assign level 1 to basal species.
-    T1(basalsp)=1;
-    ind=basalsp;
+    T1(basalsp)=1;  % Assign level 1 to basal species.
+    ind=basalsp;    % Set up index to basal species
 
     % Assign other trophic levels.
-    r = 0;
     for j=2:nichewebsize
-        clear col r;
-        [r,col]=find(nicheweb1(:,ind)~=0);
-        clear ind;
-        ind = unique(r);
-        for i=1:length(ind)
-            if T1(ind(i))==0
-                T1(ind(i))=j;
+        [r,~]=find(nicheweb1(:,ind)~=0);%Find all species that eat previous trophic level
+        ind = unique(r);%Unique Index of species that consume previous trophic level.
+        for i=ind'
+            if isnan(T1(i)) % Don't give new values to species that already have trophic levels.
+                T1(i)=j;
             end
         end 
     end
