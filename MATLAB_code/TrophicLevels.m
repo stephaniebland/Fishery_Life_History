@@ -54,8 +54,8 @@ function [T, T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp)
 
     %Create unweighted Q matrix. So a matrix that gives proportion of the
     %diet given by each prey species.
-    prey=max(prey,1);   % So that you don't divide by 0.
     Q=nicheweb1./prey;  % Create unweighted Q matrix. (Proportion of predator diet that each species gives).
+    Q(isnan(Q))=0;      % Set NaN values to 0. 
     
     %Calculate trophic levels as T2=(I-Q)^-1 * 1  %StephHWK: I may need to come back to this one...
     T2=(inv(eye(nichewebsize)-Q))*ones(nichewebsize,1);%"ones(nichewebsize,1)" or could just sum over the rows like you did everywhere else "sum(A,2)"
