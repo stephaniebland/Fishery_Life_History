@@ -54,18 +54,11 @@ function [T, T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp)
 
     %Create unweighted Q matrix. So a matrix that gives proportion of the
     %diet given by each prey species.
-    a=nicheweb1';
-    Q = zeros(nichewebsize);
-    for i=1:nichewebsize
-        for j=1:nichewebsize
-        if prey(j) ~= 0
-            Q(i,j) = a(i,j)/prey(j); 
-            end
-        end
-    end
+    prey=max(prey,1);   % So that you don't divide by 0.
+    Q=nicheweb1./prey;  % Create unweighted Q matrix. (Proportion of predator diet that each species gives).
     
     %Calculate trophic levels as T2=(I-Q)^-1 * 1  %StephHWK: I may need to come back to this one...
-    T2=(inv(eye(nichewebsize)-Q'))*ones(nichewebsize,1);%"ones(nichewebsize,1)" or could just sum over the rows like you did everywhere else "sum(A,2)"
+    T2=(inv(eye(nichewebsize)-Q))*ones(nichewebsize,1);%"ones(nichewebsize,1)" or could just sum over the rows like you did everywhere else "sum(A,2)"
     
 %--------------------------------------------------------------------------
 %Average T1 and T2  %And how is using the average even a good idea?  Why
