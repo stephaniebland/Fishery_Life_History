@@ -20,8 +20,8 @@ function [T, T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp)
 %Cannibalism within life stages, so cannibalism is allowed between
 %different life stages).
 %--------------------------------------------------------------------------
-    nicheweb1=+nicheweb;  %I really don't know why I'm including this line (except they seemed to like it up there...  does that do something special to matrices, am I missing something....?)  Possibly vestigial line from C++
-    nicheweb1=nicheweb1-diag(diag(nicheweb1));%Set the diagonal to 0.
+    nicheweb1=+nicheweb;  %Possibly a vestigial line from C++
+    %nicheweb1=nicheweb1-diag(diag(nicheweb1));%Set the diagonal to 0, so no cannibalism in Trophic calculations (but whether there is cannibalism in the model is a different question)
 
 
 %--------------------------------------------------------------------------
@@ -57,7 +57,7 @@ function [T, T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp)
     Q=nicheweb1./prey;  % Create unweighted Q matrix. (Proportion of predator diet that each species gives).
     Q(isnan(Q))=0;      % Set NaN values to 0. 
     
-    %Calculate trophic levels as T2=(I-Q)^-1 * 1  %StephHWK: I may need to come back to this one...
+    %Calculate trophic levels as T2=(I-Q)^-1 * 1  %Levine 1980 geometric series 
     T2=(inv(eye(nichewebsize)-Q))*ones(nichewebsize,1);%"ones(nichewebsize,1)" or could just sum over the rows like you did everywhere else "sum(A,2)"
     
 %--------------------------------------------------------------------------
