@@ -15,7 +15,20 @@ global reprod cont_reprod Effort;
 % Protocol parameters
 %--------------------------------------------------------------------------
 Parameters;
+lifehis.lstages_maxfish=NaN;
+%lifehis.lstages_maxfish=0;
 setup;% creation of a new food web
+[Mass(find(orig.nodes==1))-orig.Mvec]
+c=(isfish*9.1256)+1.1809;
+scatter(TrophLevel,meta,[],c,'filled')
+scatter(TrophLevel,Z,[],c,'filled')
+scatter(TrophLevel,Mass,[],c,'filled')
+scatter(TrophLevel,Mvec,[],c,'filled')
+scatter(TrophLevel,orig.Mvec,[],c,'filled')
+scatter(TrophLevel,W_scaled,[],c,'filled')
+scatter(TrophLevel,meta,[],c,'filled')
+scatter(TrophLevel,TrophLevel,[],c,'filled')
+
 %% Save Deterministic Data For Replicates
 save(strcat('setup_',num2str(simnum)))%Save the results up to now
 
