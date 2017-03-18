@@ -14,6 +14,25 @@ Method:	Add more nodes to the model that represent new life stages for the fish 
 - Quick fix, as soon as I have a steady value for number of species
 
 
+##########CONFIRM WHETHER MODEL ALLOWS LOOPS##########
+- YES IT DOES! They fixed the loop issue mentioned in Williams and Martinez Nature 2000.
+- Re-read papers (because each species prey is centered at c, and c is assigned a value in [r/2,n])
+- This means that each species can eat prey larger than it!
+- This also implies cannibalism (that sentence in Williams and Martinez 2000 Nature "Computational considerations require that chains with loops be ignored" is *really* confusing me right now, I probably took it out of context or don't understand it *at all*.)
+- Also, it looks like species eat *every* prey that fall in their range [c-r/2,c+r/2].  So no randomness. 
+
+
+##########TIME SCALES##########
+- Check what time scale the ODE uses.
+- Might want to consider using two different timescales:  One for plankton and one for fish.
+	- Use to test sensitivity 
+
+
+##########CANNIBALISM##########
+- Run the same model twice, one with no cannibalism, and one where cannibalism is allowed at a parameterized rate
+- Maybe guarantee that lifestages will eat previous life stages?
+
+
 ##########REJECTED IDEAS##########
 - Post doc Kim Davies (Oceanography, Dal) suggested using a three-dimensional array to store life stages, so predators go along the rows, prey (the same species) go along the columns, and the lifestages are stored in the third dimension (pages). Each cell would be filled with booleans, where 1 is predator feeds on prey, and 0 means it doesn't. Upon further consideration, I concluded that this idea would not work because there is no way to specify which fish lifestages are predated upon. It's probably possible to accomplish this with a fourth dimension, so [predspecies, preyspecies, predlifestages, preylifestages], but my intuition is weak with that, and I'm probably more likely to make a mistake.  
 	**ACTUALLY ON FURTHER CONSIDERATION**: It may be possible to use four dimensions.  I just need to be careful and think about things in terms of a single matrix at a time.  
