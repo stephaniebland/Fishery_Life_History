@@ -11,7 +11,7 @@
 %--------------------------------------------------------------------------
 
 function [xout, tout] =  dynamic_fn(K,int_growth,meta,max_assim,effic,Bsd,q,c,f_a,f_m, ...
-                   ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,t_final,ext_thresh)
+                   ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,t_final,reprod,cont_reprod,Effort,fishing_scenario,ext_thresh)
 
 b_size=length(B0);
 x0=[B0;zeros(b_size*2,1);E0];%Initial Biomass, initial Effort
@@ -37,7 +37,7 @@ x0=[B0;zeros(b_size*2,1);E0];%Initial Biomass, initial Effort
     while t_init<t_final-1 %integration stops at t_final
     
         [t,x,~,xe,~] = ode45(@biomass,t_init:t_final,x0,options,b_size,K,int_growth,meta, ...
-                    max_assim,effic,Bsd,nicheweb,q,c,f_a,f_m,ca,co,mu,p_a,p_b,ext_thresh);
+                    max_assim,effic,Bsd,nicheweb,q,c,f_a,f_m,ca,co,mu,p_a,p_b,reprod,cont_reprod,Effort,fishing_scenario,ext_thresh);
  
         % Accumulate output
         tout = [tout; t(2:end)];

@@ -10,8 +10,7 @@
 %--------------------------------------------------------------------------
 
 function [growth_vec]= gr_func(x,b_size,K,int_growth,meta,max_assim,...
-    effic,Bsd,nicheweb,q,c,f_a,f_m,ca)
-global reprod cont_reprod Effort fishing_scenario;
+    effic,Bsd,nicheweb,q,c,f_a,f_m,ca,reprod,cont_reprod,Effort,fishing_scenario)
 
 B=x(1:b_size);
 E=x((1:b_size)+3*b_size);

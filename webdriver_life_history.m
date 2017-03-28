@@ -9,7 +9,6 @@ while simnum<=1
 clearvars -except simnum; clear global;
 beep off
 warning off MATLAB:divideByZero;
-global reprod cont_reprod Effort;
 
 %--------------------------------------------------------------------------
 % Protocol parameters
@@ -69,7 +68,7 @@ for phase=1:4
         end
         %% ODE
         [x, t] =  dynamic_fn(K,int_growth,meta,max_assim,effic,Bsd,q,c,f_a,f_m, ...
-            ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,L_year+1,ext_thresh);
+            ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,L_year+1,reprod,cont_reprod,Effort,fishing_scenario,ext_thresh);
         B_end=x(L_year+1,1:nichewebsize)'; % use the final biomasses as the initial conditions
         B0=B_end;
         if lstages_linked==true

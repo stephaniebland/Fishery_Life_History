@@ -9,7 +9,7 @@
 %--------------------------------------------------------------------------
 
 function [dxdt] = biomass(t,x,b_size,K,int_growth,meta,max_assim,...
-    effic,Bsd,nicheweb,q,c,f_a,f_m,ca,co,mu,p_a,p_b,~)
+    effic,Bsd,nicheweb,q,c,f_a,f_m,ca,co,mu,p_a,p_b,reprod,cont_reprod,Effort,fishing_scenario,~)
 
 %x=real(x);
 x=max(0,x);
@@ -34,7 +34,7 @@ E=x((1:b_size)+3*b_size);
 %--------------------------------------------------------------------------
 
 [growth_vec] = gr_func(x,b_size,K,int_growth,meta,max_assim,...
-    effic,Bsd,nicheweb,q,c,f_a,f_m,ca); %calculates the growth vector for B
+    effic,Bsd,nicheweb,q,c,f_a,f_m,ca,reprod,cont_reprod,Effort,fishing_scenario); %calculates the growth vector for B
 
 dBdt = growth_vec(1:b_size).* B;
 fish_revenue = growth_vec((1:b_size)+b_size);
