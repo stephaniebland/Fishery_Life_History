@@ -97,9 +97,65 @@ end
 Q=Q-diag(diag(Q))
 simpler=Y.^(inv(I-Q));
 simpler2=(K*Z').^(inv(I-Q));
-prod(simpler2,2)
+mass=prod(simpler2,2)
 %is it reversible?
 simpler.^(inv(I-Q))
+
+syms y_1 y_2 y_3 y_4 y_5 y_6 y_7
+eqn1= mass(1)==(y_1^X(1,1))*(y_2^X(1,2))*(y_3^X(1,3))*(y_4^X(1,4))*(y_5^X(1,5))*(y_6^X(1,6))*(y_7^X(1,7));
+eqn2= mass(2)==(y_1^X(2,1))*(y_2^X(2,2))*(y_3^X(2,3))*(y_4^X(2,4))*(y_5^X(2,5))*(y_6^X(2,6))*(y_7^X(2,7));
+eqn3= mass(3)==(y_1^X(3,1))*(y_2^X(3,2))*(y_3^X(3,3))*(y_4^X(3,4))*(y_5^X(3,5))*(y_6^X(3,6))*(y_7^X(3,7));
+eqn4= mass(4)==(y_1^X(4,1))*(y_2^X(4,2))*(y_3^X(4,3))*(y_4^X(4,4))*(y_5^X(4,5))*(y_6^X(4,6))*(y_7^X(4,7));
+eqn5= mass(5)==(y_1^X(5,1))*(y_2^X(5,2))*(y_3^X(5,3))*(y_4^X(5,4))*(y_5^X(5,5))*(y_6^X(5,6))*(y_7^X(5,7));
+eqn6= mass(6)==(y_1^X(6,1))*(y_2^X(6,2))*(y_3^X(6,3))*(y_4^X(6,4))*(y_5^X(6,5))*(y_6^X(6,6))*(y_7^X(6,7));
+eqn7= mass(7)==(y_1^X(7,1))*(y_2^X(7,2))*(y_3^X(7,3))*(y_4^X(7,4))*(y_5^X(7,5))*(y_6^X(7,6))*(y_7^X(7,7));
+[y1,y2,y3,y4,y5,y6,y7]=solve(eqn1,eqn2,eqn3,eqn4,eqn5,eqn6,eqn7)
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%% DISCARD BELOW THIS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Y_t=Y
+Y_t(:,3)=NaN
+Y_t(3,3)=1
+Y_t=Y_t-diag(diag(Y_t)-1)
+X=inv(I-Q)
+(mass./prod((Y_t.^X),2))
+syms y_1 y_2 y_3 y_4 y_5 y_6 y_7
+Y_t=[y_1, y_2, y_3, y_4, y_5, y_6, y_7]
+Yay=[y_1; y_2; y_3; y_4; y_5; y_6; y_7]
+Y_T=[Y_t; Y_t; Y_t; Y_t; Y_t; Y_t; Y_t]
+
+y_1=1;
+%y_2=1;
+i=2
+eqn1= y_1^(X(i,1))==mass(i)/(y_2^X(i,2)*y_3^X(i,3)*y_4^X(i,4)*y_5^X(i,5)*y_6^X(i,6)*y_7^X(i,7))
+eqn2= y_2^(X(i,2))==mass(i)/(y_1^X(i,1)*y_3^X(i,3)*y_4^X(i,4)*y_5^X(i,5)*y_6^X(i,6)*y_7^X(i,7))
+eqn3= y_3^(X(i,3))==mass(i)/(y_1^X(i,1)*y_2^X(i,2)*y_4^X(i,4)*y_5^X(i,5)*y_6^X(i,6)*y_7^X(i,7))
+eqn4= y_4^(X(i,4))==mass(i)/(y_1^X(i,1)*y_2^X(i,2)*y_3^X(i,3)*y_5^X(i,5)*y_6^X(i,6)*y_7^X(i,7))
+eqn5= y_5^(X(i,5))==mass(i)/(y_1^X(i,1)*y_2^X(i,2)*y_3^X(i,3)*y_4^X(i,4)*y_6^X(i,6)*y_7^X(i,7))
+eqn6= y_6^(X(i,6))==mass(i)/(y_1^X(i,1)*y_2^X(i,2)*y_3^X(i,3)*y_4^X(i,4)*y_5^X(i,5)*y_7^X(i,7))
+eqn7= y_7^(X(i,7))==mass(i)/(y_1^X(i,1)*y_2^X(i,2)*y_3^X(i,3)*y_4^X(i,4)*y_5^X(i,5)*y_6^X(i,6))
+%sol = solve([eqn1,eqn2, eqn3,eqn4,eqn5,eqn6,eqn7], [y_1,y_2, y_3, y_4, y_5, y_6, y_7]);
+sol = solve([eqn2, eqn3,eqn4,eqn5,eqn6,eqn7], [y_2, y_3, y_4, y_5, y_6, y_7]);
+%sol.y_1
+sol.y_2
+sol.y_3
+sol.y_4
+sol.y_5
+sol.y_6
+sol.y_7
+
+y_2=1
+sol = solve([eqn3,eqn4,eqn5,eqn6,eqn7], [y_3, y_4, y_5, y_6, y_7]);
+%sol.y_1
+sol.y_3
+sol.y_4
+sol.y_5
+sol.y_6
+sol.y_7
 
 item=[0 0 0 0 0 0 1];
 prod(item*xk)%take row products of xk to get the thing you want
