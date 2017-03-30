@@ -18,16 +18,15 @@ attach(masscalc);
 %--------------------------------------------------------------------------
 %Fish or invertebrate
 %--------------------------------------------------------------------------
+    isfish=zeros(nichewebsize,1);
     % distinction between invertebrates and fishes
     if isnan(num_orig_fish)
-        isfish=zeros(nichewebsize,1);
         possibfish=find(T>=3);                % species with TL<3 are always invertebrates
         bernoulli=rand(length(possibfish),1);
         bernoulli=logical(bernoulli<=.6);     % for species with TL>=3, probability of 60% of being a fish
         isfish(possibfish)=bernoulli; %That's clever...
     else
         %Alternatively, just choose top three "most fish-like" species to be fish
-        isfish=zeros(nichewebsize,1);
         [~, fishiness]=sort(T);%Rank species by how fish like they are.  This only chooses top 3, but some could have trophic levles < 3 still.
         isfish(fishiness(end-num_orig_fish+1:end))=1;%Choose top three species to be fish
     end
