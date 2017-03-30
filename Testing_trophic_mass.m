@@ -101,6 +101,7 @@ mass=prod(simpler2,2)
 %is it reversible?
 simpler.^(inv(I-Q))
 
+
 syms y_1 y_2 y_3 y_4 y_5 y_6 y_7
 eqn1= mass(1)==(y_1^X(1,1))*(y_2^X(1,2))*(y_3^X(1,3))*(y_4^X(1,4))*(y_5^X(1,5))*(y_6^X(1,6))*(y_7^X(1,7));
 eqn2= mass(2)==(y_1^X(2,1))*(y_2^X(2,2))*(y_3^X(2,3))*(y_4^X(2,4))*(y_5^X(2,5))*(y_6^X(2,6))*(y_7^X(2,7));
@@ -110,6 +111,13 @@ eqn5= mass(5)==(y_1^X(5,1))*(y_2^X(5,2))*(y_3^X(5,3))*(y_4^X(5,4))*(y_5^X(5,5))*
 eqn6= mass(6)==(y_1^X(6,1))*(y_2^X(6,2))*(y_3^X(6,3))*(y_4^X(6,4))*(y_5^X(6,5))*(y_6^X(6,6))*(y_7^X(6,7));
 eqn7= mass(7)==(y_1^X(7,1))*(y_2^X(7,2))*(y_3^X(7,3))*(y_4^X(7,4))*(y_5^X(7,5))*(y_6^X(7,6))*(y_7^X(7,7));
 [y1,y2,y3,y4,y5,y6,y7]=solve(eqn1,eqn2,eqn3,eqn4,eqn5,eqn6,eqn7)
+
+Y_t=[y_1, y_2, y_3, y_4, y_5, y_6, y_7]
+Znew=sym('Z_%d', [1 nichewebsize]);
+
+eqn= mass==prod((K*Znew).^(inv(I-Q)),2);
+Znew=solve(eqn);
+Znew=table2array(struct2table(Znew))'
 
 
 
