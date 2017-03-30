@@ -23,7 +23,7 @@ while sum(orig.isfish)==0%Guarantee that the food web has at least one fish
 %%-------------------------------------------------------------------------
 %Calculates species weight -> so you know how many life stages it needs
     [TrophLevel,orig.T1,orig.T2]= TrophicLevels(nichewebsize,orig.nicheweb,basalsp);
-    [orig.Z,orig.Mvec,orig.isfish,W_scaled,W_scalar]= MassCalc(masscalc,nichewebsize,basalsp,TrophLevel);
+    [orig.Z,orig.Mvec,orig.isfish,W_scaled,W_scalar]= MassCalc(masscalc,nichewebsize,orig.nicheweb,basalsp,TrophLevel);
 end    
 %%-------------------------------------------------------------------------
 %%  LINEAR REGRESSION
@@ -61,7 +61,7 @@ end
 %2) Can be scaled with body size
     [TrophLevel,T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp);%Recalculate trophic levels for new nicheweb
     %YES BUT NOW I DON'T KNOW IF I SHOULD USE OLD TROPHIC LEVEL OR NEW TROPHIC LEVELS IN METABOLIC SCALING
-    [meta,Z]=metabolic_scaling(meta_scale,nichewebsize,basalsp,isfish,TrophLevel,Mass,orig.Z,orig.nodes);
+    [meta,Z]=metabolic_scaling(meta_scale,nichewebsize,basalsp,isfish,Mass);
     
 
 %Intrinsic growth parameter "r" for basal species only

@@ -13,7 +13,7 @@
 %--------------------------------------------------------------------------
 
 % uncomment if to use as a function
-function [Z,Mvec,isfish,W_scaled,W_scalar]= MassCalc(masscalc,nichewebsize,basalsp,T)
+function [Z,Mvec,isfish,W_scaled,W_scalar]= MassCalc(masscalc,nichewebsize,nicheweb,basalsp,T)
 attach(masscalc);
 %--------------------------------------------------------------------------
 %Fish or invertebrate
@@ -51,9 +51,38 @@ attach(masscalc);
 %--------------------------------------------------------------------------
 %Set body size based on trophic level
 %--------------------------------------------------------------------------
-    Mvec = zeros(nichewebsize,1); %mass per individual
-    Mvec=Z.^(T-1);  %T-1 used since basal level is 1.
+    %% Calculate Mass according to T1 (Shortest Distance)
+    Mass1=NaN(nichewebsize,1);  % Set up vector
+    Mass1(basalsp)=1; % Basal species defined to have mass of 1
+    ind=basalsp;    % Set up index to basal species
 
+    % Assign other trophic levels.
+    for j=2:nichewebsize
+        last_level=ind;%Preserve previous trophic levels
+        [r,~]=find(nicheweb(:,ind)~=0);%Find all species that eat previous trophic level
+        ind = unique(r);%Unique Index of species that consume previous trophic level.
+        for i=ind'
+            if isnan(Mass1(i)) % Don't give new values to species that already have weights.
+                prey_opts=intersect(last_level,find(nicheweb(i,:)));%find all options - all prey that were in the previous trophic level. IT MUST ALSO HAVE SHORTEST PATH(because otherwise it could take a "shortcut" through a chain with smaller masses, but a longer overall path)
+                smallest_prey=min(Mass1(prey_opts));% Find mass of the smallest prey item in consumer i's diet
+                Mass1(i)=Z(i)*smallest_prey; %Allometrically scale the weight of the prey to find the consumer's weight
+            end
+        end 
+    end
+    
+    %% Calculate Mass according to T2 (Prey-Averaged Trophic Position)
+    prey=sum(nicheweb,2); %sum of each row
+    Q=nicheweb./prey;  % Create unweighted Q matrix. (Proportion of predator diet that each species gives).
+    Q(isnan(Q))=0; 
+    I=eye(nichewebsize);
+    K=ones(nichewebsize,1);
+    
+    Mass2=(K*Z').^(inv(I-Q));
+    Mass2=prod(Mass2,2);
+    
+    %% Combine the two calculations of Mass Z^T, where T=(T1+T2)/2.  {side note: previous calculations use Z^(T-1). That's not appropriate here, because autotrophs have mass=1, and this system takes weight of all items in it's food chain into account. The previous system assumed they all have weight of the predator in question, so the autotroph would have the same size as whatever it's being eaten by - clearly not great!}
+    Mvec=sqrt(Mass1.*Mass2);
+    
 %--------------------------------------------------------------------------
 %Scale mass so that von-bert function works
 %--------------------------------------------------------------------------
