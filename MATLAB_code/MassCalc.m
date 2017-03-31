@@ -65,7 +65,7 @@ attach(masscalc);
         for i=ind'
             if isnan(Mass1(i)) % Don't give new values to species that already have weights.
                 prey_opts=intersect(last_level,find(nicheweb(i,:)));%find all options - all prey that were in the previous trophic level. IT MUST ALSO HAVE SHORTEST PATH(because otherwise it could take a "shortcut" through a chain with smaller masses, but a longer overall path)
-                smallest_prey=min(Mass1(prey_opts));% Find mass of the smallest prey item in consumer i's diet
+                smallest_prey=mean(Mass1(prey_opts));% Find mass of the smallest prey item in consumer i's diet
                 Mass1(i)=Z(i)*smallest_prey; %Allometrically scale the weight of the prey to find the consumer's weight
             end
         end 

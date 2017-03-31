@@ -13,7 +13,7 @@
 %--------------------------------------------------------------------------
 
 % uncomment if to use as a function
-function [meta,Z]= metabolic_scaling(meta_scale,nichewebsize,basalsp,isfish,Mass)
+function [meta,Z]= metabolic_scaling(meta_scale,nichewebsize,basalsp,isfish,Mass,orig.nodes,orig.Z)
 attach(meta_scale);
 %--------------------------------------------------------------------------
 % Find remaining consumer-resource body size ratios (for new life stages)
@@ -25,7 +25,9 @@ attach(meta_scale);
     %  So we start by defining Z as symbols, then define the general
     %  equations, and then we can solve it.
     Z=sym('Z_%d', [1 nichewebsize]);%We want to solve for Z2, which would correspond to the prey averaged trophic position (T2)
+    assume(Z,'real')
     %Make it just a bit faster by filling in the first two trophic levels
+    Z(find(orig.nodes))=orig.Z;
     Z(basalsp)=1;
     
     %% Find General Equation for Mass according to T1 (Shortest Distance)
@@ -62,8 +64,11 @@ attach(meta_scale);
     Mass2=prod((K*Z).^(inv(I-Q)),2);%Equation for 
     %% Solve for Z Consumer-resource body-size):
     eqn = Mass==sqrt(Mass1.*Mass2);%The equation that calculated mass will allow you to recalculate Z now
-    Z=solve(eqn); %Solve the system of equations - always can solve because basal species are defined as Z=1
-    Z=table2array(struct2table(Z))'; % Convert the structure into a vector.
+    %Z=vpasolve(eqn); %Solve the system of equations - always can solve because basal species are defined as Z=1
+    new_nodes=find(1-orig.nodes);
+    solution=vpasolve(eqn(new_nodes),[-Inf,Inf]); %Solve the system of equations - always can solve because basal species are defined as Z=1
+    solution=fsolve(eqn(new_nodes),[0,Inf])
+    Z(new_nodes)=table2array(struct2table(solution))'; % Convert the structure into a vector.
     
 
 %     %%Metabolic scaling constants  %%%No longer used
