@@ -13,9 +13,13 @@
 %--------------------------------------------------------------------------
 
 % uncomment if to use as a function
-function [meta]= metabolic_scaling(meta_scale,nichewebsize,basalsp,isfish,Mass)
+function [meta,Z]= metabolic_scaling(meta_scale,nichewebsize,basalsp,isfish,Mass,orig,species)
 attach(meta_scale);
+Z=orig.Z;%Don't attach - don't want to overwrite nichewebsize!
 
+    %% Z Consumer-Resource Body Ratios - Just give everything the same as adults.
+    Z=orig.Z(species);
+    
     %% Metabolic and mass assimilation rates
     meta=zeros(nichewebsize,1);
     for i=1:nichewebsize

@@ -61,7 +61,7 @@ end
 %2) Can be scaled with body size
     [TrophLevel,T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp);%Recalculate trophic levels for new nicheweb
     %YES BUT NOW I DON'T KNOW IF I SHOULD USE OLD TROPHIC LEVEL OR NEW TROPHIC LEVELS IN METABOLIC SCALING
-    [meta]=metabolic_scaling(meta_scale,nichewebsize,basalsp,isfish,Mass);
+    [meta,Z]=metabolic_scaling(meta_scale,nichewebsize,basalsp,isfish,Mass,orig,species);
     
 
 %Intrinsic growth parameter "r" for basal species only
