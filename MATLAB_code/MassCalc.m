@@ -47,6 +47,7 @@ attach(masscalc);
     %Consumer-resource body-size
     Z=lognrnd(mu_invert,sigma_invert,nichewebsize,1);
     Z(find(isfish))=lognrnd(mu_fish,sigma_fish,length(find(isfish)),1);
+    Z(basalsp)=1;
 
 %--------------------------------------------------------------------------
 %Set body size based on trophic level
