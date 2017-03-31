@@ -99,8 +99,7 @@ end
     Loss_H=ca.* E; 
 
     % This is to prevent a divide by 0 when B_i= 0.
-    loss = zeros(1,N_s);
-    [deadpreds_i deadpreds_j] = find(B2mx ==0);
+    [deadpreds_i, deadpreds_j] = find(B2mx ==0);
     B2mx(deadpreds_i,deadpreds_j) = -1; %anything not 0
 
     % Consumption
