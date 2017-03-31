@@ -25,7 +25,8 @@ attach(meta_scale);
     %  So we start by defining Z as symbols, then define the general
     %  equations, and then we can solve it.
     Z=sym('Z_%d', [1 nichewebsize]);%We want to solve for Z2, which would correspond to the prey averaged trophic position (T2)
-
+    %Make it just a bit faster by filling in the first two trophic levels
+    Z(basalsp)=1;
     
     %% Find General Equation for Mass according to T1 (Shortest Distance)
     Mass1=sym('M_%d', [nichewebsize 1]);  % Set up vector
