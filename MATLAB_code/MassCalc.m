@@ -54,21 +54,19 @@ attach(masscalc);
 %--------------------------------------------------------------------------
     %% Calculate Mass according to T1 (Shortest Distance)
     Mass1=NaN(nichewebsize,1);  % Set up vector
-    Mass1(basalsp)=1; % Basal species defined to have mass of 1
-    ind=basalsp;    % Set up index to basal species
-
-    % Assign other trophic levels.
-    for j=2:nichewebsize
-        last_level=ind;%Preserve previous trophic levels
-        [r,~]=find(nicheweb(:,ind)~=0);%Find all species that eat previous trophic level
-        ind = unique(r);%Unique Index of species that consume previous trophic level.
-        for i=ind'
-            if isnan(Mass1(i)) % Don't give new values to species that already have weights.
-                prey_opts=intersect(last_level,find(nicheweb(i,:)));%find all options - all prey that were in the previous trophic level. IT MUST ALSO HAVE SHORTEST PATH(because otherwise it could take a "shortcut" through a chain with smaller masses, but a longer overall path)
-                smallest_prey=min(Mass1(prey_opts));% Find mass of the smallest prey item in consumer i's diet
-                Mass1(i)=Z(i)*smallest_prey; %Allometrically scale the weight of the prey to find the consumer's weight
-            end
-        end 
+    Mass1(basalsp)=Z(basalsp); % Basal species defined to have mass equivalent to Z
+    
+    A=nicheweb.*Z;%Setup weighted nicheweb matrix - this is like the standard matrix used for Dijkstra algorithm, except weights represent allometric scaling instead of edge length (so multiplicative instead of additive)
+    
+    % Assign mass for non basal species
+    j=0;k=0; %YES, *of course* you can use same method with Z=[1 1 ...1] for calculating Trophic levels T1, and it's prob cleaner, but both methods work. 
+    while j<2%We need to iterate the while loop one extra time than min req'd to calculate all Masses - because you only just got the right mass for all the prey species of an apex predator
+        C=A*diag(Mass1);%Find shortest paths - so C_ij is the mass if it were calculated using path going from pred i to prey j.
+        C(C==0)=NaN;%Don't mistake 0s for shortest path.  
+        Mass1=min(C,[],2);%Find smallest path for each predator now that you excluded 0s
+        Mass1(basalsp)=Z(basalsp);%Redefine basal species mass
+        j=k*2;
+        k= isnan(sum(Mass1))==0;%When this condition is met, you need to do one additional loop.
     end
     
     %% Calculate Mass according to T2 (Prey-Averaged Trophic Position)
