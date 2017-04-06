@@ -61,16 +61,10 @@ attach(masscalc);
     % Assign mass for non basal species
     %YES, *of course* you can use same method with Z=[1 1 ...1] for calculating Trophic levels T1, and it's prob cleaner, but both methods work. 
     for k=0:nichewebsize%We need to iterate the while loop one extra time than min req'd to calculate all Masses - because you only just got the right mass for all the prey species of an apex predator
-        Mass_old=Mass1;
-        
         C=A*diag(Mass1);%Find shortest paths - so C_ij is the mass if it were calculated using path going from pred i to prey j.
         C(C==0)=NaN;%Don't mistake 0s for shortest path.  
         Mass1=min(C,[],2);%Find smallest path for each predator now that you excluded 0s
         Mass1(basalsp)=Z(basalsp);%Redefine basal species mass
-        
-        if Mass_old==Mass1%Shorten run time a bit
-            break
-        end
     end
     
     %% Calculate Mass according to T2 (Prey-Averaged Trophic Position)
