@@ -44,6 +44,10 @@ A       =   [0 0 0 0 0 0 0 0 0; %1
 
 s = 1;                          % The element that we are calculating the distance from. the distance ($d_i$) will tell you the distance from node i to the source (s).
 
+%% Relabel source (s) to frontier (f)
+% The frontier is the set of nodes that you just changed the distance for. 
+f=s;
+
 %% Transform the data (exponents) so that we can use the multiplicative method.
 % This function takes the exponent of all non-zero elements
 % The resulting matrix $B$ has elements $b_{ij}=e^{a_{ij}}$.
@@ -65,8 +69,8 @@ n=length(B);
 % $e^{d_s}=e^{0}=1$.
 exp_d=zeros(n,1);               % Distance is set to -infinity to begin with  (so 0 because exp(-infinity)=0).
 old_exp_d=exp_d;                % Set up a vector to track changes in distance - we will run the loop until the distance is constant
-B(s,s)=exp(0);                  % Set up a loop between the source and itself of distance 0, so that the source gets it's energy from itself.
-exp_d(s)=exp(0);                % The source has a distance of 0 from itself, but we are using exponents, so 1.
+B(f,f)=exp(0);                  % Set up a loop between the source and itself of distance 0, so that the source gets it's energy from itself.
+exp_d(f)=exp(0);                % The source has a distance of 0 from itself, but we are using exponents, so 1.
 
 %% The While Loop:
 % * This loops until distance is constant. This method guarantees that we
@@ -105,15 +109,14 @@ exp_d(s)=exp(0);                % The source has a distance of 0 from itself, bu
 % known distance between node i and the source. So updated the distance
 % vector with $e^{d_i}=\min_{j}c_{ij}$.
 
-new=s;
-while isempty(new)==0  % Iterate the loop until distance no longer changes 
+while isempty(f)==0             % Iterate the loop until the distances stop changing. 
     old_exp_d=exp_d;            % Keep track of changes in distance. We loop until this is constant, meaning we found the shortest distance. 
-    C=B(:,new)*diag(exp_d(new));            % Find shortest paths - so log(c_ij) is the distance between the source and node i, if we take the shortest route through i's neighbour (j). 
-    C=[old_exp_d,C];
+    C=B(:,f)*diag(exp_d(f));    % Find shortest paths - so log(c_ij) is the distance between the source and node i, if we take the shortest route through i's neighbour (j). 
+    C=[old_exp_d,C];            % We will find 
     C(C==0)=NaN;                % Don't mistake 0s for shortest path. (since log(0) is -infinity, it doesn't make sense to use them)
     exp_d=min(C,[],2);          % Find shortest path (We excluded 0s, so it's the second smallest element in each row of matrix C)
     exp_d(isnan(exp_d))=0;
-    new=find(exp_d~=old_exp_d)   
+    f=find(exp_d~=old_exp_d)   
 end
 
 %% Distance from Source Node:
