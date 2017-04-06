@@ -1,35 +1,45 @@
-clear;
-nicheweb=   [0 0 0 0 0 0 0 0 0; %1
+% A single source shortest path algorithm
+
+clear;%clears the workspace
+
+%% Set Up - Inputs are A (the web), and s (the source node)
+%  Start with a weighted graph A, where a_ij indicates the weight of the edge from node i to j. 
+%  We also have a source node that the distances are calculated from.
+A       =   [0 0 0 0 0 0 0 0 0; %1
              1 0 0 0 0 0 0 0 0; %2
-             1 0 0 0 0 0 0 0 0; %3
-             0 0 1 0 0 0 0 0 0; %4
-             0 0 0 1 0 0 0 0 0; %5
-             0 0 0 0 1 0 1 0 0; %6
-             0 1 0 0 0 0 0 0 0; %7
-             0 0 0 0 0 1 0 0 0; %8
-             0 0 0 0 0 0 0 1 0];%9
+             5 0 0 0 0 0 0 0 0; %3
+             0 0 2 0 0 0 0 0 0; %4
+             0 0 0 6 0 0 0 0 0; %5
+             0 0 0 0 8 0 3 0 0; %6
+             0 9 0 0 0 0 0 0 0; %7
+             0 0 0 0 0 2 0 0 0; %8
+             0 0 0 0 0 0 0 4 0];%9
 
-nichewebsize = length(nicheweb);
-basalsp = find(sum(nicheweb,2)==0);
+source = 1; %The element that we are calculating the distance from. the distance (d_i) will tell you the distance from node i to the source s.
 
-    maxim=10000;%Matlab doesn't like really large numbers, so if the values are huge we should reduce them first. I imagine the same holds for extremely small values.
-    edge_weight=randi(maxim,nichewebsize,1)-5;
-    Z=exp(edge_weight*100/maxim);%Transform the data so that you can multiply it
-    
-    Mass1=zeros(nichewebsize,1);% Set up vector
-    Mass_old=Mass1;
-    Mass1(1)=1; % Basal species defined to have mass equivalent to Z
-    
-    A=nicheweb.*Z;%Setup weighted nicheweb matrix - this is like the standard matrix used for Dijkstra algorithm, except weights represent allometric scaling instead of edge length (so multiplicative instead of additive)
-    %A(6,7)=exp(15)%If you want to test changing an edge weight - this shows you can generalize the calculation to giving different edges different weights.
-    
-    
-    while sum(Mass_old~=Mass1)~=0 %We need to iterate the while loop extra times than min req'd to calculate all Masses - because you only just got the right mass for all the prey species of an apex predator. Since Z is positive, it won't change after the longest possible simple path.
-        Mass_old=Mass1;
-        C=A*diag(Mass1);%Find shortest paths - so C_ij is the mass if it were calculated using path going from pred i to prey j.
-        C(C==0)=NaN;%Don't mistake 0s for shortest path.
-        Mass1=min(C,[],2);%Find smallest path for each predator now that you excluded 0s
-        Mass1(basalsp)=Z(basalsp);%Redefine basal species mass
-    end
-    [log(Mass1)*maxim/100, edge_weight]%Transform data back to the original.
-    [Mass1, Z];
+%% Transform the data so that we can use the multiplicative method. maxelem just makes sure that the values aren't too large for MATLAB
+maxelem=max(abs(A(:)));% Find largest element - MATLAB doesn't deal with exponents very well. 
+A=A*100/maxelem;%MATLAB deals with things up to roughly 100.
+A(A~=0)=exp(A(A~=0));%Transform the data (take the exponents)
+
+%% Find size of web - n is the number of nodes
+n=length(A);
+
+%% Set up the Distance Vector - Assume that all nodes have exp(d_i)=0 to begin with (because it works this way)
+exp_d=zeros(n,1);% Distance is set to -infinity to begin with  (so 0 because exp(-infinity)=0).
+old_exp_d=exp_d; % Set up a vector to track changes in distance - we will run the loop until the distance is constant
+A(source,source)=exp(0); %Set up a loop between the source and itself of distance 0, so that the source gets it's energy from itself.
+exp_d(source)=exp(0); % The source has a distance of 0 from itself, but we are using exponents, so 1.
+
+%% The While Loop:
+while sum(old_exp_d~=exp_d)~=0  %Iterate the loop until distance no longer changes
+    old_exp_d=exp_d;            %Keep track of changes in distance.
+    C=A*diag(exp_d);            %Find shortest paths - so C_ij is the mass if it were calculated using path going from pred i to prey j.
+    C(C==0)=NaN;                %Don't mistake 0s for shortest path.
+    exp_d=min(C,[],2);          %Find shortest path, now that you exclude 
+end
+
+%% Distance from Source Node:
+distance=log(exp_d)*maxelem/100%Transform the data again to give you the distance from source node
+
+exp_d;
