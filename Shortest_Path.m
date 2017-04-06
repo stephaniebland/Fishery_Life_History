@@ -67,7 +67,7 @@ n=length(B);
 % # The second step is to set the distance from the source node to itself. 
 % It makes sense to say that it has 0 distance from itself, so we set
 % $e^{d_s}=e^{0}=1$.
-exp_d=NaN(n,1);               % Distance is set to -infinity to begin with  (so 0 because exp(-infinity)=0).
+exp_d=Inf(n,1);               % Distance is set to -infinity to begin with  (so 0 because exp(-infinity)=0).
 exp_d(f)=exp(0);                % The source has a distance of 0 from itself, but we are using exponents, so 1.
 
 %% The While Loop:
@@ -108,7 +108,6 @@ exp_d(f)=exp(0);                % The source has a distance of 0 from itself, bu
 % vector with $e^{d_i}=\min_{j}c_{ij}$.
 
 while isempty(f)==0             % Iterate the loop until the distances stop changing. 
-    old_exp_d=exp_d;            % Keep track of changes in distance. We loop until this is constant, meaning we found the shortest distance. 
     D=B(:,f)
     [i,j]=find(D)
     k=find(D)
