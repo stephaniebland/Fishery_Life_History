@@ -67,7 +67,7 @@ n=length(B);
 % # The second step is to set the distance from the source node to itself. 
 % It makes sense to say that it has 0 distance from itself, so we set
 % $e^{d_s}=e^{0}=1$.
-exp_d=zeros(n,1);               % Distance is set to -infinity to begin with  (so 0 because exp(-infinity)=0).
+exp_d=NaN(n,1);               % Distance is set to -infinity to begin with  (so 0 because exp(-infinity)=0).
 exp_d(f)=exp(0);                % The source has a distance of 0 from itself, but we are using exponents, so 1.
 
 %% The While Loop:
@@ -109,12 +109,19 @@ exp_d(f)=exp(0);                % The source has a distance of 0 from itself, bu
 
 while isempty(f)==0             % Iterate the loop until the distances stop changing. 
     old_exp_d=exp_d;            % Keep track of changes in distance. We loop until this is constant, meaning we found the shortest distance. 
-    C=B(:,f)*diag(exp_d(f));    % Find shortest paths - so log(c_ij) is the distance between the source and node i, if we take the shortest route through i's neighbour (j). 
-    C=[old_exp_d,C];            % We will find the shortest path among the newly established distances AND the old paths.
-    C(C==0)=NaN;                % Don't mistake 0s for shortest path. (since log(0) is -infinity, it doesn't make sense to use them)
-    exp_d=min(C,[],2);          % Find shortest path (We excluded 0s, so it's the second smallest element in each row of matrix C)
-    exp_d(isnan(exp_d))=0;      % MATLAB can't distinguish between NaN and NaN (thinks they're different), so set them to 0.
-    f=find(exp_d~=old_exp_d);   % Find the new frontier - the nodes that you just changed the distance for. 
+    D=B(:,f)
+    [i,j]=find(D)
+    k=find(D)
+    new_d=D(k).*exp_d(f(j))
+    f=i(find(new_d~=exp_d(f(j))))
+    exp_d(f)=min(new_d,exp_d(f))
+    
+%     C=B(:,f)*diag(exp_d(f));    % Find shortest paths - so log(c_ij) is the distance between the source and node i, if we take the shortest route through i's neighbour (j). 
+%     C=[old_exp_d,C];            % We will find the shortest path among the newly established distances AND the old paths.
+%     C(C==0)=NaN;                % Don't mistake 0s for shortest path. (since log(0) is -infinity, it doesn't make sense to use them)
+%     exp_d=min(C,[],2);          % Find shortest path (We excluded 0s, so it's the second smallest element in each row of matrix C)
+%     exp_d(isnan(exp_d))=0;      % MATLAB can't distinguish between NaN and NaN (thinks they're different), so set them to 0.
+%     f=find(exp_d~=old_exp_d);   % Find the new frontier - the nodes that you just changed the distance for. 
 end
 
 %% Distance from Source Node:
