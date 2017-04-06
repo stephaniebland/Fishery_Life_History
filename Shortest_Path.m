@@ -108,12 +108,13 @@ exp_d(f)=exp(0);                % The source has a distance of 0 from itself, bu
 % vector with $e^{d_i}=\min_{j}c_{ij}$.
 
 while isempty(f)==0             % Iterate the loop until the distances stop changing. 
-    D=B(:,f)
-    [i,j]=find(D)
-    k=find(D)
-    new_d=D(k).*exp_d(f(j))
-    f=i(find(new_d~=exp_d(f(j))))
-    exp_d(f)=min(new_d,exp_d(f))
+    D=B(:,f);
+    [i,j]=find(D);
+    k=find(D);
+    g=f(j);
+    new_d=D(k).*exp_d(g);
+    f=i(find(new_d~=exp_d(g)));
+    exp_d(f)=min(new_d,exp_d(f));
     
 %     C=B(:,f)*diag(exp_d(f));    % Find shortest paths - so log(c_ij) is the distance between the source and node i, if we take the shortest route through i's neighbour (j). 
 %     C=[old_exp_d,C];            % We will find the shortest path among the newly established distances AND the old paths.
