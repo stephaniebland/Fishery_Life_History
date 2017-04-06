@@ -106,10 +106,10 @@ exp_d(s)=exp(0);                % The source has a distance of 0 from itself, bu
 % vector with $e^{d_i}=\min_{j}c_{ij}$.
 
 new=s;
-C=NaN(n);
 while isempty(new)==0  % Iterate the loop until distance no longer changes 
     old_exp_d=exp_d;            % Keep track of changes in distance. We loop until this is constant, meaning we found the shortest distance. 
-    C(:,new)=B(:,new)*diag(exp_d(new));            % Find shortest paths - so log(c_ij) is the distance between the source and node i, if we take the shortest route through i's neighbour (j). 
+    C=B(:,new)*diag(exp_d(new));            % Find shortest paths - so log(c_ij) is the distance between the source and node i, if we take the shortest route through i's neighbour (j). 
+    C=[old_exp_d,C];
     C(C==0)=NaN;                % Don't mistake 0s for shortest path. (since log(0) is -infinity, it doesn't make sense to use them)
     exp_d=min(C,[],2);          % Find shortest path (We excluded 0s, so it's the second smallest element in each row of matrix C)
     exp_d(isnan(exp_d))=0;
