@@ -1,11 +1,26 @@
 %% A Single Source Shortest Path Algorithm.
 % An alternative to Dijkstra's algorithm.
+%
 % Stephanie Bland
-%% Input: This function takes two inputs
+%
+% This algorithm finds the shortest distance between a source node and all
+% other nodes in a web, where nodes are connected with weighted links. This
+% algorithm can be extended for:
+%
+% * Directed graphs
+% * Cyclic graphs
+% * Directed Acyclic graphs with negatively weighted edges.
+% * Multiplicative graphs (where path distance is the multiple of all
+% edges)
+%
+% ** Input: This function takes two inputs **
+%
 % * $A$ - A weighted web where $a_{ij}$ is the distance from node $i$ to
 % $j$.
 % * $s$ - The source node that shortest distance is calculated from.
-%% Output: Distance
+%
+% ** Output: Distance **
+%
 % * $d$ - A vector that gives the distance ($d_i$) from node $i$ to the
 % source $s$.
 
@@ -22,7 +37,7 @@ A       =   [0 0 0 0 0 0 0 0 0; %1
              5 0 0 0 0 0 0 0 0; %3
              0 0 2 0 0 0 0 0 0; %4
              0 0 0 6 0 0 0 0 0; %5
-             0 0 0 0 8 0 3 0 0; %6
+             0 0 0 0 8 0 2 0 0; %6
              0 9 0 0 0 0 0 0 0; %7
              0 0 0 0 0 2 0 0 0; %8
              0 0 0 0 0 0 0 4 0];%9
@@ -100,6 +115,11 @@ end
 %% Distance from Source Node:
 distance=log(exp_d)             % Transform the data again to give you the distance from source node
 
-
-
-
+%% Plot the Matrix
+% Don't worry about the code here; it just gives you a visualization of
+% what was calculated
+d=string(distance);
+ids=strcat('i=',string(1:n),', d= ',d');
+ids=cellstr(ids);
+bg2 = biograph(A,ids,'ShowWeights','on');
+view(bg2);
