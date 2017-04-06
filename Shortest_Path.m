@@ -1,10 +1,12 @@
 %% A Single Source Shortest Path Algorithm.
 % Stephanie Bland
 %% Input: This function takes two inputs
-% * $A$ - A weighted web where $a_{ij}$ is the distance from node $i$ to $j$.
-% * $s$ - The source node that shortest distance is calculated from. 
+% * $A$ - A weighted web where $a_{ij}$ is the distance from node $i$ to
+% $j$.
+% * $s$ - The source node that shortest distance is calculated from.
 %% Output: Distance
-% * $d$ - A vector that gives the distance ($d_i$) from node $i$ to the source $s$.
+% * $d$ - A vector that gives the distance ($d_i$) from node $i$ to the
+% source $s$.
 
 %% Clear Workspace
 clear;                          % Clears the workspace
@@ -33,16 +35,17 @@ A(A~=0)=exp(A(A~=0));           % Transform the data (take the exponents of link
 n=length(A);
 
 %% Set up the Distance Vector
-% Assume that all nodes have $e^{d_i}=0$ to begin with (because it works this way)
+% Assume that all nodes have $e^{d_i}=0$ to begin with (because it works
+% this way)
 exp_d=zeros(n,1);               % Distance is set to -infinity to begin with  (so 0 because exp(-infinity)=0).
 old_exp_d=exp_d;                % Set up a vector to track changes in distance - we will run the loop until the distance is constant
 A(s,s)=exp(0);                  % Set up a loop between the source and itself of distance 0, so that the source gets it's energy from itself.
 exp_d(s)=exp(0);                % The source has a distance of 0 from itself, but we are using exponents, so 1.
 
 %% The While Loop:
-% This loops until distance is constant (because if there is a shorter 
-% path available between node $i$ and $s$, it will need to go through $j$ 
-% first, so the shortest distance for node $j$ would need to change in the 
+% This loops until distance is constant (because if there is a shorter path
+% available between node $i$ and $s$, it will need to go through $j$ first,
+% so the shortest distance for node $j$ would need to change in the
 % previous loop - proof by induction).
 while sum(old_exp_d~=exp_d)~=0  % Iterate the loop until distance no longer changes
     old_exp_d=exp_d;            % Keep track of changes in distance. We loop until this is constant, meaning we found the shortest distance. 
