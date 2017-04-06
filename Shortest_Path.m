@@ -110,10 +110,10 @@ exp_d(f)=exp(0);                % The source has a distance of 0 from itself, bu
 [u,v,val]=find(B)
 while isempty(f)==0             % Iterate the loop until the distances stop changing. 
     [in_f,in_v]=find(v'==f);
-    new_d=val(in_v).*exp_d(f(in_f))
-    g=u(in_v)
-    [exp_d(g),test]=min([new_d,exp_d(g)],[],2)
-    f=g(find(test==1));
+    new_d=val(in_v).*exp_d(f(in_f));
+    g=u(in_v);
+    [exp_d(g),test]=min([new_d,exp_d(g)],[],2);
+    f=g(logical(test==1));
     
     
     %exp_d(f)=min(new_d,exp_d(f));
