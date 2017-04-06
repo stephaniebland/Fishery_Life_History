@@ -14,7 +14,7 @@ basalsp = find(sum(nicheweb,2)==0);
 
     maxim=10000;%Matlab doesn't like really large numbers, so if the values are huge we should reduce them first. I imagine the same holds for extremely small values.
     edge_weight=randi(maxim,nichewebsize,1)-5;
-    Z=exp(edge_weight*100/maxim);
+    Z=exp(edge_weight*100/maxim);%Transform the data so that you can multiply it
     
     Mass1=zeros(nichewebsize,1);% Set up vector
     Mass_old=Mass1;
@@ -31,5 +31,5 @@ basalsp = find(sum(nicheweb,2)==0);
         Mass1=min(C,[],2);%Find smallest path for each predator now that you excluded 0s
         Mass1(basalsp)=Z(basalsp);%Redefine basal species mass
     end
-    [log(Mass1)*maxim/100, edge_weight]
+    [log(Mass1)*maxim/100, edge_weight]%Transform data back to the original.
     [Mass1, Z];
