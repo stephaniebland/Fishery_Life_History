@@ -139,9 +139,13 @@ while isempty(f)==0             % Iterate the loop until the distances stop chan
     f
     [val(in_v) exp_d(f(in_f))]
     g=u(in_v);
-    
-    [exp_d(g),test]=min([new_d,exp_d(g)],[],2);%ERROR is here, because when you have two items being assigned simultaneously, you end up overwriting value instead of choosing smallest option!!!
+    for i=g'
+        [exp_d(i),test]=min([new_d,exp_d(i)],[],2);
+    end
+    [~,test]=min([new_d,exp_d(g)],[],2);
+    %ERROR is here, because when you have two items being assigned simultaneously, you end up overwriting value instead of choosing smallest option!!!
     f=unique(g(logical(test==1)));
+    logical(exp_d(g)~=new_d
     exp_d
     
     %exp_d(f)=min(new_d,exp_d(f));
