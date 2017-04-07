@@ -77,7 +77,7 @@ f=s;
 % This function takes the exponent of all non-zero elements
 % The resulting matrix $B$ has elements $b_{ij}=e^{a_{ij}}$.
 B=A;                            % Preserve the original matrix
-B(B~=0)=exp(B(B~=0));           % Transform the data (take the exponents of links) - nodes that aren't linked remain 0.
+%B(B~=0)=exp(B(B~=0));           % Transform the data (take the exponents of links) - nodes that aren't linked remain 0.
 
 %% Find size of web - n is the number of nodes
 n=length(B);
@@ -136,10 +136,13 @@ exp_d(f)=exp(0);                % The source has a distance of 0 from itself, bu
 while isempty(f)==0             % Iterate the loop until the distances stop changing. 
     [in_f,in_v]=find(v'==f);
     new_d=val(in_v).*exp_d(f(in_f));
+    f
+    [val(in_v) exp_d(f(in_f))]
     g=u(in_v);
-    [exp_d(g),test]=min([new_d,exp_d(g)],[],2);
-    f=g(logical(test==1));
     
+    [exp_d(g),test]=min([new_d,exp_d(g)],[],2);%ERROR is here, because when you have two items being assigned simultaneously, you end up overwriting value instead of choosing smallest option!!!
+    f=unique(g(logical(test==1)));
+    exp_d
     
     %exp_d(f)=min(new_d,exp_d(f));
     
@@ -152,7 +155,7 @@ while isempty(f)==0             % Iterate the loop until the distances stop chan
 end
 
 %% Distance from Source Node:
-distance=log(exp_d)             % Transform the data again to give you the distance from source node
+distance=(exp_d)             % Transform the data again to give you the distance from source node
 
 %% Plot the Matrix
 % Don't worry about the code here; it just gives you a visualization of
