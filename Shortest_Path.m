@@ -107,7 +107,7 @@ exp_d(f)=exp(0);                % The source has a distance of 0 from itself, bu
 % known distance between node i and the source. So updated the distance
 % vector with $e^{d_i}=\min_{j}c_{ij}$.
 
-[u,v,val]=find(B)
+[u,v,val]=find(B);
 while isempty(f)==0             % Iterate the loop until the distances stop changing. 
     [in_f,in_v]=find(v'==f);
     new_d=val(in_v).*exp_d(f(in_f));
