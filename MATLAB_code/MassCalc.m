@@ -53,21 +53,77 @@ attach(masscalc);
 %Set body size based on trophic level
 %--------------------------------------------------------------------------
     %% Calculate Mass according to T1 (Shortest Distance)
-    Mass1=NaN(nichewebsize,1); % Set up vector
-    Mass1(basalsp)=Z(basalsp); % Basal species defined to have mass equivalent to Z
+    % * MATLAB PUBLISH FEATURE MAKES THIS SECTION READABLE.
+    % * This section is split into two parts. 
+    % * Start with a weighted graph $A$, where $a_{ij}$ indicates the allometric ratio of the edge from node $i$ to $j$. (so the allometric relationship between species i and j. 
+    A=nicheweb.*Z;              %Setup weighted nicheweb matrix - this is like the standard matrix used for Dijkstra algorithm, except weights represent allometric scaling instead of edge length (so multiplicative instead of additive)
 
-    A=nicheweb.*Z;%Setup weighted nicheweb matrix - this is like the standard matrix used for Dijkstra algorithm, except weights represent allometric scaling instead of edge length (so multiplicative instead of additive)
+    Mass1=NaN(nichewebsize,1);	% Set up vector
+    old_Mass1=Mass1;            % Set up a vector to track changes in mass - we will run the loop until mass is constant
+    A(basalsp,basalsp)=exp(0);	% Set up a loop between the source and itself of distance 0, so that the source gets it's energy from themselves.
+    Mass1(basalsp)=Z(basalsp);	% Basal species defined to have mass equivalent to Z (1 if nothing changes)
+
     
-    % Assign mass for non basal species
-    %YES, *of course* you can use same method with Z=[1 1 ...1] for calculating Trophic levels T1, and it's prob cleaner, but both methods work. 
-    for k=0:nichewebsize%We need to iterate the while loop one extra time than min req'd to calculate all Masses - because you only just got the right mass for all the prey species of an apex predator
-        C=A*diag(Mass1);%Find shortest paths - so C_ij is the mass if it were calculated using path going from pred i to prey j.
-        C(C==0)=NaN;%Don't mistake 0s for shortest path.  
-        Mass1=min(C,[],2);%Find smallest path for each predator now that you excluded 0s
-        Mass1(basalsp)=Z(basalsp);%Redefine basal species mass
+    %% The While Loop: Assign Mass for Non Basal Species
+    % * YES, *of course* you can use same method with Z=[1 1 ...1] for calculating Trophic levels T1, and it's prob cleaner, but both methods work. 
+    % * "distance" here is mass, s=source=basal species... I wrote this
+    % trying to generalize to standard shortest distance models... for more
+    % info find file "Shortest_Path.m" on branch
+    % "Prepare-to-Merge-(shortest-path)" in the git repository for this
+    % code. In short, this method is an amalgamation of Dijkstra's and
+    % Floyd-Marshall, it's not as powerful or fast as either, but it's
+    % easiest (for me) to understand. The steps below are as follows:
+    % * This loops until distance is constant. This method guarantees that we
+    % will find the shortest distance $d_{i}$. Proof by induction: If there is
+    % a shorter path between node $i$ and $s$, it will need to go through node 
+    % $j$ first, so the shortest distance for node $j$ would need to change in 
+    % the previous loop.
+    % * Update the vector to keep track of changes in distance. We will
+    % continue to loop until distance is constant.
+    % * Find a matrix 
+    %
+    % $C=A\times  \pmatrix{e^{d_1} &&&  \cr
+    %                       & e^{d_2} && \cr
+    %                       && \ddots  & \cr
+    %                       &&& e^{d_n} \cr}$
+    % 
+    % Of course for the first few rounds, $e^{d_i}=0$ for almost all $i$. Each
+    % round we will add more known values to this. So the log of element 
+    % $c_{ij}$ is the shortest known distance between nodes $i$ and $s$ that 
+    % goes through node $i$'s neighbour, $j$. This is because $b_{ij}$ is the
+    % log of the distance between node $i$ and it's neighbour, $j$, and
+    % $e^{d_j}$ is the shortest known distance between $j$ and s. So
+    % $c_{ij}=b_{ij}e^{d_j}=e^{a_{ij}}e^{d_j}=e^{a_{ij}+d_j}$. So the log of
+    % $c_{ij}$ is: $\log c_{ij}=\log e^{a_{ij}+d_j}=a_{ij}+d_j$, which is the
+    % shortest distance between $i$ and $s$, calculated with the shortest known
+    % value for $d_j$. Every time you run this loop you will update the
+    % distance for the neighbouring nodes, so eventually it will optimize,
+    % provided:
+    %
+    % all distances are positive OR there are no loops. 
+    %%
+    % * Correct for 0 values: $c_{ij}=0$ for distances you have not calculated
+    % yet, so we will set them NaN for now so we don't mistake them for the
+    % shortest distance. 
+    % * We need to find the shortest distance, so we need to find the smallest
+    % known distance between node i and the source. So updated the distance
+    % vector with $e^{d_i}=\min_{j}c_{ij}$.
+    while sum(old_Mass1~=Mass1)~=0  % Iterate the loop until distance no longer changes
+        old_Mass1=Mass1;            % Keep track of changes in distance. We loop until this is constant, meaning we found the shortest distance. 
+        C=A*diag(Mass1);            % Find shortest paths - so log(c_ij) is the distance between the source and node i, if we take the shortest route through i's neighbour (j). 
+        C(C==0)=NaN;                % Don't mistake 0s for shortest path. (since log(0) is -infinity, it doesn't make sense to use them)
+        Mass1=min(C,[],2);          % Find shortest path (We excluded 0s, so it's the second smallest element in each row of matrix C)
     end
-    Mass1
     
+    %% Plot the Matrix: If you want to see that the equations are working. 
+    % Don't worry about the code here; it just gives you a visualization of
+    % what was calculated just uncomment this section.
+%     d=string(Mass1);
+%     ids=strcat('i=',string(1:nichewebsize),', d= ',d');
+%     ids=cellstr(ids);
+%     bg2 = biograph(A,ids,'ShowWeights','on');
+%     view(bg2);
+
     %% Calculate Mass according to T2 (Prey-Averaged Trophic Position)
     prey=sum(nicheweb,2); %sum of each row
     Q=nicheweb./prey;  % Create unweighted Q matrix. (Proportion of predator diet that each species gives).
