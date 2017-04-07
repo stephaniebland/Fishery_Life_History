@@ -23,9 +23,11 @@
 /Testing Code Files/.Rhistory
 /Testing Code Files/Git_Ignore
 
-
 # Modified Code Files #
 #######################
 *.m~
 *.mat
 
+# Publish MATLAB file #
+#######################
+/html/
