@@ -42,6 +42,31 @@ A       =   [0 0 0 0 0 0 0 0 0; %1
              0 0 0 0 0 2 0 0 0; %8
              0 0 0 0 0 0 0 4 0];%9
 
+nicheweb=   [0 0 0 0 0 0 0 0 0; %1
+             1 0 0 0 0 0 0 0 0; %2
+             1 0 0 0 0 0 0 0 0; %3
+             0 0 1 0 0 0 0 0 0; %4
+             0 0 0 1 0 0 0 0 0; %5
+             0 0 0 0 1 0 1 0 0; %6
+             0 1 0 0 0 0 0 0 0; %7
+             0 0 0 0 0 1 0 0 0; %8
+             0 0 0 0 0 0 0 1 0];%9
+Z=[1;2;2;2;2;2;500;2;2];                    
+         
+nichewebsize = length(nicheweb);
+nicheweb1=+nicheweb;
+prey=sum(nicheweb1,2); %sum of each row
+basalsp = find(sum(nicheweb,2)==0);
+
+
+Mass1=NaN(nichewebsize,1);  % Set up vector
+    Mass1(basalsp)=Z(basalsp); % Basal species defined to have mass of 1
+    
+A=nicheweb.*Z;%S
+A(8,5)=0.0001
+         
+         
+         
 s = 1;                          % The element that we are calculating the distance from. the distance ($d_i$) will tell you the distance from node i to the source (s).
 
 %% Relabel source (s) to frontier (f)
