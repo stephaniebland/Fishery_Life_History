@@ -20,31 +20,27 @@ function [T, T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp)
 %Cannibalism within life stages, so cannibalism is allowed between
 %different life stages).
 %--------------------------------------------------------------------------
-    nicheweb1=+nicheweb;  %I really don't know why I'm including this line (except they seemed to like it up there...  does that do something special to matrices, am I missing something....?)  Possibly vestigial line from C++
-    nicheweb1=nicheweb1-diag(diag(nicheweb1));%Set the diagonal to 0.
+    nicheweb1=+nicheweb;  %Possibly a vestigial line from C++
+    %nicheweb1=nicheweb1-diag(diag(nicheweb1));%Set the diagonal to 0, so no cannibalism in Trophic calculations (but whether there is cannibalism in the model is a different question)
 
 
 %--------------------------------------------------------------------------
 %Compute shortest path to basal species for each species.
 %Note: the matrix 'nicheweb' is oriented rows eat columns. 
 %--------------------------------------------------------------------------
-    T1=zeros(1,nichewebsize);
+    T1=NaN(1,nichewebsize);
 
     %Compute shortest trophic level.
-    %Assign level 1 to basal species.
-    T1(basalsp)=1;
-    ind=basalsp;
+    T1(basalsp)=1;  % Assign level 1 to basal species.
+    ind=basalsp;    % Set up index to basal species
 
     % Assign other trophic levels.
-    r = 0;
     for j=2:nichewebsize
-        clear col r;
-        [r,col]=find(nicheweb1(:,ind)~=0);
-        clear ind;
-        ind = unique(r);
-        for i=1:length(ind)
-            if T1(ind(i))==0
-                T1(ind(i))=j;
+        [r,~]=find(nicheweb1(:,ind)~=0);%Find all species that eat previous trophic level
+        ind = unique(r);%Unique Index of species that consume previous trophic level.
+        for i=ind'
+            if isnan(T1(i)) % Don't give new values to species that already have trophic levels.
+                T1(i)=j;
             end
         end 
     end
@@ -58,18 +54,11 @@ function [T, T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp)
 
     %Create unweighted Q matrix. So a matrix that gives proportion of the
     %diet given by each prey species.
-    a=nicheweb1';
-    Q = zeros(nichewebsize);
-    for i=1:nichewebsize
-        for j=1:nichewebsize
-        if prey(j) ~= 0
-            Q(i,j) = a(i,j)/prey(j); 
-            end
-        end
-    end
+    Q=nicheweb1./prey;  % Create unweighted Q matrix. (Proportion of predator diet that each species gives).
+    Q(isnan(Q))=0;      % Set NaN values to 0. 
     
-    %Calculate trophic levels as T2=(I-Q)^-1 * 1  %StephHWK: I may need to come back to this one...
-    T2=(inv(eye(nichewebsize)-Q'))*ones(nichewebsize,1);%"ones(nichewebsize,1)" or could just sum over the rows like you did everywhere else "sum(A,2)"
+    %Calculate trophic levels as T2=(I-Q)^-1 * 1  %Levine 1980 geometric series 
+    T2=(inv(eye(nichewebsize)-Q))*ones(nichewebsize,1);%"ones(nichewebsize,1)" or could just sum over the rows like you did everywhere else "sum(A,2)"
     
 %--------------------------------------------------------------------------
 %Average T1 and T2  %And how is using the average even a good idea?  Why
