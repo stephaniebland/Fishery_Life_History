@@ -31,3 +31,10 @@
 # Publish MATLAB file #
 #######################
 /html/
+
+# Modified Open Files #
+#######################
+~$*
+
+
+
