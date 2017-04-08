@@ -8,7 +8,7 @@
 % and the predator-prey body-masses ratios Z
 %--------------------------------------------------------------------------
 
-function [Bsd, c] = func_resp_scaling(func_resp,nicheweb,nichewebsize,isfish,Z,basalsp)
+function [Bsd, c] = func_resp_scaling(func_resp,nicheweb,nichewebsize,isfish,Mass,basalsp)
 attach(func_resp);
 
 Bsd = ones(nichewebsize); % non zero value to prevent division by 0 in gr_func  (Default half-sat constants)
@@ -60,7 +60,7 @@ for i=1:nichewebsize
                     %------------------------------------------------------
                     else
                         attach(herb);
-                        ratio = Z(i)/Z(j);%Z is predator-prey body mass ratio. 
+                        ratio = Mass(i)/Mass(j);%Predator-prey body mass ratio. 
                         
                         %--------------------------------------------------
                         % if the invertebrate prey j mostly herbivore is
