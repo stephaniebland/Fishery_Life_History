@@ -49,6 +49,7 @@ if abort_sim==false %If the food web is stable enough & has enough fish species 
     save(strcat('Complete_',num2str(simnum)))
     lifestages_linked=false;
     simulations;
+    save(strcat('unlinked_',num2str(simnum)))
     simnum=simnum+1;
 end
 

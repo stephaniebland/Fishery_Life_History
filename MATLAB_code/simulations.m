@@ -23,7 +23,6 @@ for phase=1:4
             Effort=0;
         case 3 %{insert fishing}
             %% Save Deterministic Data For Replicates
-            save(strcat('Prefishing_',num2str(simnum)))%Save the results up to now
             B_repeat_sim=B0;%
             %% Basic settings
             n_years_in_phase=num_years.fishing;
