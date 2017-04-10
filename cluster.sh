@@ -10,6 +10,15 @@
 # see http://www.ace-net.ca/training/workshops-seminars/ for details.
 ###############################################
 
+simnum=1;
+
+while [ $simnum -le 10 ]; do 
+	echo The sim is $simnum
+
+	
+	let simnum=simnum+1
+done
+
 
 
 
