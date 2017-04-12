@@ -39,7 +39,7 @@ B_orig=B_orig.*orig.nodes';%Start with adults only. %CAUTION - changes total bio
 simulations;
 save(strcat('origweb_',num2str(simnum)))
 
-
+%% Increase simnum by 1
 simnum=simnum+1;
 
 end
