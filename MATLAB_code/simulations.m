@@ -10,12 +10,11 @@ abort_sim=false;
 %Run one time phase at a time, each phase has different conditions
 for phase=1:4
     switch phase
-        case 1 % before lifehistory starts
-            n_years_in_phase=num_years.prelifehist;
-            evolve=false;%initialize the evolution setting, needs to be done every time you run the loop
-            nicheweb=extended_web;%Set nicheweb to the original web before fishing induced dietary shifts (so has extended nodes that aren't linked by lifehistory. Important because later we set it to shifted_web)
-            lstages_linked=false;
-            Effort=0;
+        case 1 %{Stabilize Data before you record anything}
+             n_years_in_phase=num_years.stabilize;
+             evolve=false;
+             lstages_linked=lifestages_linked;
+             Effort=0;
         case 2 %{insert lifehistory}
             n_years_in_phase=num_years.pre_fish;
             evolve=false;
@@ -71,7 +70,7 @@ for phase=1:4
         surv_sp=find(B0>ext_thresh);%Index of all surviving nodes (indexed by newwebsize)
         surv_fish_stages=intersect(find(isfish),surv_sp);%Surviving fish lifestages (indexed by new newwebsize)
         surv_fish=unique(species(surv_fish_stages));%The original species number of each surviving fish (indexed as one of S_0)
-        if (length(surv_fish)<3 && phase<3)%Cancel simulation if there aren't enough surviving fish species (not nodes) before fishing even starts
+        if (length(surv_fish)<3 && phase<3 && first_run==true)%Cancel simulation if there aren't enough surviving fish species (not nodes) before fishing even starts
             abort_sim=true;
             break
         end

@@ -5,7 +5,7 @@
 % ATN Model with life histories linked.
 %--------------------------------------------------------------------------
 simnum=1;
-while simnum<=500
+while simnum<=1
 clearvars -except simnum; clear global;
 beep off
 warning off MATLAB:divideByZero;
@@ -15,6 +15,7 @@ global reprod cont_reprod Effort;
 % Protocol parameters
 %--------------------------------------------------------------------------
 Parameters;
+first_run=true;
 setup;% creation of a new food web
 %% Save Deterministic Data For Replicates
 save(strcat('setup_',num2str(simnum)))%Save the results up to now
@@ -47,9 +48,17 @@ plot(day,delta_biomass);
 if abort_sim==false %If the food web is stable enough & has enough fish species before fishing starts, can export it for analysis in R
     %Export Data
     save(strcat('Complete_',num2str(simnum)))
+    B(1000:1005,1:5)
+    B(999:1005,find(isfish==1))
+    B0(find(isfish==1))
+    
     lifestages_linked=false;
+    first_run=false;
     simulations;
     save(strcat('unlinked_',num2str(simnum)))
+    B(1000:1005,1:5)
+    B(999:1005,find(isfish==1))
+    B0(find(isfish==1))
     simnum=simnum+1;
 end
 
