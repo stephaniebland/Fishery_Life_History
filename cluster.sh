@@ -21,47 +21,16 @@ echo 'output=log_1200m/results.output.$(Cluster).$(Process)'
 echo 'error=log_1200m/results.error.$(Cluster).$(Process)'
 echo 'log=log_1200m/results.log.$(Cluster).$(Process)'
 
-
-
-
-#simnum=1;
-#
-#while [ $simnum -le 10 ]; do 
-#	echo The sim is $simnum
-#                         echo "arguments=" $simnum
-#                         echo "queue"
-#
-#	let simnum=simnum+1
-#done
-
+seed_0=0
 
 for simnum in `seq 1 10`; do 
 	echo The sim is $simnum
-	for xkcd in `seq 1 10`; do 
-		echo "arguments=" $simnum $xkcd
+	for Exper in `seq 1 3`; do 
+		echo "arguments=" $seed_0 $simnum $Exper
 		echo "queue"
 	done
 done
 
-
-#for ifrG_native in 0 4; do
-  # for ifrG_Inv in 0 4; do
-    #  for PoA in 0 1; do
-         for k_level in 0 1; do
-	     for fbetaI in 1 4; do
-                 for fepsilonI in 1 4; do
- #                    for ftauI in 1 2; do
-                        for ((ri=1;ri<=1200;ri++)) ; do
-                         echo "arguments=" 4 0 0 1 $k_level 0 $fbetaI $fepsilonI 1 1 0.3 $ri 0
-                         echo "queue"
-                        done
-                     done
-                 #done
-              #done
-          done
-      #done
-    done
-#done
 
 
 
