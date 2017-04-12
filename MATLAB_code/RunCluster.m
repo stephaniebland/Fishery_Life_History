@@ -54,7 +54,7 @@ function RunCluster(seed_0,simnum,linkedstages,Adults_only)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Export Data
     name=sprintf('BLANDseed%d_sim%04d_link%d_AdultOnly%d.txt',seed_0,simnum,linkedstages,Adults_only)
-    %dlmwrite(name,answer,',') 
+    dlmwrite(name,B) 
     
 end
 
