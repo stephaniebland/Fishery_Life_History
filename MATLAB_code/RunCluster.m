@@ -36,14 +36,17 @@ function RunCluster(seed_0,simnum,Exper)
             %% 1st Simulation: Extended_nicheweb + Lifehistory: B_orig & linked
             lifestages_linked=true;
             B0=B_orig;
+            Adults_only=0;
         case 2
             %% 2nd Simulation: Extended_nicheweb: B_orig & NOT linked
             lifestages_linked=false;
             B0=B_orig;
+            Adults_only=0;
         case 3 
             %% 3rd Simulation: Nicheweb: B_orig=B_orig.*orig.nodes';%(Start with adults only) & NOT linked
             lifestages_linked=false;
             B0=B_orig.*orig.nodes';%Start with adults only. %CAUTION - changes total biomass, consider normalizing so all experiments have same total biomass. Or maybe sum juvenile stages to adult instead.
+            Adults_only=1;
     end
             
     %% Simulation
