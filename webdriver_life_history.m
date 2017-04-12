@@ -22,11 +22,6 @@ save(strcat('setup_',num2str(simnum)))%Save the results up to now
 
 simulations;
 
-B=full_sim(:,1:nichewebsize);
-day=0:size(full_sim,1)-1;%Use this for graphs instead of full_t because full_t has gaps and is not perfect
-AllCatch=full_sim(:,2*nichewebsize+(1:nichewebsize));
-E=full_sim(:,3*nichewebsize+(1:nichewebsize));
-
 find(isnan(B)==1) % Check for errors that might occur
 nan_error=min(find(isnan(B)==1))
 isConnected(nicheweb)%Error with TrophicLevels.m may be because it's not connected? As a matrix that is, it was already connected before in orig web, so lifehistories connections keep it alright.

@@ -79,3 +79,14 @@ for phase=1:4
         break
     end
 end
+
+B=full_sim(:,1:nichewebsize);
+day=0:size(full_sim,1)-1;%Use this for graphs instead of full_t because full_t has gaps and is not perfect
+AllCatch=full_sim(:,2*nichewebsize+(1:nichewebsize));
+E=full_sim(:,3*nichewebsize+(1:nichewebsize));
+
+
+
+
+
+
