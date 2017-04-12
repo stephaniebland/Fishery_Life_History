@@ -39,26 +39,8 @@ B_orig=B_orig.*orig.nodes';%Start with adults only. %CAUTION - changes total bio
 simulations;
 save(strcat('origweb_',num2str(simnum)))
 
-%--------------------------------------------------------------------------
-% Export Data
-%--------------------------------------------------------------------------
-if abort_sim==false %If the food web is stable enough & has enough fish species before fishing starts, can export it for analysis in R
-    %Export Data
-    %save(strcat('Complete_',num2str(simnum)))
-    B(1000:1005,1:5)
-    B(999:1005,find(isfish==1))
-    B0(find(isfish==1))
-    
-    lifestages_linked=false;
-    first_run=false;
-    simulations;
-    %save(strcat('unlinked_',num2str(simnum)))
-    B(1000:1005,1:5)
-    B(999:1005,find(isfish==1))
-    B0(find(isfish==1))
-    
-    simnum=simnum+1;
-end
+
+simnum=simnum+1;
 
 end
 

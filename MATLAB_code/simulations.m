@@ -6,7 +6,6 @@ AllCatch=nan(nichewebsize,N_years*L_year);
 %B0=B_orig;
 t_days=0;
 t_year=1;
-abort_sim=false;
 %Run one time phase at a time, each phase has different conditions
 for phase=1:4
     switch phase
@@ -70,13 +69,6 @@ for phase=1:4
         surv_sp=find(B0>ext_thresh);%Index of all surviving nodes (indexed by newwebsize)
         surv_fish_stages=intersect(find(isfish),surv_sp);%Surviving fish lifestages (indexed by new newwebsize)
         surv_fish=unique(species(surv_fish_stages));%The original species number of each surviving fish (indexed as one of S_0)
-        if (length(surv_fish)<3 && phase<3 && first_run==true)%Cancel simulation if there aren't enough surviving fish species (not nodes) before fishing even starts
-            abort_sim=true;
-            break
-        end
-    end
-    if abort_sim==true
-        break
     end
 end
 
