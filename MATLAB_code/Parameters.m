@@ -51,15 +51,15 @@
     S_0=30;% Number of original nodes (species)
     L_year=100;% Number of (days?) in a year (check units!!!)
     %Number of years for each phase%IMPORTANT: IF YOU ADD ANOTHER PHASE YOU NEED TO FIX THE PHASE LOOPS
-    num_years.prelifehist=0;%DOESNT WORK YET%Years Before lifehistories are created
-    num_years.pre_fish=20;%Years of normal pre-fishing simulation
-    num_years.fishing=20;%Years of fishing simulation
-    num_years.post_fish=20;%Years of post-fishing simulation
+    num_years.stabilize=100;%Give model some time to stabilize
+    num_years.pre_fish=200;%Years of normal pre-fishing simulation
+    num_years.fishing=0;%Years of fishing simulation
+    num_years.post_fish=0;%Years of post-fishing simulation
 
 %% Life History Switches
     lifehis.lstages_maxfish=NaN;%NaN;%Maximum number of fish species to create new lifestages for. NaN gives every fish new lifestages.
     lifestages_linked=true;%Are life histories linked via leslie matrix?
-    lstages_B0ratedR=true;%Start simulation with adults only.
+    lstages_B0ratedR=false;%Start simulation with adults only.
     cannibal_invert=true;%Cannibalism for all species
     lifehis.cannibal_fish=false;%false=none,true=yes & any stage can cannibalize larger stages, -1=cannibalism on strictly smaller stages,0=cannibalism on own stages and smaller stages.% The number for cannibal_fish indicates how much younger conspecifics need to be to be cannibalized.  Of note: -1 means strictly younger, 0 means same lifestage or younger
     lifehis.fishpred=true;%Choose how to assign fish predators. 0 means only adults eaten, 1 means all stages are eaten, and true reassigns them according to nichevalues
