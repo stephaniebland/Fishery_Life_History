@@ -53,8 +53,27 @@ function RunCluster(seed_0,simnum,Exper)
     simulations;
     
     %% Export Data
-    name=sprintf('BLANDseed%d_sim%06d_link%d_AdultOnly%d_Exper%d.txt',seed_0,simnum,lifestages_linked,Adults_only,Exper)
-    dlmwrite(name,B);
+    name=sprintf('BLANDseed%d_sim%06d_link%d_AdultOnly%d_Exper%d',seed_0,simnum,lifestages_linked,Adults_only,Exper)
+    dlmwrite(strcat(name,'.txt'),B);
+    
+    %% Save A Figure
+    figure(1); hold on;
+    p=plot(day,log10(B),'LineWidth',1);
+    [~,~,ind_species]=unique(isfish.*species');
+    [~,~,ind_lifestage]=unique(lifestage);
+    %colours=get(gca,'colororder');
+    colours=parula(sum(orig.isfish)+1);
+    %mark={'o', '+', '*', '.', 'x', 's', 'd', '^', 'v', '>', '<', 'p', 'h'}
+    line_lifestage={'-','--',':','-.','-.','-.'};
+    for i=1:nichewebsize
+        p(i).Color=colours(ind_species(i),1:3);
+        %p(i).Marker=char(mark(ind(i)))
+        p(i).LineStyle=char(line_lifestage(lifestage(i)));%Youngest lifestage is given same line type as non-fish species
+    end
+    xlabel('time (1/100 years)'); ylabel('log10 biomass')
+    title('Fish Species by colour (invertebrates are all same colour), and lifestage by line type')
+    grid on;
+    saveas(gcf,'name','png')
     
 end
 
