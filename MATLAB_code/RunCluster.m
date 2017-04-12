@@ -1,4 +1,4 @@
-function [answer]= RunCluster(seed_0,simnum,lifestages_linked,Adults_only)
+function RunCluster(seed_0,simnum,linkedstages,Adults_only)
     %% Set Seed
     rng(seed_0+simnum)
     
@@ -9,6 +9,9 @@ function [answer]= RunCluster(seed_0,simnum,lifestages_linked,Adults_only)
     
     %% Protocol Parameters
     Parameters;
+    
+    %% Setup
+    setup;% creation of a new food web
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Simulation
