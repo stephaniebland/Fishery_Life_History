@@ -11,6 +11,10 @@ location=/Applications/MATLAB_R2016b.app/bin/matlab # Local location on my compu
 echo Parameters $1 $2 $3 $4 $5 $6 $7 $8 $9 $10 $11 $12 $13
 #$location -nodisplay -r "runObj2_cluster($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13);quit"
 $location -nodisplay -r "x=5*4;dlmwrite('hihelloyoutwo.txt',x);quit"
+echo answer is $x yay
+echo $x
+echo this is the end
+#$location -nodisplay -r "RunCluster();quit"
 
 
 
