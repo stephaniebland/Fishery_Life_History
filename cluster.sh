@@ -24,7 +24,6 @@ echo 'log=log_1200m/results.log.$(Cluster).$(Process)'
 seed_0=0
 
 for simnum in `seq 1 10`; do 
-	echo The sim is $simnum
 	for Exper in `seq 1 3`; do 
 		echo "arguments=" $seed_0 $simnum $Exper
 		echo "queue"
