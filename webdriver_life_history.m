@@ -5,7 +5,7 @@
 % ATN Model with life histories linked.
 %--------------------------------------------------------------------------
 simnum=1;
-while simnum<=1
+while simnum<=500
 clearvars -except simnum; clear global;
 beep off
 warning off MATLAB:divideByZero;
