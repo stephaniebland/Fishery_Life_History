@@ -8,10 +8,11 @@ location=/Applications/MATLAB_R2016b.app/bin/matlab # Local location on my compu
 ###############################################
 ################# RUN FILES ###################
 ###############################################
-echo Parameters $1 $2 $3 $4 $5 $6 $7 $8 $9 $10 $11 $12 $13
-#$location -nodisplay -r "runObj2_cluster($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13);quit"
-$location -nodisplay -r "x=5*4;dlmwrite('hihelloyoutwo.txt',x);quit"
-$location -nodisplay -r "RunCluster(4,3);quit"
+echo Parameters $simnum $lifestages_linked $Adults_only
+simnum=5
+lifestages_linked=4
+Adults_only=2
+$location -nodisplay -r "RunCluster($simnum,$lifestages_linked,$Adults_only);quit"
 
 
 
