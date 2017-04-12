@@ -31,3 +31,9 @@
 # Publish MATLAB file #
 #######################
 /html/
+
+# Cluster Trash Files #
+#######################
+*.job
+
+
