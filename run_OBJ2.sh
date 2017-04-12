@@ -8,11 +8,12 @@ location=/Applications/MATLAB_R2016b.app/bin/matlab # Local location on my compu
 ###############################################
 ################# RUN FILES ###################
 ###############################################
-echo Parameters $simnum $lifestages_linked $Adults_only
+seed_0=0
 simnum=5
 lifestages_linked=4
 Adults_only=2
-$location -nodisplay -r "RunCluster($simnum,$lifestages_linked,$Adults_only);quit"
+echo Parameters $seed_0 $simnum $lifestages_linked $Adults_only
+$location -nodisplay -r "RunCluster($seed_0,$simnum,$lifestages_linked,$Adults_only);quit"
 
 
 
