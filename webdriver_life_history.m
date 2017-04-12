@@ -15,19 +15,36 @@ global reprod cont_reprod Effort;
 % Protocol parameters
 %--------------------------------------------------------------------------
 Parameters;
-first_run=true;
+
 setup;% creation of a new food web
 %% Save Deterministic Data For Replicates
 save(strcat('setup_',num2str(simnum)))%Save the results up to now
 
+%% 1st Simulation: Extended_nicheweb + Lifehistory: B_orig & linked
+first_run=true;
+lifestages_linked=true;
+B0=B_orig;
 simulations;
+save(strcat('complete_',num2str(simnum)))
+
+%% 2nd Simulation: Extended_nicheweb: B_orig & NOT linked
+lifestages_linked=false;
+B0=B_orig;
+simulations;
+save(strcat('extended_unlinked_',num2str(simnum)))
+
+%% 3rd Simulation: Nicheweb: B_orig=B_orig.*orig.nodes';%(Start with adults only) & NOT linked
+lifestages_linked=false;
+B_orig=B_orig.*orig.nodes';%Start with adults only. %CAUTION - changes total biomass, consider normalizing so all experiments have same total biomass. Or maybe sum juvenile stages to adult instead.
+simulations;
+save(strcat('origweb_',num2str(simnum)))
 
 %--------------------------------------------------------------------------
 % Export Data
 %--------------------------------------------------------------------------
 if abort_sim==false %If the food web is stable enough & has enough fish species before fishing starts, can export it for analysis in R
     %Export Data
-    save(strcat('Complete_',num2str(simnum)))
+    %save(strcat('Complete_',num2str(simnum)))
     B(1000:1005,1:5)
     B(999:1005,find(isfish==1))
     B0(find(isfish==1))
@@ -35,10 +52,11 @@ if abort_sim==false %If the food web is stable enough & has enough fish species 
     lifestages_linked=false;
     first_run=false;
     simulations;
-    save(strcat('unlinked_',num2str(simnum)))
+    %save(strcat('unlinked_',num2str(simnum)))
     B(1000:1005,1:5)
     B(999:1005,find(isfish==1))
     B0(find(isfish==1))
+    
     simnum=simnum+1;
 end
 
