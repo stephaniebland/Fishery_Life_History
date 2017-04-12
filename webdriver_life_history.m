@@ -21,7 +21,6 @@ setup;% creation of a new food web
 save(strcat('setup_',num2str(simnum)))%Save the results up to now
 
 %% 1st Simulation: Extended_nicheweb + Lifehistory: B_orig & linked
-first_run=true;
 lifestages_linked=true;
 B0=B_orig;
 simulations;
