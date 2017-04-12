@@ -53,7 +53,7 @@ function RunCluster(seed_0,simnum,Exper)
     simulations;
     
     %% Export Data
-    name=sprintf('BLANDseed%d_sim%04d_link%d_AdultOnly%d_Exper%d.txt',seed_0,simnum,lifestages_linked,Adults_only,Exper)
+    name=sprintf('BLANDseed%d_sim%06d_link%d_AdultOnly%d_Exper%d.txt',seed_0,simnum,lifestages_linked,Adults_only,Exper)
     dlmwrite(name,B);
     
 end
