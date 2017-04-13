@@ -6,13 +6,13 @@
 %  invertebrates and fishes, stochasticity in the consumer-resource
 %  body size constants Z and rewrote some comments
 %--------------------------------------------------------------------------
-%  Computes Trophic Levels
+%  Computes Trophic Position
 %  Reference: Brose et al. PNAS 2009
 %  Uses the following parameters:
 %  nichewebsize, nicheweb, basalsp
 %--------------------------------------------------------------------------
 
-function [T, T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp)
+function [T,T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp)
     %% Shortest Path Trophic Position (T1)
     % Compute shortest path to basal species for each species.
     % Note: the matrix 'nicheweb' is oriented rows eat columns. 
@@ -26,7 +26,7 @@ function [T, T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp)
 
     % Assign other trophic levels.
     for j=2:nichewebsize
-        [r,~]=find(nicheweb1(:,ind)~=0);%Find all species that eat previous trophic level
+        [r,~]=find(nicheweb(:,ind)~=0);%Find all species that eat previous trophic level
         ind = unique(r);%Unique Index of species that consume previous trophic level.
         for i=ind'
             if isnan(T1(i)) % Don't give new values to species that already have trophic levels.
@@ -40,17 +40,17 @@ function [T, T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp)
     % C=I+Q+Q^2+Q^3+.... is a geometric series & converges -> C=(I-Q)^(-1)
     
     % Add up how many prey items each species has:
-    prey=sum(nicheweb1,2); %sum of each row
+    prey=sum(nicheweb,2); %sum of each row
 
     % Create unweighted Q matrix. So a matrix that gives proportion of the
     % diet given by each prey species.
-    Q=nicheweb1./prey;  % Create unweighted Q matrix. (Proportion of predator diet that each species gives).
+    Q=nicheweb./prey;  % Create unweighted Q matrix. (Proportion of predator diet that each species gives).
     Q(isnan(Q))=0;      % Set NaN values to 0. 
     
     %Calculate trophic levels as T2=(I-Q)^-1 * 1  %Levine 1980 geometric series 
     T2=(inv(eye(nichewebsize)-Q))*ones(nichewebsize,1); % Or sum over the rows "sum(A,2)"
 
-    %% Short weighted Trophic position
+    %% Short Weighted Trophic Position
     % Better estimate of Trophic position than T1 or T2 on their own:
     % Carscallen et al. Estimating trophic position in marine and estuarine food webs (2012)
     T=((T1+T2')/2)';
