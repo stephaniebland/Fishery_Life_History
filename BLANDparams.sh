@@ -10,8 +10,8 @@
 # see http://www.ace-net.ca/training/workshops-seminars/ for details.
 ###############################################
 # Use following terminal commands to run:
-# chmod ./cluster.sh
-# ./cluster.sh > params2run.job 
+# chmod ./BLANDparams.sh
+# ./BLANDparams.sh > BLANDparamsList.job 
 
 echo "#Created by make_jobfile.sh"
 echo "universe=vanilla"
