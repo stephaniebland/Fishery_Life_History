@@ -73,7 +73,7 @@ function RunCluster(seed_0,simnum,Exper)
     xlabel('time (1/100 years)'); ylabel('log10 biomass')
     title('Fish Species by colour (invertebrates are all same colour), and lifestage by line type')
     grid on;
-    saveas(gcf,'name','png')
+    saveas(gcf,name,'png')
     
 end
 
