@@ -13,13 +13,13 @@
 # chmod ./BLANDparams.sh
 # ./BLANDparams.sh > BLANDparamsList.job 
 
-echo "#Created by make_jobfile.sh"
+echo "#Created by BLANDparams.sh"
 echo "universe=vanilla"
 echo "getenv=true"
-echo "executable=./run_OBJ2.sh"
-echo 'output=BLAND/results.output.$(Cluster).$(Process)'
-echo 'error=BLAND/results.error.$(Cluster).$(Process)'
-echo 'log=BLAND/results.log.$(Cluster).$(Process)'
+echo "executable=./BLANDrun_cluster.sh"
+echo 'output=log_BLAND/results.output.$(Cluster).$(Process)'
+echo 'error=log_BLAND/results.error.$(Cluster).$(Process)'
+echo 'log=log_BLAND/results.log.$(Cluster).$(Process)'
 
 seed_0=0
 
