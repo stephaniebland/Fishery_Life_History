@@ -83,9 +83,9 @@ AllCatch=full_sim(:,2*nichewebsize+(1:nichewebsize));
 E=full_sim(:,3*nichewebsize+(1:nichewebsize));
 
 %% Export Data
-dlmwrite(strcat('B_',name,'.txt'),B);
-dlmwrite(strcat('B_year_end_',name,'.txt'),B_year_end);
-dlmwrite(strcat('B_stable_phase_',name,'.txt'),B_stable_phase);
+dlmwrite(strcat(name,'_B.txt'),B);
+dlmwrite(strcat(name,'_B_year_end.txt'),B_year_end);
+dlmwrite(strcat(name,'_B_stable_phase.txt'),B_stable_phase);
 
 %% Save A Figure
 figure(1); hold on;
