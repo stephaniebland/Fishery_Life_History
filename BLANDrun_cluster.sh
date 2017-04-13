@@ -2,7 +2,8 @@
 ###############################################
 ############### SET LOCATION ##################
 ###############################################
-#location=/nfs/usr/local/bin/matlab # Location for Neo's cluster
+#location=/nfs/usr/local/bin/matlab # Location for Neo's cluster (OLD)
+#location=/nfs/MATLAB/R2013a/bin/matlab # Location for Neo's cluster (NEW)
 location=/Applications/MATLAB_R2016b.app/bin/matlab # Local location on my computer
 
 ###############################################

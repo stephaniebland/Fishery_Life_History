@@ -17,9 +17,9 @@ echo "#Created by make_jobfile.sh"
 echo "universe=vanilla"
 echo "getenv=true"
 echo "executable=./run_OBJ2.sh"
-echo 'output=log_1200m/results.output.$(Cluster).$(Process)'
-echo 'error=log_1200m/results.error.$(Cluster).$(Process)'
-echo 'log=log_1200m/results.log.$(Cluster).$(Process)'
+echo 'output=BLAND/results.output.$(Cluster).$(Process)'
+echo 'error=BLAND/results.error.$(Cluster).$(Process)'
+echo 'log=BLAND/results.log.$(Cluster).$(Process)'
 
 seed_0=0
 
