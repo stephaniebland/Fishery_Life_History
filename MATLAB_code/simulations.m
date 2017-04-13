@@ -76,11 +76,35 @@ for phase=1:4
     end
 end
 
+%% Compile Data
 B=full_sim(:,1:nichewebsize);
 day_t=0:size(full_sim,1)-1;%Use this for graphs instead of full_t because full_t has gaps and is not perfect
 AllCatch=full_sim(:,2*nichewebsize+(1:nichewebsize));
 E=full_sim(:,3*nichewebsize+(1:nichewebsize));
 
+%% Export Data
+dlmwrite(strcat('B_',name,'.txt'),B);
+dlmwrite(strcat('B_year_end_',name,'.txt'),B_year_end);
+dlmwrite(strcat('B_stable_phase_',name,'.txt'),B_stable_phase);
+
+%% Save A Figure
+figure(1); hold on;
+p=plot(day_t,log10(B),'LineWidth',1);
+[~,~,ind_species]=unique(isfish.*species');
+[~,~,ind_lifestage]=unique(lifestage);
+%colours=get(gca,'colororder');
+colours=parula(sum(orig.isfish)+1);
+%mark={'o', '+', '*', '.', 'x', 's', 'd', '^', 'v', '>', '<', 'p', 'h'}
+line_lifestage={'-','--',':','-.','-.','-.'};
+for i=1:nichewebsize
+    p(i).Color=colours(ind_species(i),1:3);
+    %p(i).Marker=char(mark(ind(i)))
+    p(i).LineStyle=char(line_lifestage(lifestage(i)));%Youngest lifestage is given same line type as non-fish species
+end
+xlabel('time (1/100 years)'); ylabel('log10 biomass')
+title('Fish Species by colour (invertebrates are all same colour), and lifestage by line type')
+grid on;
+saveas(gcf,name,'png')
 
 
 

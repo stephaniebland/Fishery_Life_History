@@ -48,34 +48,14 @@ function RunCluster(seed_0,simnum,Exper)
             B0=B_orig.*orig.nodes';%Start with adults only. %CAUTION - changes total biomass, consider normalizing so all experiments have same total biomass. Or maybe sum juvenile stages to adult instead.
             Adults_only=1;
     end
-            
-    %% Simulation
+    
+    %% Name for Exporting Data
+    name=sprintf('BLANDseed%d_sim%06d_link%d_AdultOnly%d_Exper%d',seed_0,simnum,lifestages_linked,Adults_only,Exper)
+    
+    %% Time Series Simulation (& Export TS dependent Properties)
     simulations;
     
-    %% Export Data
-    name=sprintf('BLANDseed%d_sim%06d_link%d_AdultOnly%d_Exper%d',seed_0,simnum,lifestages_linked,Adults_only,Exper)
-    dlmwrite(strcat(name,'.txt'),B);
-    dlmwrite(strcat(name,'.txt'),B_year_end);
-    dlmwrite(strcat(name,'.txt'),B_stable_phase);
-    
-    %% Save A Figure
-    figure(1); hold on;
-    p=plot(day_t,log10(B),'LineWidth',1);
-    [~,~,ind_species]=unique(isfish.*species');
-    [~,~,ind_lifestage]=unique(lifestage);
-    %colours=get(gca,'colororder');
-    colours=parula(sum(orig.isfish)+1);
-    %mark={'o', '+', '*', '.', 'x', 's', 'd', '^', 'v', '>', '<', 'p', 'h'}
-    line_lifestage={'-','--',':','-.','-.','-.'};
-    for i=1:nichewebsize
-        p(i).Color=colours(ind_species(i),1:3);
-        %p(i).Marker=char(mark(ind(i)))
-        p(i).LineStyle=char(line_lifestage(lifestage(i)));%Youngest lifestage is given same line type as non-fish species
-    end
-    xlabel('time (1/100 years)'); ylabel('log10 biomass')
-    title('Fish Species by colour (invertebrates are all same colour), and lifestage by line type')
-    grid on;
-    saveas(gcf,name,'png')
+    %% Export Web Properties:
     
 end
 
