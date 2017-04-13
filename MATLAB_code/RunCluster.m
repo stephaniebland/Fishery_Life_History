@@ -55,6 +55,8 @@ function RunCluster(seed_0,simnum,Exper)
     %% Export Data
     name=sprintf('BLANDseed%d_sim%06d_link%d_AdultOnly%d_Exper%d',seed_0,simnum,lifestages_linked,Adults_only,Exper)
     dlmwrite(strcat(name,'.txt'),B);
+    dlmwrite(strcat(name,'.txt'),B_year_end);
+    dlmwrite(strcat(name,'.txt'),B_stable_phase);
     
     %% Save A Figure
     figure(1); hold on;

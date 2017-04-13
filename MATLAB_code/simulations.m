@@ -3,6 +3,7 @@ full_t=nan(N_years*L_year,1);
 year_index=nan(N_years*L_year,1);
 B_year_end=nan(N_years,nichewebsize);
 AllCatch=nan(nichewebsize,N_years*L_year);
+B_stable_phase=[]; %Capture annual variation once the data set stabilized
 %B0=B_orig;
 t_days=0;
 t_year=1;
@@ -69,6 +70,9 @@ for phase=1:4
         surv_sp=find(B0>ext_thresh);%Index of all surviving nodes (indexed by newwebsize)
         surv_fish_stages=intersect(find(isfish),surv_sp);%Surviving fish lifestages (indexed by new newwebsize)
         surv_fish=unique(species(surv_fish_stages));%The original species number of each surviving fish (indexed as one of S_0)
+    end
+    if n_years_in_phase>0
+        B_stable_phase=[B_stable_phase; phase*ones(L_year,1), x(1:L_year,1:nichewebsize)];
     end
 end
 
