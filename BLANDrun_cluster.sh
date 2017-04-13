@@ -12,8 +12,8 @@ location=/Applications/MATLAB_R2016b.app/bin/matlab # Local location on my compu
 seed_0=0
 simnum=5
 Exper=1
-echo Parameters $seed_0 $simnum $Exper
-$location -nodisplay -r "RunCluster($seed_0,$simnum,$Exper);quit"
+echo Parameters $1 $2 $3
+$location -nodisplay -r "RunCluster($1,$2,$3);quit"
 
 
 

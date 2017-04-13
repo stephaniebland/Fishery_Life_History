@@ -27,8 +27,8 @@ echo 'log=log_BLAND/results.log.$(Cluster).$(Process)'
 
 seed_0=0
 
-for simnum in `seq 1 10`; do 
-	for Exper in `seq 1 3`; do 
+for simnum in 1 10; do 
+	for Exper in 1 3; do 
 		echo "arguments=" $seed_0 $simnum $Exper
 		echo "queue"
 	done
