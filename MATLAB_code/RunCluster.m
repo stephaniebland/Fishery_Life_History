@@ -58,7 +58,7 @@ function RunCluster(seed_0,simnum,Exper)
     
     %% Save A Figure
     figure(1); hold on;
-    p=plot(day,log10(B),'LineWidth',1);
+    p=plot(day_t,log10(B),'LineWidth',1);
     [~,~,ind_species]=unique(isfish.*species');
     [~,~,ind_lifestage]=unique(lifestage);
     %colours=get(gca,'colororder');
