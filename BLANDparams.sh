@@ -10,8 +10,12 @@
 # see http://www.ace-net.ca/training/workshops-seminars/ for details.
 ###############################################
 # Use following terminal commands to run:
-# chmod ./BLANDparams.sh
+# chmod +x ./BLANDparams.sh
 # ./BLANDparams.sh > BLANDparamsList.job 
+# Once in condor run this to get it to run:
+# condor_submit BLANDparamsList.job 
+# and to check the queue of jobs:
+# condor_q
 
 echo "#Created by BLANDparams.sh"
 echo "universe=vanilla"
