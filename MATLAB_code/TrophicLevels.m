@@ -6,13 +6,13 @@
 %  invertebrates and fishes, stochasticity in the consumer-resource
 %  body size constants Z and rewrote some comments
 %--------------------------------------------------------------------------
-%  Computes Trophic Levels
+%  Computes Trophic Position
 %  Reference: Brose et al. PNAS 2009
 %  Uses the following parameters:
 %  nichewebsize, nicheweb, basalsp
 %--------------------------------------------------------------------------
 
-function [T, T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp)
+function [T,T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp)
     %% Shortest Path Trophic Position (T1)
     % Compute shortest path to basal species for each species.
     % Note: the matrix 'nicheweb' is oriented rows eat columns. 
@@ -50,7 +50,7 @@ function [T, T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp)
     %Calculate trophic levels as T2=(I-Q)^-1 * 1  %Levine 1980 geometric series 
     T2=(inv(eye(nichewebsize)-Q))*ones(nichewebsize,1); % Or sum over the rows "sum(A,2)"
 
-    %% Short weighted Trophic position
+    %% Short Weighted Trophic Position
     % Better estimate of Trophic position than T1 or T2 on their own:
     % Carscallen et al. Estimating trophic position in marine and estuarine food webs (2012)
     T=((T1+T2')/2)';
