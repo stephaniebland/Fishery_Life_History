@@ -63,7 +63,7 @@ function RunCluster(seed_0,simnum,Exper)
     
     dlmwrite(strcat(name,'_export_int.txt'),export_int);
     dlmwrite(strcat(name,'_export_real.txt'),export_real);
-    dlmwrite(strcat(name,'_num_years.txt'),num_years);
+    dlmwrite(strcat(name,'_num_years.txt'),cell2mat(struct2cell(num_years)));
     dlmwrite(strcat(name,'_export_vals.txt'),export_vals);
     
 end
