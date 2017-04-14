@@ -16,6 +16,7 @@
 # condor_submit BLANDparamsList.job 
 # and to check the queue of jobs:
 # condor_q
+#location=/Applications/MATLAB_R2016b.app/bin/matlab # Local location on my computer
 
 echo "#Created by BLANDparams.sh"
 echo "universe=vanilla"
@@ -30,6 +31,7 @@ seed_0=0
 for simnum in `seq 1 10`; do
 	for Exper in `seq 1 3`; do
 		echo "arguments=" $seed_0 $simnum $Exper
+		#$location -nodisplay -r "RunCluster($seed_0,$simnum,$Exper);quit"
 		echo "queue"
 	done
 done
