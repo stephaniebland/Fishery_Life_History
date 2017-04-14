@@ -48,8 +48,8 @@ end
         Mass=Mass*W_scalar;
     end;
     Mvec=Mass;
-    basalsp = find(sum(nicheweb,2)==0);%List the autotrophs (So whatever doesn't have prey)  Hidden assumption - can't assign negative prey values (but why would you?)
-
+    basalsp = find(sum(nicheweb,2)==0);%List the autotrophs (So whatever doesn't have prey)  Hidden assumption - can't assign negative prey values (but why would you?) also important because something that used to be basal may no longer be basal
+    
 %%-------------------------------------------------------------------------
 %%  SET DYNAMICS PARAMETERS
 %%-------------------------------------------------------------------------
@@ -86,7 +86,7 @@ end
 %-----------------------------------------------------------
     %Bsd = 1.5*ones(nichewebsize);
     %c = ones(nichewebsize,nichewebsize)*0.5;
-    [Bsd, c]=func_resp_scaling(func_resp,nicheweb,nichewebsize,isfish,Z,basalsp);
+    [Bsd, c]=func_resp_scaling(func_resp,nicheweb,nichewebsize,isfish,Mass,basalsp);
 
 %set initial and final integration times
 %---------------------------------------
