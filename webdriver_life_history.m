@@ -53,19 +53,19 @@ end
 % %subplot(2,1,1); hold on;
 % plot_fish=B(:,[find(isfish')]);
 % plot_invert=B(:,[find(1-isfish')]);
-% plot(day,log10(plot_fish),'r','LineWidth',1);
-% plot(day,log10(plot_invert),'b','LineWidth',1);
+% plot(day_t/100,log10(plot_fish),'r','LineWidth',1);
+% plot(day_t/100,log10(plot_invert),'b','LineWidth',1);
 % %plot(day,log10(B));
-% xlabel('time','FontSize',18); ylabel('log10 biomass','FontSize',18)
+% xlabel('Time (years)','FontSize',18); ylabel('log10 biomass','FontSize',18)
 % %legend('Autotroph','Herbivore','Carnivore')
-%title('Fish vs. Invertebrates','FontSize', 20)
+% title('Fish vs. Invertebrates','FontSize', 20)
 % grid on;
 
 %% Plot Fish Species by colour (invertebrates are all same colour), and lifestage by line type
 
 figure(1); hold on;
 set(gca,'fontsize',14);
-p=plot(day,log10(B),'LineWidth',1);
+p=plot(day_t/100,log10(B),'LineWidth',1);
 [~,~,ind_species]=unique(isfish.*species');
 [~,~,ind_lifestage]=unique(lifestage);
 %colours=get(gca,'colororder');
@@ -77,7 +77,7 @@ for i=1:nichewebsize
     %p(i).Marker=char(mark(ind(i)))
     p(i).LineStyle=char(line_lifestage(lifestage(i)));%Youngest lifestage is given same line type as non-fish species
 end
-xlabel('time (1/100 years)','FontSize',18); ylabel('log10 biomass','FontSize',18)
+xlabel('Time (years)','FontSize',18); ylabel('log10 biomass','FontSize',18)
 title('Fish Species by colour (invertebrates are all same colour), and lifestage by line type','FontSize', 20)
 grid on;
 
@@ -98,9 +98,9 @@ B_species=B_species';
 figure(1); hold on;
 set(gca,'fontsize',14);
 fish_only=B_species(:,2:end);
-plot(day,log10(B_species),'LineWidth',1.5);%Including Inverts & Plants
+plot(day_t/100,log10(B_species),'LineWidth',1.5);%Including Inverts & Plants
 %plot(day,log10(fish_only),'LineWidth',1.5);%Only Fish
-xlabel('time','FontSize',18); ylabel('log10 biomass','FontSize',18)
+xlabel('Time (years)','FontSize',18); ylabel('log10 biomass','FontSize',18)
 grid on;
 title('Individual Fish Species, by total biomass','FontSize', 20)
 
@@ -120,7 +120,7 @@ B_year_mean = accumarray(labels,B_as_vector(:),[],@mean);  %# I used "totals" in
 figure(1); hold on;
 set(gca,'fontsize',14);
 plot(1:N_years,log10(B_year_mean),'LineWidth',1.5);%Annual Means for all nodes
-xlabel('time','FontSize',18); ylabel('log10 biomass','FontSize',18)
+xlabel('Time (years)','FontSize',18); ylabel('log10 biomass','FontSize',18)
 grid on;
 title('Annual means for every node','FontSize', 20)
 
@@ -143,7 +143,7 @@ set(gca,'fontsize',14);
 fish_ann_only=B_ann_species(:,2:end);
 plot(1:N_years,log10(B_ann_species),'LineWidth',2);%Including Inverts & Plants
 %plot(1:N_years,log10(fish_ann_only),'LineWidth',2);%Only Fish
-xlabel('time','FontSize',18); ylabel('log10 biomass','FontSize',18)
+xlabel('Time (years)','FontSize',18); ylabel('log10 biomass','FontSize',18)
 grid on;
 title('Annual Means for every species','FontSize', 20)
 
@@ -154,7 +154,7 @@ title('Annual Means for every species','FontSize', 20)
 figure(1); hold on;
 set(gca,'fontsize',14);
 plot(1:N_years,log10(B_year_end),'LineWidth',1.5);%Including Inverts & Plants
-xlabel('time','FontSize',18); ylabel('log10 biomass','FontSize', 18)
+xlabel('Time (years)','FontSize',18); ylabel('log10 biomass','FontSize', 18)
 grid on;
 title('Year ends for every node','FontSize', 20)
 
@@ -177,7 +177,7 @@ set(gca,'fontsize',14);
 fish_end_only=B_end_species(:,2:end);
 plot(1:N_years,log10(B_end_species),'LineWidth',1.5);%Including Inverts & Plants
 plot(1:N_years,log10(fish_end_only),'LineWidth',1.5);%Only Fish
-xlabel('time','FontSize',18); ylabel('log10 biomass','FontSize',18)
+xlabel('Time (years)','FontSize',18); ylabel('log10 biomass','FontSize',18)
 grid on;
 title('Year ends for every species','FontSize', 20)
 

@@ -89,7 +89,7 @@ dlmwrite(strcat(name,'_B_stable_phase.txt'),B_stable_phase);
 
 %% Save A Figure
 figure(1); hold on;
-p=plot(day_t,log10(B),'LineWidth',1);
+p=plot(day_t/100,log10(B),'LineWidth',1);
 [~,~,ind_species]=unique(isfish.*species');
 [~,~,ind_lifestage]=unique(lifestage);
 %colours=get(gca,'colororder');
@@ -101,7 +101,7 @@ for i=1:nichewebsize
     %p(i).Marker=char(mark(ind(i)))
     p(i).LineStyle=char(line_lifestage(lifestage(i)));%Youngest lifestage is given same line type as non-fish species
 end
-xlabel('time (1/100 years)'); ylabel('log10 biomass')
+xlabel('time (years)'); ylabel('log10 biomass')
 title('Fish Species by colour (invertebrates are all same colour), and lifestage by line type')
 grid on;
 saveas(gcf,name,'png')
