@@ -14,6 +14,7 @@
 %--------------------------------------------------------------------------
 
 function [nicheproperties]= web_properties(nicheweb,T1,T)
+T1=T1';
 
 nichewebsize = length(nicheweb);  % number of species
 numberlinks  = length(find(nicheweb==1)); % L: number of links in the foodweb
@@ -21,14 +22,11 @@ numberlinks  = length(find(nicheweb==1)); % L: number of links in the foodweb
 
 % Top, Bas, Int and Can coefficients
 %--------------------------------------------------------------------------
-    nichewithoutcann=nicheweb; %removes cannibalism
-    for i=1:nichewebsize
-        nichewithoucann(i,i)=0;
-    end
+    nichewithoutcann=nicheweb-diag(diag(nicheweb));%removes cannibalism
     topsp = find(sum(nichewithoutcann,1)==0);   % indices of top species (no pred besides themselves)
 
     basalsp = find(sum(nicheweb,2)==0); % indices of basal species
-    cansp = find(diag(nicheweb)==1);    % indices of top species
+    cansp = find(diag(nicheweb)==1);    % indices of cannibalistic species
 
     Bas=length(basalsp)/nichewebsize;   % percentage of basal species
     Top=length(topsp)/nichewebsize;     % percentage of top species
@@ -39,10 +37,10 @@ numberlinks  = length(find(nicheweb==1)); % L: number of links in the foodweb
 % Herb coefficient
 % = species eating only at basal level
 %--------------------------------------------------------------------------
-    eatingbasalsp=find(sum(nicheweb(:,basalsp),2)>0);    % indices of all species eating basal
+    eatingbasalsp=find(T1'==2);                          % indices of all species eating basal
     nonbasalsp=find(sum(nicheweb,2)>0);                  % indices of non basal
     nonbasalpreys=nicheweb(eatingbasalsp,nonbasalsp);    % matrix rows=eating basal species / col=non basal species
-    herbsp=eatingbasalsp(find(sum(nonbasalpreys,2)==0)); % indicies of herbivore species
+    herbsp=eatingbasalsp(sum(nonbasalpreys,2)==0); % indicies of herbivore species
     Herb=length(herbsp)/nichewebsize;
 
 
@@ -78,9 +76,9 @@ numberlinks  = length(find(nicheweb==1)); % L: number of links in the foodweb
 % Clust coefficient
 %--------------------------------------------------------------------------
     Clustvec=zeros(1,nichewebsize);
-    nichewithoutcan=max(nicheweb-eye(nichewebsize),zeros(nichewebsize)); % to prevent counting cannibal species as their own neighbour --> should we do that?
+    % Use nichewithoutcann to prevent counting cannibal species as their own neighbour --> should we do that?
     for v=1:nichewebsize
-        neighbours=find(nichewithoutcan(v,:)'==1 | nichewithoutcan(:,v)==1);   % indices of species v neighbours (prey & pred)
+        neighbours=find(nichewithoutcann(v,:)'==1 | nichewithoutcann(:,v)==1);   % indices of species v neighbours (prey & pred)
         kv=length(neighbours);                                  % number of neighbours of v's species
         betweenneighbours=nicheweb(neighbours,neighbours);      % submatrix of only v's species neighbours
         Clustvec(v)=length(find(betweenneighbours==1))/kv^2;    % Clustering coeff for species v
@@ -101,14 +99,14 @@ numberlinks  = length(find(nicheweb==1)); % L: number of links in the foodweb
             end
         end
     end
-    pathmat=triu(pathmat); % to keap only pairs of species (clust(i,j)=clust(j,i))
+    pathmat=triu(pathmat); % to keep only pairs of species (clust(i,j)=clust(j,i))
     Path=mean(pathmat(pathmat~=0));
 
 
 % Omn --> fraction of species which consum at least two species and have
 % food chains of different lengths
 %--------------------------------------------------------------------------
-    Tb=repmat(T1,nichewebsize,1).*nicheweb; %on each row, shortest trophic level of the consumed species
+    Tb=nicheweb.*T1; %on each row, shortest trophic level of the consumed species
     Omniv=0;
     for j=nonbasalsp
         if length(unique((Tb(nonbasalsp,:))))>1 %different shortest trophic levels on the same row : omniv
@@ -125,11 +123,11 @@ numberlinks  = length(find(nicheweb==1)); % L: number of links in the foodweb
 % ChNum --> Log of number of food chains (without loops)
 %--------------------------------------------------------------------------
     Loop=[]; %list of species involved in loops
-    tmp=nichewithoutcan;
+    tmp=nichewithoutcann;
     m=zeros(length(nonbasalsp),length(nonbasalsp));
     chLen=0;
     chNum=0;
-    nichewithoutloop=nichewithoutcan;
+    nichewithoutloop=nichewithoutcann;
     for i=1:length(nonbasalsp) %path of length i
         loop_here=[];
         for j=1:length(nonbasalsp) %only the non basal species can eat other species
@@ -139,7 +137,7 @@ numberlinks  = length(find(nicheweb==1)); % L: number of links in the foodweb
             end
         end
         nichewithoutloop(loop_here,loop_here)=0;
-        tmp=tmp*nichewithoutcan;
+        tmp=tmp*nichewithoutcann;
     end
     tmp=nichewithoutloop;
     for i=1:length(nonbasalsp) %path of length i
