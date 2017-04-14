@@ -57,11 +57,14 @@ function RunCluster(seed_0,simnum,Exper)
     
     %% Export Web Properties:
     basal_ls=sum(nicheweb,2)==0;
-    [T1 isfish species' orig.nodes' lifestage' basal_ls]
-    [T2 TrophLevel]
-    %basalsp
-    num_years
-    [nichewebsize ext_thresh]
+    export_int=[T1 isfish species' orig.nodes' lifestage' basal_ls];
+    export_real=[T2 TrophLevel];
+    export_vals=[nichewebsize ext_thresh web_properties(nicheweb,T1,TrophLevel) isConnected(nicheweb)];
+    
+    dlmwrite(strcat(name,'_export_int.txt'),export_int);
+    dlmwrite(strcat(name,'_export_real.txt'),export_real);
+    dlmwrite(strcat(name,'_num_years.txt'),num_years);
+    dlmwrite(strcat(name,'_export_vals.txt'),export_vals);
     
 end
 
