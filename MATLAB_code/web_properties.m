@@ -14,7 +14,6 @@
 %--------------------------------------------------------------------------
 
 function [nicheproperties]= web_properties(nicheweb,T1,T)
-T1=T1';
 
 nichewebsize = length(nicheweb);  % number of species
 numberlinks  = length(find(nicheweb==1)); % L: number of links in the foodweb
@@ -37,7 +36,7 @@ numberlinks  = length(find(nicheweb==1)); % L: number of links in the foodweb
 % Herb coefficient
 % = species eating only at basal level
 %--------------------------------------------------------------------------
-    eatingbasalsp=find(T1'==2);                          % indices of all species eating basal
+    eatingbasalsp=find(T1==2);                          % indices of all species eating basal
     nonbasalsp=find(sum(nicheweb,2)>0);                  % indices of non basal
     nonbasalpreys=nicheweb(eatingbasalsp,nonbasalsp);    % matrix rows=eating basal species / col=non basal species
     herbsp=eatingbasalsp(sum(nonbasalpreys,2)==0); % indicies of herbivore species
@@ -106,7 +105,7 @@ numberlinks  = length(find(nicheweb==1)); % L: number of links in the foodweb
 % Omn --> fraction of species which consum at least two species and have
 % food chains of different lengths
 %--------------------------------------------------------------------------
-    Tb=nicheweb.*T1; %on each row, shortest trophic level of the consumed species
+    Tb=nicheweb.*T1'; %on each row, shortest trophic level of the consumed species
     Omniv=0;
     for j=nonbasalsp
         if length(unique((Tb(nonbasalsp,:))))>1 %different shortest trophic levels on the same row : omniv
