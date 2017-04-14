@@ -56,6 +56,12 @@ function RunCluster(seed_0,simnum,Exper)
     simulations;
     
     %% Export Web Properties:
+    basal_ls=sum(nicheweb,2)==0;
+    [T1 isfish species' orig.nodes' lifestage' basal_ls]
+    [T2 TrophLevel]
+    %basalsp
+    num_years
+    [nichewebsize ext_thresh]
     
 end
 
