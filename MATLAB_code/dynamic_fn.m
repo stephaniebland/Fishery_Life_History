@@ -46,6 +46,7 @@ x0=[B0;zeros(b_size*2,1);E0];%Initial Biomass, initial Effort
         % Set the new initial conditions
         if ~isempty(xe)
             dead = logical(xe(1:b_size)<=ext_thresh);
+            b_size
             x0 = xe;
             x0(dead) = 0;
         end

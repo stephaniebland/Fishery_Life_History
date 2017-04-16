@@ -4,6 +4,7 @@ year_index=nan(N_years*L_year,1);
 B_year_end=nan(N_years,nichewebsize);
 AllCatch=nan(nichewebsize,N_years*L_year);
 B_stable_phase=[]; %Capture annual variation once the data set stabilized
+new_num_years=[];
 %B0=B_orig;
 t_days=0;
 t_year=1;
@@ -40,25 +41,21 @@ for phase=1:4
             evolve=false;
             Effort=0;
     end
-    for i=1:n_years_in_phase
+    stable_yet=nichewebsize;
+    year=0;
+    while stable_yet>0
+        year=year+1;
         if (evolve==true || t_days==0)%For years after evolution starts
-            [reprod]=prob_of_maturity(prob_mat,nichewebsize,is_split,N_stages,species,i);
+            [reprod]=prob_of_maturity(prob_mat,nichewebsize,is_split,N_stages,species,year);
         end
         %% ODE
         [x, t] =  dynamic_fn(K,int_growth,meta,max_assim,effic,Bsd,q,c,f_a,f_m, ...
             ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,L_year+1,ext_thresh);
         B_end=x(L_year+1,1:nichewebsize)'; % use the final biomasses as the initial conditions
+        %[abs((B0-B_end)) abs((B0-B_end)./(B0)) abs((B0-B_end)./(B0))>0.1]
+        stable_yet=sum(abs((B0-B_end)./B0)>0.1)
         B0=B_end;
-        if lstages_linked==true
-            %% Move biomass from one life history to the next
-            fish_gain_tot=sum(x(1:L_year,(1:nichewebsize)+nichewebsize),1)';
-            if cont_reprod==false
-                fish_gain_tot=1;
-            end
-            %DOUBLE CHECK THAT YOU TAKE B OUT OF FOLLOWING LINE
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            B0=aging_table*B_end+fecund_table*(reprod.*fish_gain_tot);%.*B_end); %Last step is adding contribution from all lifestages, so put the rest in brackets! %Split lifehistory_table into two parts.
-        end
+        %year
         %% Concatenate Data for all years
         full_sim((1:L_year)+t_days,:)=x(1:L_year,:);
         full_t((1:L_year)+t_days)=t(1:L_year)+t_days;%full_t does not have timesteps that are *exactly* 1, so numbers don't look to nice.  keep anyhow.
@@ -71,9 +68,8 @@ for phase=1:4
         surv_fish_stages=intersect(find(isfish),surv_sp);%Surviving fish lifestages (indexed by new newwebsize)
         surv_fish=unique(species(surv_fish_stages));%The original species number of each surviving fish (indexed as one of S_0)
     end
-    if n_years_in_phase>0
-        B_stable_phase=[B_stable_phase; phase*ones(L_year,1), x(1:L_year,1:nichewebsize)];
-    end
+	B_stable_phase=[B_stable_phase; phase*ones(L_year,1), x(1:L_year,1:nichewebsize)];
+	new_num_years=[new_num_years year];
 end
 
 %% Compile Data
