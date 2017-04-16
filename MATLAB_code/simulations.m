@@ -83,9 +83,11 @@ AllCatch=full_sim(:,2*nichewebsize+(1:nichewebsize));
 E=full_sim(:,3*nichewebsize+(1:nichewebsize));
 
 %% Export Data
-dlmwrite(strcat(name,'_B.txt'),B);
-dlmwrite(strcat(name,'_B_year_end.txt'),B_year_end);
-dlmwrite(strcat(name,'_B_stable_phase.txt'),B_stable_phase);
+import_vars={'B','B_year_end','B_stable_phase'};
+
+for i=import_vars
+    dlmwrite(strcat(name,'_',char(i),'.txt'),eval(char(i)));
+end
 
 %% Save A Figure
 figure(1); hold on;

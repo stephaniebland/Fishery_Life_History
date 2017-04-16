@@ -55,21 +55,17 @@ function RunCluster(seed_0,simnum,Exper)
     %% Time Series Simulation (& Export TS dependent Properties)
     simulations;
     
-    %% Export Web Properties:
+    %% Extra Web Properties
+    web_properties(nicheweb,T1,TrophLevel);
+    numyears=cell2mat(struct2cell(num_years));
     basal_ls=sum(nicheweb,2)==0;
-    export_int=[T1 isfish species' orig.nodes' lifestage' basal_ls];
-    export_real=[T2 TrophLevel];
-    export_vals=[nichewebsize ext_thresh web_properties(nicheweb,T1,TrophLevel) isConnected(nicheweb)];
+    web_connected=isConnected(nicheweb);
     
-    dlmwrite(strcat(name,'_export_int.txt'),export_int);
-    dlmwrite(strcat(name,'_export_real.txt'),export_real);
-    dlmwrite(strcat(name,'_num_years.txt'),cell2mat(struct2cell(num_years)));
-    dlmwrite(strcat(name,'_export_vals.txt'),export_vals);
+    %% Export Web Properties
+    import_vars={'isfish','basalsp','species','numyears','nichewebsize','ext_thresh','N_stages'};
     
-    import_vars={'B','B_year_end','B_stable_phase','export_int','export_real','export_vals'}
-    
-    for item=import_vars
-        dlmwrite(strcat(name,'_',char(item),'.txt'),eval(char(item)));
+    for i=import_vars
+        dlmwrite(strcat(name,'_',char(i),'.txt'),eval(char(i)));
     end
     
 end
