@@ -50,7 +50,7 @@ function RunCluster(seed_0,simnum,Exper)
     end
     
     %% Name for Exporting Data
-    name=sprintf('BLANDseed%04d_sim%06d_link%d_AdultOnly%d_Exper%d',seed_0,simnum,lifestages_linked,Adults_only,Exper)
+    name=sprintf('BLANDseed%d_sim%d_link%d_AdultOnly%d_Exper%d',seed_0,simnum,lifestages_linked,Adults_only,Exper)
     
     %% Time Series Simulation (& Export TS dependent Properties)
     simulations;
@@ -65,6 +65,12 @@ function RunCluster(seed_0,simnum,Exper)
     dlmwrite(strcat(name,'_export_real.txt'),export_real);
     dlmwrite(strcat(name,'_num_years.txt'),cell2mat(struct2cell(num_years)));
     dlmwrite(strcat(name,'_export_vals.txt'),export_vals);
+    
+    import_vars={'B','B_year_end','B_stable_phase','export_int','export_real','export_vals'}
+    
+    for item=import_vars
+        dlmwrite(strcat(name,'_',char(item),'.txt'),eval(char(item)));
+    end
     
 end
 
