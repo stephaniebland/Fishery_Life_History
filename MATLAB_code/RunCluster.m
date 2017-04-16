@@ -62,7 +62,7 @@ function RunCluster(seed_0,simnum,Exper)
     web_connected=isConnected(nicheweb);
     
     %% Export Web Properties
-    import_vars={'isfish','basalsp','species','numyears','nichewebsize','ext_thresh','N_stages'};
+    import_vars={'isfish','basalsp','basal_ls','species','numyears','nichewebsize','ext_thresh','N_stages','lifestage','L_year','Mass'};
     
     for i=import_vars
         dlmwrite(strcat(name,'_',char(i),'.txt'),eval(char(i)));
