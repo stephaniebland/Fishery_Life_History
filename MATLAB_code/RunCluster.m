@@ -60,9 +60,12 @@ function RunCluster(seed_0,simnum,Exper)
     numyears=cell2mat(struct2cell(num_years));
     basal_ls=sum(nicheweb,2)==0;
     web_connected=isConnected(nicheweb);
+    %Convert Nicheweb into an adjacency list "two-column format, in which the first column lists the number of a consumer, and the second column lists the number of one of the resource species of that consumer." - Dunne 2006
+    [adj_row,adj_col]=find(nicheweb);
+    adj_list=[adj_row, adj_col];%indexed from 1 and up, so if you want first node to be 0, you need to subtract 1.
     
     %% Export Web Properties
-    import_vars={'isfish','basalsp','basal_ls','species','numyears','nichewebsize','ext_thresh','N_stages','lifestage','L_year','Mass'};
+    import_vars={'isfish','basalsp','basal_ls','species','numyears','nichewebsize','ext_thresh','N_stages','lifestage','L_year','Mass','adj_list'};
     
     for i=import_vars
         dlmwrite(strcat(name,'_',char(i),'.txt'),eval(char(i)));
