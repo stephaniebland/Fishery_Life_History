@@ -89,7 +89,7 @@ for i=import_vars
     dlmwrite(strcat(name,'_',char(i),'.txt'),eval(char(i)));
 end
 
-%% Save A Figure
+%% Save A Figure of the whole simulation
 figure(1); hold on;
 p=plot(day_t/100,log10(B),'LineWidth',1);
 [~,~,ind_species]=unique(isfish.*species');
@@ -103,10 +103,30 @@ for i=1:nichewebsize
     %p(i).Marker=char(mark(ind(i)))
     p(i).LineStyle=char(line_lifestage(lifestage(i)));%Youngest lifestage is given same line type as non-fish species
 end
-xlabel('time (years)'); ylabel('log10 biomass')
-title('Fish Species by colour (invertebrates are all same colour), and lifestage by line type')
+xlabel('time (years)','FontSize',18); ylabel('log10 biomass','FontSize',18)
+title('Fish Species by colour (invertebrates are all same colour), and lifestage by line type','FontSize', 12)
 grid on;
-saveas(gcf,name,'png')
+saveas(gcf,strcat(name,'_all'),'png')
+
+%% Save A Figure that contains the period
+figure(1); hold on;
+cycle_tau=10;% The period of the cycle
+p=plot(day_t(end+1-L_year*cycle_tau:end)'/100,log10(B(end+1-L_year*cycle_tau:end,:)),'LineWidth',1);
+[~,~,ind_species]=unique(isfish.*species');
+[~,~,ind_lifestage]=unique(lifestage);
+%colours=get(gca,'colororder');
+colours=parula(sum(orig.isfish)+1);
+%mark={'o', '+', '*', '.', 'x', 's', 'd', '^', 'v', '>', '<', 'p', 'h'}
+line_lifestage={'-','--',':','-.','-.','-.'};
+for i=1:nichewebsize
+    p(i).Color=colours(ind_species(i),1:3);
+    %p(i).Marker=char(mark(ind(i)))
+    p(i).LineStyle=char(line_lifestage(lifestage(i)));%Youngest lifestage is given same line type as non-fish species
+end
+xlabel('time (years)','FontSize',18); ylabel('log10 biomass','FontSize',18)
+title('Fish Species by colour (invertebrates are all same colour), and lifestage by line type','FontSize', 12)
+grid on;
+saveas(gcf,strcat(name,'_periodic'),'png')
 
 
 
