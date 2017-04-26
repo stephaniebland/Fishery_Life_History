@@ -1,0 +1,162 @@
+<deployment-project plugin="plugin.ezdeploy" plugin-version="1.0">
+  <configuration file="/Users/JurassicPark/Google Drive/GIT/Masters Project/RunClusterTEST1.prj" location="/Users/JurassicPark/Google Drive/GIT/Masters Project" name="RunClusterTEST1" target="target.ezdeploy.standalone" target-name="Application Compiler">
+    <param.appname>RunClusterTEST1</param.appname>
+    <param.icon />
+    <param.icons />
+    <param.version>1.0</param.version>
+    <param.authnamewatermark>Stephanie Bland</param.authnamewatermark>
+    <param.email />
+    <param.company />
+    <param.summary />
+    <param.description />
+    <param.screenshot />
+    <param.guid />
+    <param.installpath.string>/RunClusterTEST1/</param.installpath.string>
+    <param.installpath.combo>option.installpath.systemwideapp</param.installpath.combo>
+    <param.logo />
+    <param.install.notes>In the following directions, replace MCR_ROOT by the directory where the MATLAB Runtime is installed on the target machine.
+
+If the environment variable DYLD_LIBRARY_PATH is undefined, set it to the concatenation of the following strings:
+
+    MCR_ROOT/v91/runtime/maci64:
+    MCR_ROOT/v91/sys/os/maci64:
+    MCR_ROOT/v91/bin/maci64
+
+If it is defined, set it to the concatenation of these strings:
+
+    ${LD_LIBRARY_PATH}: 
+    MCR_ROOT/v91/runtime/maci64:
+    MCR_ROOT/v91/sys/os/maci64:
+    MCR_ROOT/v91/bin/maci64</param.install.notes>
+    <param.target.install.notes />
+    <param.intermediate>${PROJECT_ROOT}/RunClusterTEST1/for_testing</param.intermediate>
+    <param.files.only>${PROJECT_ROOT}/RunClusterTEST1/for_redistribution_files_only</param.files.only>
+    <param.output>${PROJECT_ROOT}/RunClusterTEST1/for_redistribution</param.output>
+    <param.logdir>${PROJECT_ROOT}/RunClusterTEST1</param.logdir>
+    <param.enable.clean.build>false</param.enable.clean.build>
+    <param.user.defined.mcr.options />
+    <param.embed.ctf>true</param.embed.ctf>
+    <param.target.type>subtarget.standalone</param.target.type>
+    <param.support.packages />
+    <param.web.mcr>true</param.web.mcr>
+    <param.package.mcr>false</param.package.mcr>
+    <param.no.mcr>false</param.no.mcr>
+    <param.web.mcr.name>MyAppInstaller_web</param.web.mcr.name>
+    <param.package.mcr.name>MyAppInstaller_mcr</param.package.mcr.name>
+    <param.no.mcr.name>MyAppInstaller_app</param.no.mcr.name>
+    <param.windows.command.prompt>false</param.windows.command.prompt>
+    <param.create.log>false</param.create.log>
+    <param.log.file />
+    <unset>
+      <param.icon />
+      <param.icons />
+      <param.version />
+      <param.email />
+      <param.company />
+      <param.summary />
+      <param.description />
+      <param.screenshot />
+      <param.guid />
+      <param.installpath.string />
+      <param.installpath.combo />
+      <param.logo />
+      <param.target.install.notes />
+      <param.intermediate />
+      <param.files.only />
+      <param.output />
+      <param.logdir />
+      <param.enable.clean.build />
+      <param.user.defined.mcr.options />
+      <param.embed.ctf />
+      <param.target.type />
+      <param.support.packages />
+      <param.web.mcr />
+      <param.package.mcr />
+      <param.no.mcr />
+      <param.web.mcr.name />
+      <param.package.mcr.name />
+      <param.no.mcr.name />
+      <param.windows.command.prompt />
+      <param.create.log />
+      <param.log.file />
+    </unset>
+    <fileset.main>
+      <file>${PROJECT_ROOT}/RunCluster.m</file>
+    </fileset.main>
+    <fileset.resources />
+    <fileset.package />
+    <fileset.depfun>
+      <file>${PROJECT_ROOT}/CreateWeb.m</file>
+      <file>${PROJECT_ROOT}/Dietary_evolution.m</file>
+      <file>${PROJECT_ROOT}/LeslieMatrix.m</file>
+      <file>${PROJECT_ROOT}/LifeHistories.m</file>
+      <file>${PROJECT_ROOT}/Linear_Regression.m</file>
+      <file>${PROJECT_ROOT}/MassCalc.m</file>
+      <file>${PROJECT_ROOT}/NicheModel.m</file>
+      <file>${PROJECT_ROOT}/Parameters.m</file>
+      <file>${PROJECT_ROOT}/TrophicLevels.m</file>
+      <file>${PROJECT_ROOT}/attach.m</file>
+      <file>${PROJECT_ROOT}/biomass.m</file>
+      <file>${PROJECT_ROOT}/dynamic_fn.m</file>
+      <file>${PROJECT_ROOT}/func_resp_scaling.m</file>
+      <file>${PROJECT_ROOT}/gr_func.m</file>
+      <file>${PROJECT_ROOT}/isConnected.m</file>
+      <file>${PROJECT_ROOT}/metabolic_scaling.m</file>
+      <file>${PROJECT_ROOT}/prob_of_maturity.m</file>
+      <file>${PROJECT_ROOT}/setup.m</file>
+      <file>${PROJECT_ROOT}/simulations.m</file>
+      <file>${PROJECT_ROOT}/web_properties.m</file>
+    </fileset.depfun>
+    <build-deliverables>
+      <file location="${PROJECT_ROOT}/RunClusterTEST1/for_testing" name="splash.png" optional="false">/Users/JurassicPark/Google Drive/GIT/Masters Project/RunClusterTEST1/for_testing/splash.png</file>
+      <file location="${PROJECT_ROOT}/RunClusterTEST1/for_testing" name="run_RunClusterTEST1.sh" optional="false">/Users/JurassicPark/Google Drive/GIT/Masters Project/RunClusterTEST1/for_testing/run_RunClusterTEST1.sh</file>
+      <file location="${PROJECT_ROOT}/RunClusterTEST1/for_testing" name="RunClusterTEST1.app" optional="false">/Users/JurassicPark/Google Drive/GIT/Masters Project/RunClusterTEST1/for_testing/RunClusterTEST1.app</file>
+      <file location="${PROJECT_ROOT}/RunClusterTEST1/for_testing" name="readme.txt" optional="true">/Users/JurassicPark/Google Drive/GIT/Masters Project/RunClusterTEST1/for_testing/readme.txt</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>/Applications/MATLAB_R2016b.app</root>
+      <toolboxes>
+        <toolbox name="fixedpoint" />
+        <toolbox name="matlabcoder" />
+        <toolbox name="matlabhdlcoder" />
+        <toolbox name="embeddedcoder" />
+      </toolboxes>
+      <toolbox>
+        <fixedpoint>
+          <enabled>true</enabled>
+        </fixedpoint>
+      </toolbox>
+      <toolbox>
+        <matlabcoder>
+          <enabled>true</enabled>
+        </matlabcoder>
+      </toolbox>
+      <toolbox>
+        <matlabhdlcoder>
+          <enabled>true</enabled>
+        </matlabhdlcoder>
+      </toolbox>
+      <toolbox>
+        <embeddedcoder>
+          <enabled>true</enabled>
+        </embeddedcoder>
+      </toolbox>
+    </matlab>
+    <platform>
+      <unix>true</unix>
+      <mac>true</mac>
+      <windows>false</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>false</linux>
+      <solaris>false</solaris>
+      <osver>10.12.3</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>maci64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>
