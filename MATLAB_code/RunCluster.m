@@ -26,33 +26,28 @@ function RunCluster(seed_0,simnum,Exper)
     
     %% Protocol Parameters
     Parameters;
-    simnum=0
-    5+4
-    Exper=1
-    seed_0=0
-    23+2
     
     %% Setup
     setup;% creation of a new food web
     
     %% Experimental Parameters
-%     switch Exper
-%         case 1
+    switch Exper
+        case 1
             %% 1st Simulation: Extended_nicheweb + Lifehistory: B_orig & linked
             lifestages_linked=true;
             B0=B_orig;
             Adults_only=0;
-%         case 2
-%             %% 2nd Simulation: Extended_nicheweb: B_orig & NOT linked
-%             lifestages_linked=false;
-%             B0=B_orig;
-%             Adults_only=0;
-%         case 3 
-%             %% 3rd Simulation: Nicheweb: B_orig=B_orig.*orig.nodes';%(Start with adults only) & NOT linked
-%             lifestages_linked=false;
-%             B0=B_orig.*orig.nodes';%Start with adults only. %CAUTION - changes total biomass, consider normalizing so all experiments have same total biomass. Or maybe sum juvenile stages to adult instead.
-%             Adults_only=1;
-%     end
+        case 2
+            %% 2nd Simulation: Extended_nicheweb: B_orig & NOT linked
+            lifestages_linked=false;
+            B0=B_orig;
+            Adults_only=0;
+        case 3 
+            %% 3rd Simulation: Nicheweb: B_orig=B_orig.*orig.nodes';%(Start with adults only) & NOT linked
+            lifestages_linked=false;
+            B0=B_orig.*orig.nodes';%Start with adults only. %CAUTION - changes total biomass, consider normalizing so all experiments have same total biomass. Or maybe sum juvenile stages to adult instead.
+            Adults_only=1;
+    end
     
     %% Name for Exporting Data
     name=sprintf('BLANDseed%d_sim%d_link%d_AdultOnly%d_Exper%d',seed_0,simnum,lifestages_linked,Adults_only,Exper);
@@ -70,7 +65,7 @@ function RunCluster(seed_0,simnum,Exper)
     adj_list=[adj_row, adj_col];%indexed from 1 and up, so if you want first node to be 0, you need to subtract 1.
     
     %% Export Web Properties
-    import_vars={'simnum','Exper','isfish','basalsp','basal_ls','species','numyears','nichewebsize','ext_thresh','N_stages','lifestage','L_year','Mass','adj_list'};
+    import_vars={'isfish','basalsp','basal_ls','species','numyears','nichewebsize','ext_thresh','N_stages','lifestage','L_year','Mass','adj_list'};
     
     for i=import_vars
         dlmwrite(strcat(name,'_',char(i),'.txt'),eval(char(i)));
