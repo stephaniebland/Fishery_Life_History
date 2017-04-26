@@ -106,7 +106,7 @@ end
 xlabel('time (years)','FontSize',18); ylabel('log10 biomass','FontSize',18)
 title('Fish Species by colour (invertebrates are all same colour), and lifestage by line type','FontSize', 12)
 grid on;
-%saveas(gcf,strcat(name,'_all'),'png')
+saveas(gcf,strcat(name,'_all'),'png')
 
 %% Save A Figure that contains the period
 % figure(1); hold on;
