@@ -75,9 +75,9 @@ function RunCluster(seed_0,simnum,Exper)
         dlmwrite(strcat(name,'_',char(i),'.txt'),eval(char(i)));
     end
     
+    %% Close the windows so simulation ends
+    close all;
 end
-
-
 
 
 
