@@ -110,7 +110,7 @@ saveas(gcf,strcat(name,'_all'),'png')
 
 %% Save A Figure that contains the period
 figure(1); hold on;
-cycle_tau=10;% The period of the cycle
+cycle_tau=1;% The period of the cycle
 p=plot(day_t(end+1-L_year*cycle_tau:end)'/100,log10(B(end+1-L_year*cycle_tau:end,:)),'LineWidth',1);
 [~,~,ind_species]=unique(isfish.*species');
 [~,~,ind_lifestage]=unique(lifestage);
