@@ -16,6 +16,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function RunCluster(seed_0,simnum,Exper)
+    seed_0=str2num(seed_0);
+    simnum=str2num(simnum);
+    Exper=str2num(Exper);
+
     %% Set Seed
     rng(seed_0+simnum)
     
