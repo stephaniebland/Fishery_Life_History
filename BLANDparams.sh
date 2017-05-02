@@ -1,5 +1,6 @@
 #!/bin/bash
 # The looping script to run on ACENET clusters.
+# https://www.ace-net.ca/wiki/MATLAB_Runtime
 ###############################################
 # ACENET (www.ace-net.ca) provides cluster computing resources for researchers at Dal (and elsewhere).
 # Your thesis supervisor will have to get an account before you can, but both are free.
