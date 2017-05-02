@@ -16,25 +16,32 @@
 # condor_submit BLANDparamsList.job 
 # and to check the queue of jobs:
 # condor_q
+##### MATLAB #####
 #location=/Applications/MATLAB_R2016b.app/bin/matlab # Local location on my computer
+##### MATLAB RUNTIME #####
+#location=/Applications/MATLAB/MATLAB_Runtime/v91  #My Laptop
+#location=/usr/local/matlab-runtime/r2017a/v92 #ACENET NEW
+script_name=RunCluster
 
-echo "#Created by BLANDparams.sh"
-echo "universe=vanilla"
-echo "getenv=true"
-echo "executable=./BLANDrun_cluster.sh"
-echo 'output=log_BLAND/results.output.$(Cluster).$(Process)'
-echo 'error=log_BLAND/results.error.$(Cluster).$(Process)'
-echo 'log=log_BLAND/results.log.$(Cluster).$(Process)'
+echo '#$ -cwd'
+echo '#$ -j yes'
+echo '#$ -l h_rt=48:0:0'
+echo '#$ -l h_vmem=40G'
+echo 'module load matlab-runtime/r2017a'
 
-seed_0=0
+chmod +x $script_name
+chmod +x run_$script_name.sh
+declare -i seed_0=0
+simsize=5
 
-for simnum in `seq 1 10`; do
-	for Exper in `seq 1 3`; do
-		echo "arguments=" $seed_0 $simnum $Exper
-		#$location -nodisplay -r "RunCluster($seed_0,$simnum,$Exper);quit"
-		echo "queue"
-	done
+for simnum in `seq 0 4`; do
+	declare -i simnum_0=$simsize*$simnum+1
+	declare -i simnum_f=$simsize+$simnum_0-1
+	echo ./run_$script_name.sh $MCR $seed_0 $simnum_0 $simnum_f
 done
+
+
+#Don't run more than 2 days strict limit
 
 
 
