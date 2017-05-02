@@ -9,24 +9,18 @@
 # There are several classroom and web training sessions scheduled for early May;
 # see http://www.ace-net.ca/training/workshops-seminars/ for details.
 ###############################################
-# Use following terminal commands to run:
+# Use following terminal commands to run in ACENET:
 # chmod +x ./BLANDparams.sh
-# ./BLANDparams.sh > BLANDparamsList.job 
-# Once in condor run this to get it to run:
-# condor_submit BLANDparamsList.job 
+# ./BLANDparams.sh > BLANDparams.job 
+# qsub BLANDparams.job 
 # and to check the queue of jobs:
-# condor_q
-##### MATLAB #####
-#location=/Applications/MATLAB_R2016b.app/bin/matlab # Local location on my computer
-##### MATLAB RUNTIME #####
-#location=/Applications/MATLAB/MATLAB_Runtime/v91  #My Laptop
-#location=/usr/local/matlab-runtime/r2017a/v92 #ACENET NEW
+# qstat 
 script_name=RunCluster
 
 echo '#$ -cwd'
 echo '#$ -j yes'
-echo '#$ -l h_rt=48:0:0'
-echo '#$ -l h_vmem=40G'
+echo '#$ -l h_rt=48:0:0' # Time limit
+echo '#$ -l h_vmem=40G'	 # memory limit
 echo 'module load matlab-runtime/r2017a'
 
 chmod +x $script_name
