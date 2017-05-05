@@ -24,12 +24,7 @@ while sum(orig.isfish)==0%Guarantee that the food web has at least one fish
 %Calculates species weight -> so you know how many life stages it needs
     [TrophLevel,orig.T1,orig.T2]= TrophicLevels(nichewebsize,orig.nicheweb,basalsp);
     [orig.Z,orig.Mvec,orig.isfish,W_scaled,W_scalar]= MassCalc(masscalc,nichewebsize,orig.nicheweb,basalsp,TrophLevel);
-end    
-%%-------------------------------------------------------------------------
-%%  LINEAR REGRESSION
-%%------------------------------------------------------------------------- 
-    % Use Linear regression to estimate slope of mass-niche relationship:
-    [R_squared,Adj_Rsq,lin_regr]=Linear_Regression(orig);
+end
 
 %%-------------------------------------------------------------------------
 %%  LIFE HISTORY

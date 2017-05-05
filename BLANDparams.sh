@@ -10,6 +10,10 @@
 # There are several classroom and web training sessions scheduled for early May;
 # see http://www.ace-net.ca/training/workshops-seminars/ for details.
 ###############################################
+# COMPILE IT ON LINUX FIRST:
+# Run this script on linux (Selenium) and it will compile your data files
+# /usr/local/MATLAB/R2017a/bin/matlab -nodisplay -r "cd('/home/selenium/Documents/Masters Project/');mcc -m RunCluster.m;quit"
+###############################################
 # Use following terminal commands to run in ACENET:
 # chmod +x ./BLANDparams.sh
 # ./BLANDparams.sh > BLANDparams.job 
