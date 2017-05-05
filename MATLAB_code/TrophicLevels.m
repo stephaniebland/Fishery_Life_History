@@ -18,7 +18,7 @@ function [T,T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp)
     % Note: the matrix 'nicheweb' is oriented rows eat columns. 
     
     % Set up vector for storing values
-    T1=NaN(1,nichewebsize);
+    T1=NaN(nichewebsize,1);
 
     % Find all species with T1=1 -> Basal species (autotrophs)
     T1(basalsp)=1;  % Assign level 1 to basal species.
@@ -53,6 +53,6 @@ function [T,T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp)
     %% Short Weighted Trophic Position
     % Better estimate of Trophic position than T1 or T2 on their own:
     % Carscallen et al. Estimating trophic position in marine and estuarine food webs (2012)
-    T=((T1+T2')/2)';
+    T=(T1+T2)/2;
 
 end
