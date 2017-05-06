@@ -54,16 +54,6 @@ B2mx = B1mx';         %% B in rows (one column=one species, rows are identical)
             for k=pred'
                 val=val+c(k,j)*pik(i,k)*B(k)*Bsd(k,j)^h;
             end
-%             val2=0;
-%             k=0;
-%             while k<length(pred)
-%                k=k+1;
-%                val2=val2+c(pred(k),j)*pik(i,pred(k))*B(pred(k))*Bsd(pred(k),j)^h;
-%             end
-%             %Check if the values are correct
-%             if val-val2~=0
-%                 val-val2
-%             end
             cBiB0h(i,j)=val;
         end
     end
