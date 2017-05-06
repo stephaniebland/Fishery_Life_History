@@ -35,17 +35,14 @@ B2mx = B1mx';         %% B in rows (one column=one species, rows are identical)
     
     % omega (preferences) matrix
     nr_resources=sum(nicheweb,2); 
-    tmp=1./nr_resources;
-    tmp(basalsp)=zeros(size(basalsp));
-    w=tmp * ones(1,N_s); 
-    w=nicheweb.*w;
+    w=nicheweb./nr_resources;  % Create unweighted w matrix. (Proportion of predator diet that each species gives).
+    w(isnan(w))=0;
     %---------------------------
     
     % resource species shared (pik) matrix
-    Niche=double(nicheweb);
-    pik=nr_resources*ones(1,N_s);
-    pik(basalsp,:)=1; % to prevent dividing by 0
-    pik=(Niche*Niche')./pik;
+    Niche=double(nicheweb);%Useful if nicheweb is logical (probably more efficient way of storing it, but we already have it as a double)
+    pik=(Niche*Niche')./nr_resources;%Niche*Niche' is a matrix where element a_ij is the number of prey that both i and j eats.(so they would be competing for same prey)
+    pik(isnan(pik))=0;%Dividing by 0 gives NaN so we reassign it to 0.
     %---------------------------
     
     % competition due to other predators
@@ -54,16 +51,23 @@ B2mx = B1mx';         %% B in rows (one column=one species, rows are identical)
         for j=1:N_s
             pred=find(nicheweb(:,j)==1);
             val=0;
-            k=0;
-            while k<length(pred)
-               k=k+1;
-               val=val+c(pred(k),j)*pik(i,pred(k))*B(pred(k))*Bsd(pred(k),j)^h;
+            for k=pred'
+                val=val+c(k,j)*pik(i,k)*B(k)*Bsd(k,j)^h;
             end
+%             val2=0;
+%             k=0;
+%             while k<length(pred)
+%                k=k+1;
+%                val2=val2+c(pred(k),j)*pik(i,pred(k))*B(pred(k))*Bsd(pred(k),j)^h;
+%             end
+%             %Check if the values are correct
+%             if val-val2~=0
+%                 val-val2
+%             end
             cBiB0h(i,j)=val;
         end
     end
-    clear pred;
-    clear val;
+    clear pred val;
     %---------------------------
     
     wBh = w.*(ones(N_s,1)*Bpow');
