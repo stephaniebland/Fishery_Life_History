@@ -10,12 +10,20 @@
 # There are several classroom and web training sessions scheduled for early May;
 # see http://www.ace-net.ca/training/workshops-seminars/ for details.
 ###############################################
+# COMPILE IT ON LINUX FIRST:
+# Run this script on linux (Selenium) and it will compile your data files
+# /usr/local/MATLAB/R2017a/bin/matlab -nodisplay -r "cd('/home/selenium/Documents/Masters Project/');mcc -m RunCluster.m;quit"
+# To compile it on my mac instead:
+# /Applications/MATLAB_R2016b.app/bin/matlab -nodisplay -r "cd('/Users/JurassicPark/Google Drive/GIT/Masters Project');mcc -m RunCluster.m;quit"
+###############################################
 # Use following terminal commands to run in ACENET:
 # chmod +x ./BLANDparams.sh
 # ./BLANDparams.sh > BLANDparams.job 
 # qsub BLANDparams.job 
 # and to check the queue of jobs:
 # qstat 
+# and to check memory requirements:
+# qacct -j 6782792 | grep maxvmem
 script_name=RunCluster
 
 echo '#$ -cwd'
@@ -28,6 +36,10 @@ chmod +x $script_name
 chmod +x run_$script_name.sh
 declare -i seed_0=0
 simsize=5
+###############################################
+# Options to run it locally instead
+# MCR=/Applications/MATLAB/MATLAB_Runtime/v91 #Run on my Mac
+# MCR=/usr/local/MATLAB/MATLAB_Runtime/v92 #Run on linux (Selenium)
 
 for simnum in `seq 0 4`; do
 	declare -i simnum_0=$simsize*$simnum+1
@@ -36,7 +48,7 @@ for simnum in `seq 0 4`; do
 done
 
 
-#Don't run more than 2 days strict limit
+
 
 
 

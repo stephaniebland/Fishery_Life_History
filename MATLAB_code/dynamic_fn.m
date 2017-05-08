@@ -61,10 +61,10 @@ x0=[B0;zeros(b_size*2,1);E0];%Initial Biomass, initial Effort
 %----------------------------------------------------------------------
 %This function is set to stop the integration when any species drops below the 
 %extinction threshold.
-function [lookfor, stop, direction] = events(~,y,~,~,~,~, ...
+function [lookfor, stop, direction] = events(~,y,b_size,~,~,~, ...
           ~,~,~,~,~,~,~,~,~,~,~,~,~,ext_thresh)
 
-    lookfor   = y(1:30) - ext_thresh;       % look for any biomass to reach the threshold
+    lookfor   = y(1:b_size) - ext_thresh;       % look for any biomass to reach the threshold
     stop      = ones(length(lookfor),1);    % =1 to stop the code when detection of the event
     direction = zeros(length(lookfor),1);   % detection if B are increasing or decreasing
 
