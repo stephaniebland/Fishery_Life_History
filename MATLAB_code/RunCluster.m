@@ -58,7 +58,7 @@ function RunCluster(seed_0,simnum_0,simnum_f)
             end
 
             %% Name for Exporting Data
-            name=sprintf('BLANDseed%d_sim%d_link%d_AdultOnly%d_Exper%d',seed_0,simnum,lifestages_linked,Adults_only,Exper)
+            name=sprintf('BLAND_seed%d_sim%d_Exper%d',seed_0,simnum,Exper)
 
             %% Time Series Simulation (& Export TS dependent Properties)
             simulations;
