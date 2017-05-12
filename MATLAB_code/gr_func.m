@@ -47,6 +47,10 @@ B2mx = B1mx';         %% B in rows (one column=one species, rows are identical)
     
     % competition due to other predators
     cBiB0h=zeros(N_s);
+    xkcd=zeros(N_s);
+    xkcd2=zeros(N_s);
+    xkcd3=zeros(N_s);
+    thingy=nicheweb.*c.*B.*(Bsd.^h);%This line only works because nicheweb is binary!
     for i=1:N_s
         for j=1:N_s
             pred=find(nicheweb(:,j)==1);
@@ -55,7 +59,16 @@ B2mx = B1mx';         %% B in rows (one column=one species, rows are identical)
                 val=val+c(k,j)*pik(i,k)*B(k)*Bsd(k,j)^h;
             end
             cBiB0h(i,j)=val;
+            %Testing an equivalent solution:
+            test=nicheweb(:,j).*c(:,j).*pik(i,:)'.*B.*(Bsd(:,j).^h);%This line only works because nicheweb is binary!
+            xkcd(i,j)=sum(test);
         end
+        %And another equivalent solution:
+        test2=nicheweb.*c.*pik(i,:)'.*B.*(Bsd.^h);%This line only works because nicheweb is binary!
+        xkcd2(i,:)=sum(test2);
+        %And finally, a third:
+        test3=thingy.*pik(i,:)';
+        xkcd3(i,:)=sum(test3);%This isn't broken, just rounding errors!
     end
     clear pred val;
     %---------------------------
