@@ -60,38 +60,38 @@ for phase=1:4
             B0=aging_table*B_end+fecund_table*(reprod.*fish_gain_tot);%.*B_end); %Last step is adding contribution from all lifestages, so put the rest in brackets! %Split lifehistory_table into two parts.
         end
         %% Concatenate Data for all years
-        full_sim((1:L_year)+t_days,:)=x(1:L_year,:);
-        full_t((1:L_year)+t_days)=t(1:L_year)+t_days;%full_t does not have timesteps that are *exactly* 1, so numbers don't look to nice.  keep anyhow.
-        year_index((1:L_year)+t_days)=repelem(t_year,L_year);%Pointless really, just the year of each time step. good for checking data
+%         full_sim((1:L_year)+t_days,:)=x(1:L_year,:);
+%         full_t((1:L_year)+t_days)=t(1:L_year)+t_days;%full_t does not have timesteps that are *exactly* 1, so numbers don't look to nice.  keep anyhow.
+%         year_index((1:L_year)+t_days)=repelem(t_year,L_year);%Pointless really, just the year of each time step. good for checking data
         B_year_end(t_year,:)=B_end;%For matlab graphs- just year end biomasses
         t_days=t_days+L_year;%Index Number of days that passed, because loop repeated for cases
         t_year=t_year+1;%Index Number of years that passed, because loop repeated for cases
         %% Aborts simulation early if there aren't enough fish for it to continue
-        surv_sp=find(B0>ext_thresh);%Index of all surviving nodes (indexed by newwebsize)
-        surv_fish_stages=intersect(find(isfish),surv_sp);%Surviving fish lifestages (indexed by new newwebsize)
-        surv_fish=unique(species(surv_fish_stages));%The original species number of each surviving fish (indexed as one of S_0)
+%         surv_sp=find(B0>ext_thresh);%Index of all surviving nodes (indexed by newwebsize)
+%         surv_fish_stages=intersect(find(isfish),surv_sp);%Surviving fish lifestages (indexed by new newwebsize)
+%         surv_fish=unique(species(surv_fish_stages));%The original species number of each surviving fish (indexed as one of S_0)
     end
-    if n_years_in_phase>0
-        B_stable_phase=[B_stable_phase; phase*ones(L_year,1), x(1:L_year,1:nichewebsize)];
-    end
+%     if n_years_in_phase>0 %Doesnt work yet - need to gather cycle_tau
+%         B_stable_phase=[B_stable_phase; phase*ones(L_year,1), x(1:L_year,1:nichewebsize)];
+%     end
 end
 
 %% Compile Data
-B=full_sim(:,1:nichewebsize);
-day_t=0:size(full_sim,1)-1;%Use this for graphs instead of full_t because full_t has gaps and is not perfect
-AllCatch=full_sim(:,2*nichewebsize+(1:nichewebsize));
-E=full_sim(:,3*nichewebsize+(1:nichewebsize));
+% B=full_sim(:,1:nichewebsize);
+% day_t=0:size(full_sim,1)-1;%Use this for graphs instead of full_t because full_t has gaps and is not perfect
+% AllCatch=full_sim(:,2*nichewebsize+(1:nichewebsize));
+% E=full_sim(:,3*nichewebsize+(1:nichewebsize));
 
 %% Export Data
-import_vars={'B','B_year_end','B_stable_phase'};
+import_vars={'B_year_end'};
 
 for i=import_vars
     dlmwrite(strcat(name,'_',char(i),'.txt'),eval(char(i)));
 end
 
-%% Save A Figure of the whole simulation
+%% Save A Figure of the year ends
 figure(1); hold on;
-p=plot(day_t/100,log10(B),'LineWidth',1);
+p=plot(1:N_years,log10(B_year_end),'LineWidth',1);
 [~,~,ind_species]=unique(isfish.*species');
 [~,~,ind_lifestage]=unique(lifestage);
 %colours=get(gca,'colororder');
@@ -106,27 +106,46 @@ end
 xlabel('time (years)','FontSize',18); ylabel('log10 biomass','FontSize',18)
 title('Fish Species by colour (invertebrates are all same colour), and lifestage by line type','FontSize', 12)
 grid on;
-saveas(gcf,strcat(name,'_all'),'png')
+saveas(gcf,strcat(name,'_yr_ends'),'png')
+
+%% Save A Figure of the whole simulation
+% figure(1); hold on;
+% p=plot(day_t/100,log10(B),'LineWidth',1);
+% [~,~,ind_species]=unique(isfish.*species');
+% [~,~,ind_lifestage]=unique(lifestage);
+% %colours=get(gca,'colororder');
+% colours=parula(sum(orig.isfish)+1);
+% %mark={'o', '+', '*', '.', 'x', 's', 'd', '^', 'v', '>', '<', 'p', 'h'}
+% line_lifestage={'-','--',':','-.','-.','-.'};
+% for i=1:nichewebsize
+%     p(i).Color=colours(ind_species(i),1:3);
+%     %p(i).Marker=char(mark(ind(i)))
+%     p(i).LineStyle=char(line_lifestage(lifestage(i)));%Youngest lifestage is given same line type as non-fish species
+% end
+% xlabel('time (years)','FontSize',18); ylabel('log10 biomass','FontSize',18)
+% title('Fish Species by colour (invertebrates are all same colour), and lifestage by line type','FontSize', 12)
+% grid on;
+% saveas(gcf,strcat(name,'_all'),'png')
 
 %% Save A Figure that contains the period
-figure(1); hold on;
-cycle_tau=1;% The period of the cycle
-p=plot(day_t(end+1-L_year*cycle_tau:end)'/100,log10(B(end+1-L_year*cycle_tau:end,:)),'LineWidth',1);
-[~,~,ind_species]=unique(isfish.*species');
-[~,~,ind_lifestage]=unique(lifestage);
-%colours=get(gca,'colororder');
-colours=parula(sum(orig.isfish)+1);
-%mark={'o', '+', '*', '.', 'x', 's', 'd', '^', 'v', '>', '<', 'p', 'h'}
-line_lifestage={'-','--',':','-.','-.','-.'};
-for i=1:nichewebsize
-    p(i).Color=colours(ind_species(i),1:3);
-    %p(i).Marker=char(mark(ind(i)))
-    p(i).LineStyle=char(line_lifestage(lifestage(i)));%Youngest lifestage is given same line type as non-fish species
-end
-xlabel('time (years)','FontSize',18); ylabel('log10 biomass','FontSize',18)
-title('Fish Species by colour (invertebrates are all same colour), and lifestage by line type','FontSize', 12)
-grid on;
-saveas(gcf,strcat(name,'_periodic'),'png')
+% figure(1); hold on;
+% cycle_tau=1;% The period of the cycle
+% p=plot(day_t(end+1-L_year*cycle_tau:end)'/100,log10(B(end+1-L_year*cycle_tau:end,:)),'LineWidth',1);
+% [~,~,ind_species]=unique(isfish.*species');
+% [~,~,ind_lifestage]=unique(lifestage);
+% %colours=get(gca,'colororder');
+% colours=parula(sum(orig.isfish)+1);
+% %mark={'o', '+', '*', '.', 'x', 's', 'd', '^', 'v', '>', '<', 'p', 'h'}
+% line_lifestage={'-','--',':','-.','-.','-.'};
+% for i=1:nichewebsize
+%     p(i).Color=colours(ind_species(i),1:3);
+%     %p(i).Marker=char(mark(ind(i)))
+%     p(i).LineStyle=char(line_lifestage(lifestage(i)));%Youngest lifestage is given same line type as non-fish species
+% end
+% xlabel('time (years)','FontSize',18); ylabel('log10 biomass','FontSize',18)
+% title('Fish Species by colour (invertebrates are all same colour), and lifestage by line type','FontSize', 12)
+% grid on;
+% saveas(gcf,strcat(name,'_periodic'),'png')
 
 
 

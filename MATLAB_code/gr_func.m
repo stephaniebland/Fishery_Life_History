@@ -35,35 +35,42 @@ B2mx = B1mx';         %% B in rows (one column=one species, rows are identical)
     
     % omega (preferences) matrix
     nr_resources=sum(nicheweb,2); 
-    tmp=1./nr_resources;
-    tmp(basalsp)=zeros(size(basalsp));
-    w=tmp * ones(1,N_s); 
-    w=nicheweb.*w;
+    w=nicheweb./nr_resources;  % Create unweighted w matrix. (Proportion of predator diet that each species gives).
+    w(isnan(w))=0;
     %---------------------------
     
     % resource species shared (pik) matrix
-    Niche=double(nicheweb);
-    pik=nr_resources*ones(1,N_s);
-    pik(basalsp,:)=1; % to prevent dividing by 0
-    pik=(Niche*Niche')./pik;
+    Niche=double(nicheweb);%Useful if nicheweb is logical (probably more efficient way of storing it, but we already have it as a double)
+    pik=(Niche*Niche')./nr_resources;%Niche*Niche' is a matrix where element a_ij is the number of prey that both i and j eats.(so they would be competing for same prey)
+    pik(isnan(pik))=0;%Dividing by 0 gives NaN so we reassign it to 0.
     %---------------------------
     
     % competition due to other predators
     cBiB0h=zeros(N_s);
+    xkcd=zeros(N_s);
+    xkcd2=zeros(N_s);
+    xkcd3=zeros(N_s);
+    thingy=nicheweb.*c.*B.*(Bsd.^h);%This line only works because nicheweb is binary!
     for i=1:N_s
         for j=1:N_s
             pred=find(nicheweb(:,j)==1);
             val=0;
-            k=0;
-            while k<length(pred)
-               k=k+1;
-               val=val+c(pred(k),j)*pik(i,pred(k))*B(pred(k))*Bsd(pred(k),j)^h;
+            for k=pred'
+                val=val+c(k,j)*pik(i,k)*B(k)*Bsd(k,j)^h;
             end
             cBiB0h(i,j)=val;
+            %Testing an equivalent solution:
+            test=nicheweb(:,j).*c(:,j).*pik(i,:)'.*B.*(Bsd(:,j).^h);%This line only works because nicheweb is binary!
+            xkcd(i,j)=sum(test);
         end
+        %And another equivalent solution:
+        test2=nicheweb.*c.*pik(i,:)'.*B.*B0h;%This line only works because nicheweb is binary!
+        xkcd2(i,:)=sum(test2);
+        %And finally, a third:
+        test3=thingy.*pik(i,:)';
+        xkcd3(i,:)=sum(test3);%This isn't broken, just rounding errors!
     end
-    clear pred;
-    clear val;
+    clear pred val;
     %---------------------------
     
     wBh = w.*(ones(N_s,1)*Bpow');
