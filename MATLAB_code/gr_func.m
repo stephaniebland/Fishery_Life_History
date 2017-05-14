@@ -64,7 +64,7 @@ B2mx = B1mx';         %% B in rows (one column=one species, rows are identical)
             xkcd(i,j)=sum(test);
         end
         %And another equivalent solution:
-        test2=nicheweb.*c.*pik(i,:)'.*B.*(Bsd.^h);%This line only works because nicheweb is binary!
+        test2=nicheweb.*c.*pik(i,:)'.*B.*B0h;%This line only works because nicheweb is binary!
         xkcd2(i,:)=sum(test2);
         %And finally, a third:
         test3=thingy.*pik(i,:)';
