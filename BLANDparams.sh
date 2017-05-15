@@ -42,7 +42,7 @@ simsize=10
 # MCR=/usr/local/MATLAB/MATLAB_Runtime/v92 # Run on linux (Selenium)
 MCR=/usr/local/matlab-runtime/r2017a/v92 # Run on ACENET
 
-for simnum in `seq 11 20`; do
+for simnum in `seq 21 30`; do
 	declare -i simnum_0=$simsize*$simnum+1
 	declare -i simnum_f=$simsize+$simnum_0-1
 	echo ./run_$script_name.sh $MCR $seed_0 $simnum_0 $simnum_f
