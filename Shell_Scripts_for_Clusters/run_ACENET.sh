@@ -1,7 +1,7 @@
 #!/bin/bash
 # Variable Names:
 script_name=RunCluster # Name of the file we will be compressing
-run_name=may15.6 # Name of the Run, where we store the ACENET file
+run_name=may15.7 # Name of the Run, where we store the ACENET file
 
 # On my Mac Run:
 git push origin master
