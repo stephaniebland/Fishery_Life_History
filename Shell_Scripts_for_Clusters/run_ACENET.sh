@@ -1,7 +1,10 @@
 #!/bin/bash
 # Variable Names:
 script_name=RunCluster # Name of the file we will be compressing
-run_name=may15.7 # Name of the Run, where we store the ACENET file
+run_name=may15.8 # Name of the Run, where we store the ACENET file
+#cluster_name=fundy		&&	URL=titanium@fundy.ace-net.ca
+#cluster_name=glooscap	&&	URL=titanium@dtn.glooscap.ace-net.ca
+cluster_name=placentia	&&	URL=titanium@placentia.ace-net.ca
 
 # On my Mac Run:
 git push origin master
@@ -17,7 +20,7 @@ END
 ssh selenium@129.173.34.107 <<END
 	cd ~/masters
 	# On ACENET Run: 
-	sftp titanium@fundy.ace-net.ca <<END
+	sftp -i ~/.ssh/id_rsa$cluster_name $URL <<END
 		mkdir /home/titanium/$run_name
 		cd $run_name
 		put $script_name
@@ -27,7 +30,7 @@ ssh selenium@129.173.34.107 <<END
 END
 
 # And finally Run ACENET
-ssh titanium@fundy.ace-net.ca <<END
+ssh -i /Users/JurassicPark/.ssh/id_rsa$cluster_name $URL <<END
 	cd $run_name
 	chmod +x ./BLANDparams.sh
 	./BLANDparams.sh > BLANDparams.job 
@@ -43,3 +46,13 @@ END
 # chmod 700 ~/.ssh
 # cd ~/.ssh && chmod 600 authorized_keys id_rsa id_rsa.pub known_hosts 
 # cat ~/.ssh/id_rsa.pub | ssh titanium@fundy.ace-net.ca "mkdir -p ~/.ssh && cat >>  ~/.ssh/authorized_keys && chmod go-w ~/ && chmod 700 ~/.ssh && cd ~/.ssh && chmod 600 authorized_keys"
+
+
+
+
+
+
+
+
+
+
