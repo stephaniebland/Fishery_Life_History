@@ -29,7 +29,7 @@ script_name=RunCluster
 echo '#$ -cwd'
 echo '#$ -j yes'
 echo '#$ -l h_rt=48:0:0' # Time limit
-echo '#$ -l h_vmem=40G'	 # memory limit
+echo '#$ -l h_vmem=10G'	 # memory limit
 echo 'module load matlab-runtime/r2017a'
 
 chmod +x $script_name
@@ -38,8 +38,9 @@ declare -i seed_0=0
 simsize=5
 ###############################################
 # Options to run it locally instead
-# MCR=/Applications/MATLAB/MATLAB_Runtime/v91 #Run on my Mac
-# MCR=/usr/local/MATLAB/MATLAB_Runtime/v92 #Run on linux (Selenium)
+# MCR=/Applications/MATLAB/MATLAB_Runtime/v91 # Run on my Mac
+# MCR=/usr/local/MATLAB/MATLAB_Runtime/v92 # Run on linux (Selenium)
+MCR=/usr/local/matlab-runtime/r2017a/v92 # Run on ACENET
 
 for simnum in `seq 0 4`; do
 	declare -i simnum_0=$simsize*$simnum+1

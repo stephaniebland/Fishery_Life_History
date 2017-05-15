@@ -1,9 +1,9 @@
-full_sim=nan(N_years*L_year,4*nichewebsize);
-full_t=nan(N_years*L_year,1);
-year_index=nan(N_years*L_year,1);
+% full_sim=nan(N_years*L_year,4*nichewebsize);
+% full_t=nan(N_years*L_year,1);
+% year_index=nan(N_years*L_year,1);
 B_year_end=nan(N_years,nichewebsize);
-AllCatch=nan(nichewebsize,N_years*L_year);
-B_stable_phase=[]; %Capture annual variation once the data set stabilized
+% AllCatch=nan(nichewebsize,N_years*L_year);
+% B_stable_phase=[]; %Capture annual variation once the data set stabilized
 %B0=B_orig;
 t_days=0;
 t_year=1;
