@@ -1,48 +1,73 @@
 #!/bin/bash
 # Variable Names:
-script_name=RunCluster 	# Name of the file we will be compressing
-version=_3				# Version
-#cluster_name=fundy		&& URL=titanium@fundy.ace-net.ca		&& dtnURL=$URL
-cluster_name=glooscap	&& URL=titanium@glooscap.ace-net.ca		&& dtnURL=titanium@dtn.glooscap.ace-net.ca
-#cluster_name=placentia	&& URL=titanium@placentia.ace-net.ca	&& dtnURL=$URL
-###############################################
+version=_4				# Version
 declare -i seed_0=0
 simsize=5
+sims_per_cluster=100
+
+# Setup
+script_name=RunCluster 	# Name of the file we will be compressing
+myLinux=selenium@129.173.34.107
+declare -a avail_clusters=("fundy" "glooscap" "placentia")
+DATE=`date +%Y%b%d`
+run_name=$DATE$version # Name of the Run, where we store the ACENET file
 # Options to run it locally instead
 # MCR=/Applications/MATLAB/MATLAB_Runtime/v91 # Run on my Mac
 # MCR=/usr/local/MATLAB/MATLAB_Runtime/v92 # Run on linux (Selenium)
 MCR=/usr/local/matlab-runtime/r2017a/v92 # Run on ACENET
 
-# Setup
-myLinux=selenium@129.173.34.107
-DATE=`date +%Y%b%d`
-run_name=$DATE$version # Name of the Run, where we store the ACENET file
-
 # On my Mac Run:
-git push origin master ACENET-RUNS
-git bundle create ~/Documents/master\'s\ Backup/backup_$DATE.bundle master ACENET-RUNS
+git push origin master ACENET-RUNS # Push MATLAB code to Selenium Server 
+git bundle create ~/Documents/master\'s\ Backup/backup_$DATE.bundle master ACENET-RUNS # Save a local backup of your work
 # git bundle create ~/Documents/master\'s\ Backup/backup_$DATE_all.bundle --all #Stores all branches
 
-# On Selenium Run:
+# Compile MATLAB On Selenium to get a Linux Executable:
 ssh $myLinux <<END
 	rm -rf masters/
 	git clone -b ACENET-RUNS ~/GIT/masters.git/
 	/usr/local/MATLAB/R2017a/bin/matlab -nodisplay -r "cd('~/masters/');mcc -m $script_name.m;quit"
+END
+
+###############################################
+########### LOOP THROUGH CLUSTERS #############
+###############################################
+for cluster_num in `seq 0 2`; do
+	cluster_name=${avail_clusters[$cluster_num]}
+	URL=titanium@$cluster_name.ace-net.ca
+	dtnURL="$URL"
+	if [ "$cluster_name" = "glooscap" ]; then
+		dtnURL=titanium@dtn.$cluster_name.ace-net.ca
+	fi
+	echo $cluster_name
+	echo $URL
+	echo $dtnURL
+# Drop the compiled files in the cluster
+ssh $myLinux <<END
 	cd ~/masters
 	sftp -i ~/.ssh/id_rsa$cluster_name $dtnURL <<END
-		mkdir ~/$run_name
+		mkdir /home/titanium/$run_name
 		cd $run_name
 		put $script_name
 		put run_$script_name.sh
 	END
 END
 
-# Create Job Scripts Locally
-for simnum in `seq 0 4`; do
+#Find the total number of jobs to do in each cluster
+declare -i jobs_per_cluster=$sims_per_cluster/$simsize
+declare -i job_0=$cluster_num*$jobs_per_cluster
+declare -i job_f=$job_0+$jobs_per_cluster-1
+
+
+###############################################
+######### LOOP THROUGH JOB SCRIPTS ############
+###############################################
+for simnum in `seq $job_0 $job_f`; do
+	# Create Job Scripts Locally
 	declare -i simnum_0=$simsize*$simnum+1
 	declare -i simnum_f=$simsize+$simnum_0-1
-	job_name=run_simnum_0_to_$simnum_f.job
-	touch $job_name
+	job_name=run_$simnum_0\_to_$simnum_f.job
+	touch $job_name 
+# The contents of the job script
 cat > $job_name<<EOF
 #$ -cwd
 #$ -j yes
@@ -51,19 +76,21 @@ cat > $job_name<<EOF
 ./run_$script_name.sh $MCR $seed_0 $simnum_0 $simnum_f
 EOF
 
-# And finally Run ACENET
+# Drop the job script on the cluster
 sftp -i ~/.ssh/id_rsa$cluster_name $dtnURL <<END
 	cd $run_name
 	put $job_name
 END
 rm $job_name
+# And finally Run ACENET Cluster
 ssh -i ~/.ssh/id_rsa$cluster_name $URL <<END
 	cd $run_name
 	chmod +x $script_name run_$script_name.sh
 	qsub $job_name
 END
-done
+done # FINISH LOOPING THROUGH JOB SCRIPTS
 
+done # FINISH LOOPING THROUGH CLUSTERS
 
 ## Manual setup
 ## Set up keygen on Selenium
