@@ -58,7 +58,7 @@ function RunCluster(seed_0,simnum_0,simnum_f)
             end
 
             %% Name for Exporting Data
-            name=sprintf('May16_4_seed%d_sim%d_Exper%d',seed_0,simnum,Exper)
+            name=sprintf('May16_5_seed%d_sim%d_Exper%d',seed_0,simnum,Exper)
 
             %% Time Series Simulation (& Export TS dependent Properties)
             simulations;

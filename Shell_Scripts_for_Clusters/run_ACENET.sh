@@ -1,6 +1,6 @@
 #!/bin/bash
 # Variable Names:
-version=_4				# Version
+version=_5				# Version
 declare -i seed_0=0
 simsize=5
 sims_per_cluster=100
@@ -22,7 +22,7 @@ git bundle create ~/Documents/master\'s\ Backup/backup_$DATE.bundle master ACENE
 # git bundle create ~/Documents/master\'s\ Backup/backup_$DATE_all.bundle --all #Stores all branches
 
 # Compile MATLAB On Selenium to get a Linux Executable:
-ssh $myLinux <<END
+ssh -T $myLinux <<END
 	rm -rf masters/
 	git clone -b ACENET-RUNS ~/GIT/masters.git/
 	/usr/local/MATLAB/R2017a/bin/matlab -nodisplay -r "cd('~/masters/');mcc -m $script_name.m;quit"
@@ -83,7 +83,7 @@ sftp -i ~/.ssh/id_rsa$cluster_name $dtnURL <<END
 END
 rm $job_name
 # And finally Run ACENET Cluster
-ssh -i ~/.ssh/id_rsa$cluster_name $URL <<END
+ssh -T -i ~/.ssh/id_rsa$cluster_name $URL <<END
 	cd $run_name
 	chmod +x $script_name run_$script_name.sh
 	qsub $job_name
