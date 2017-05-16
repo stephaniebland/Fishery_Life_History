@@ -1,7 +1,7 @@
 #!/bin/bash
 # Variable Names:
 script_name=RunCluster 	# Name of the file we will be compressing
-version=.0				# Version
+version=.1				# Version
 #cluster_name=fundy		&& URL=titanium@fundy.ace-net.ca		&& dtnURL=$URL
 cluster_name=glooscap	&& URL=titanium@glooscap.ace-net.ca		&& dtnURL=titanium@dtn.glooscap.ace-net.ca
 #cluster_name=placentia	&& URL=titanium@placentia.ace-net.ca	&& dtnURL=$URL
