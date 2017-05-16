@@ -19,27 +19,21 @@ DATE=`date +%Y%b%d`
 run_name=$DATE$version # Name of the Run, where we store the ACENET file
 
 # On my Mac Run:
-git push origin master
-git push origin ACENET-RUNS
+git push origin master ACENET-RUNS
 git bundle create ~/Documents/master\'s\ Backup/backup_$DATE.bundle master ACENET-RUNS
 # git bundle create ~/Documents/master\'s\ Backup/backup_$DATE_all.bundle --all #Stores all branches
 
 # On Selenium Run:
 ssh $myLinux <<END
-	# Run:
 	rm -rf masters/
 	git clone -b ACENET-RUNS ~/GIT/masters.git/
 	/usr/local/MATLAB/R2017a/bin/matlab -nodisplay -r "cd('~/masters/');mcc -m $script_name.m;quit"
-END
-ssh $myLinux <<END
 	cd ~/masters
-	# On ACENET Run: 
 	sftp -i ~/.ssh/id_rsa$cluster_name $dtnURL <<END
-		mkdir /home/titanium/$run_name
+		mkdir ~/$run_name
 		cd $run_name
 		put $script_name
 		put run_$script_name.sh
-		put BLANDparams.sh
 	END
 END
 
