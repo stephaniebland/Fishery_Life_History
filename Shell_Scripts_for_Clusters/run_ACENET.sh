@@ -1,7 +1,7 @@
 #!/bin/bash
 # Variable Names:
 script_name=RunCluster 	# Name of the file we will be compressing
-version=.1				# Version
+version=.2				# Version
 #cluster_name=fundy		&& URL=titanium@fundy.ace-net.ca		&& dtnURL=$URL
 cluster_name=glooscap	&& URL=titanium@glooscap.ace-net.ca		&& dtnURL=titanium@dtn.glooscap.ace-net.ca
 #cluster_name=placentia	&& URL=titanium@placentia.ace-net.ca	&& dtnURL=$URL
@@ -44,7 +44,7 @@ ssh $myLinux <<END
 END
 
 # Create Job Scripts Locally
-for simnum in `seq 0 4`; do
+for simnum in `seq 0 19`; do
 	declare -i simnum_0=$simsize*$simnum+1
 	declare -i simnum_f=$simsize+$simnum_0-1
 	job_name=run_simnum_0_to_$simnum_f.job
@@ -53,7 +53,7 @@ cat > $job_name<<EOF
 #$ -cwd
 #$ -j yes
 #$ -l h_rt=48:0:0
-#$ -l h_vmem=10G
+#$ -l h_vmem=8G
 module load matlab-runtime/r2017a
 ./run_$script_name.sh $MCR $seed_0 $simnum_0 $simnum_f
 EOF
