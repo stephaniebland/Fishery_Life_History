@@ -1,10 +1,10 @@
 #!/bin/bash
 # Variable Names:
 script_name=RunCluster 	# Name of the file we will be compressing
-version=.0				# Version of the
-#cluster_name=fundy		&& URL=titanium@fundy.ace-net.ca
-cluster_name=glooscap	&& URL=titanium@dtn.glooscap.ace-net.ca
-#cluster_name=placentia	&& URL=titanium@placentia.ace-net.ca
+version=.0				# Version
+#cluster_name=fundy		&& URL=titanium@fundy.ace-net.ca		&& dtnURL=$URL
+cluster_name=glooscap	&& URL=titanium@glooscap.ace-net.ca		&& dtnURL=titanium@dtn.glooscap.ace-net.ca
+#cluster_name=placentia	&& URL=titanium@placentia.ace-net.ca	&& dtnURL=$URL
 ###############################################
 declare -i seed_0=0
 simsize=5
@@ -34,7 +34,7 @@ END
 ssh $myLinux <<END
 	cd ~/masters
 	# On ACENET Run: 
-	sftp -i ~/.ssh/id_rsa$cluster_name $URL <<END
+	sftp -i ~/.ssh/id_rsa$cluster_name $dtnURL <<END
 		mkdir /home/titanium/$run_name
 		cd $run_name
 		put $script_name
@@ -59,7 +59,7 @@ module load matlab-runtime/r2017a
 EOF
 
 # And finally Run ACENET
-sftp -i ~/.ssh/id_rsa$cluster_name $URL <<END
+sftp -i ~/.ssh/id_rsa$cluster_name $dtnURL <<END
 	cd $run_name
 	put $job_name
 END
