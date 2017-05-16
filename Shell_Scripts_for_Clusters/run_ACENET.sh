@@ -54,7 +54,6 @@ cat > $job_name<<EOF
 #$ -j yes
 #$ -l h_rt=48:0:0
 #$ -l h_vmem=10G
-module load matlab-runtime/r2017a
 ./run_$script_name.sh $MCR $seed_0 $simnum_0 $simnum_f
 EOF
 

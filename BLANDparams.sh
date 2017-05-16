@@ -22,6 +22,8 @@
 # qsub BLANDparams.job 
 # and to check the queue of jobs:
 # qstat 
+# qsum
+# showq
 # and to check memory requirements:
 # qacct -j 6782792 | grep maxvmem
 script_name=RunCluster
