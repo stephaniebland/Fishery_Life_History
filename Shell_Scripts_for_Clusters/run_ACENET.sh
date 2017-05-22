@@ -1,12 +1,12 @@
 #!/bin/bash
 # Variable Names:
-version=_5				# Version
+version=_0 # Version
 declare -i seed_0=0
 simsize=5
 sims_per_cluster=100
 
 # Setup
-script_name=RunCluster 	# Name of the file we will be compressing
+script_name=RunCluster # Name of the file we will be compressing
 myLinux=selenium@129.173.34.107
 declare -a avail_clusters=("fundy" "glooscap" "placentia")
 DATE=`date +%Y%b%d`
@@ -17,6 +17,9 @@ run_name=$DATE$version # Name of the Run, where we store the ACENET file
 MCR=/usr/local/matlab-runtime/r2017a/v92 # Run on ACENET
 
 # On my Mac Run:
+rm DateVersion.m
+echo "run_name='$run_name';" >> DateVersion.m
+git commit -m "$run_name" DateVersion.m
 git push origin master ACENET-RUNS # Push MATLAB code to Selenium Server 
 ssh-agent sh -c 'ssh-add ~/.ssh/id_rsaPterodactyl; git push backup --all -u' # Push all MATLAB code to Shadow Server
 git bundle create ~/Documents/master\'s\ Backup/backup_$DATE.bundle master ACENET-RUNS # Save a local backup of your work
@@ -92,6 +95,12 @@ END
 done # FINISH LOOPING THROUGH JOB SCRIPTS
 
 done # FINISH LOOPING THROUGH CLUSTERS
+
+###############################################
+############# DONE NOW CLEAN UP ###############
+###############################################
+rm DateVersion.m 
+echo "run_name='BLAND';" >> DateVersion.m # 
 
 ## Manual setup
 ## Set up keygen on Selenium

@@ -91,7 +91,7 @@ end
 
 %% Save A Figure of the year ends
 figure(1); hold on;
-p=plot(1:N_years,log10(B_year_end),'LineWidth',1);
+p=plot(0:N_years,log10([B0';B_year_end]),'LineWidth',1);
 [~,~,ind_species]=unique(isfish.*species');
 [~,~,ind_lifestage]=unique(lifestage);
 %colours=get(gca,'colororder');
