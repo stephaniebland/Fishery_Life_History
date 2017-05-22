@@ -18,6 +18,7 @@ MCR=/usr/local/matlab-runtime/r2017a/v92 # Run on ACENET
 
 # On my Mac Run:
 git push origin master ACENET-RUNS # Push MATLAB code to Selenium Server 
+ssh-agent sh -c 'ssh-add ~/.ssh/id_rsaPterodactyl; git push backup --all -u' # Push all MATLAB code to Shadow Server
 git bundle create ~/Documents/master\'s\ Backup/backup_$DATE.bundle master ACENET-RUNS # Save a local backup of your work
 # git bundle create ~/Documents/master\'s\ Backup/backup_$DATE_all.bundle --all #Stores all branches
 
