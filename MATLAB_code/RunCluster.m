@@ -21,6 +21,7 @@ function RunCluster(seed_0,simnum_0,simnum_f)
     simnum_0=str2num(simnum_0);
     simnum_f=str2num(simnum_f);
     sprintf('seed=%d, sim_0=%d, sim_f=%d',seed_0,simnum_0,simnum_f)
+    DateVersion; % Import the Date And Version number so we can label output accordingly.
 
     for simnum=simnum_0:simnum_f
         %% Set Seed
@@ -58,7 +59,7 @@ function RunCluster(seed_0,simnum_0,simnum_f)
             end
 
             %% Name for Exporting Data
-            name=sprintf('BLAND_seed%d_sim%d_Exper%d',seed_0,simnum,Exper)
+            name=sprintf('%s_seed%d_sim%d_Exper%d',run_name,seed_0,simnum,Exper)
 
             %% Time Series Simulation (& Export TS dependent Properties)
             simulations;
