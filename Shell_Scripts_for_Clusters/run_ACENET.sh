@@ -1,10 +1,30 @@
 #!/bin/bash
+# The looping script to run on ACENET clusters.
+# https://www.ace-net.ca/wiki/MATLAB_Runtime
+###############################################
+# ACENET (www.ace-net.ca) provides cluster computing resources for researchers at Dal (and elsewhere).
+# Your thesis supervisor will have to get an account before you can, but both are free.
+# The process is described in more detail at https://www.ace-net.ca/wiki/Get_an_Account.
+#
+# If you have never used a cluster before you will want some training.
+# There are several classroom and web training sessions scheduled for early May;
+# see http://www.ace-net.ca/training/workshops-seminars/ for details.
+###############################################
+# USEFUL ACENET COMMANDS:
+# Check the queue of jobs:
+# qstat 
+# qsum
+# showq
+# Check memory requirements:
+# qacct -j 6793085 | grep maxvmem
+###############################################
 # Variable Names:
 version=0 # Version
 declare -i seed_0=0
 simsize=5
 sims_per_cluster=100
 
+###############################################
 # Setup
 script_name=RunCluster # Name of the file we will be compressing
 myLinux=selenium@129.173.34.107
@@ -16,7 +36,9 @@ run_name=$DATE\_$version # Name of the Run, where we store the ACENET file
 # MCR=/usr/local/MATLAB/MATLAB_Runtime/v92 # Run on linux (Selenium)
 MCR=/usr/local/matlab-runtime/r2017a/v92 # Run on ACENET
 
-# On my Mac Run:
+###############################################
+# Push commits to Linux and Backup Servers (& Bundle Backups):
+# This runs on my mac
 rm DateVersion.m
 echo "run_name='$run_name';" >> DateVersion.m
 git commit -m "$run_name" DateVersion.m
@@ -25,12 +47,15 @@ ssh-agent sh -c 'ssh-add ~/.ssh/id_rsaPterodactyl; git push backup --all -u' # P
 git bundle create ~/Documents/master\'s\ Backup/backup_$DATE.bundle master ACENET-RUNS # Save a local backup of your work
 # git bundle create ~/Documents/master\'s\ Backup/backup_$DATE_all.bundle --all #Stores all branches
 
+###############################################
 # Compile MATLAB On Selenium to get a Linux Executable:
 ssh -T $myLinux <<END
 	rm -rf masters/
 	git clone -b ACENET-RUNS ~/GIT/masters.git/
 	/usr/local/MATLAB/R2017a/bin/matlab -nodisplay -r "cd('~/masters/');mcc -m $script_name.m;quit"
 END
+# To compile it on my mac instead to get a mac executable use:
+# /Applications/MATLAB_R2016b.app/bin/matlab -nodisplay -r "cd('/Users/JurassicPark/Google Drive/GIT/Masters Project');mcc -m RunCluster.m;quit"
 
 ###############################################
 ########### LOOP THROUGH CLUSTERS #############
@@ -65,6 +90,7 @@ declare -i job_f=$job_0+$jobs_per_cluster-1
 ###############################################
 ######### LOOP THROUGH JOB SCRIPTS ############
 ###############################################
+# These loops happen within the cluster loops
 for simnum in `seq $job_0 $job_f`; do
 	# Create Job Scripts Locally
 	declare -i simnum_0=$simsize*$simnum+1
