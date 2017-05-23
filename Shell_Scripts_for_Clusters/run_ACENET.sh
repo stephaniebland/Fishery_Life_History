@@ -2,7 +2,7 @@
 # Variable Names:
 version=_0 # Version
 declare -i seed_0=0
-simsize=5
+simsize=1
 sims_per_cluster=100
 
 # Setup
