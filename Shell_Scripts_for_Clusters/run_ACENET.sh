@@ -1,6 +1,6 @@
 #!/bin/bash
 # Variable Names:
-version=_0 # Version
+version=0 # Version
 declare -i seed_0=0
 simsize=5
 sims_per_cluster=100
@@ -10,7 +10,7 @@ script_name=RunCluster # Name of the file we will be compressing
 myLinux=selenium@129.173.34.107
 declare -a avail_clusters=("fundy" "glooscap" "placentia")
 DATE=`date +%Y%b%d`
-run_name=$DATE$version # Name of the Run, where we store the ACENET file
+run_name=$DATE\_$version # Name of the Run, where we store the ACENET file
 # Options to run it locally instead
 # MCR=/Applications/MATLAB/MATLAB_Runtime/v91 # Run on my Mac
 # MCR=/usr/local/MATLAB/MATLAB_Runtime/v92 # Run on linux (Selenium)
