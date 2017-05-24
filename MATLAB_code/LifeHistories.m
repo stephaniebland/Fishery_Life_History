@@ -121,7 +121,7 @@ end
 %%  NEW NICHEWEB - ALTERNATIVE METHODS & ASSIGNING PREDATORS FOR NEW STAGES
 %%-------------------------------------------------------------------------
 
-if (fishpred==true | splitdiet==false)
+if (fishpred==2 | splitdiet==false)
     %Standardize niche values and mass here,then you can use intercept of -4.744e-17, and slope of 2.338e-01 to calculate new niche values for new nodes,then you transform it back to reg.
     fish_n=n_new(find(isfish));%only use adult fish data (all fish, not just is_split)
     fish_w=log10(W_max(find(isfish)));%log the weight first
@@ -155,11 +155,11 @@ switch fishpred
         %First approximation is just that if something preys on a species, it will prey on all of the lifestages
         newnodes=1-orig_nodes;
         for i=fish2div
-            fishpred=nicheweb_new(:,find(species==i));
-            fishpred(:,1:end-1)=fishpred(:,1:end-1)+fishpred(:,end);
-            nicheweb_new(:,find(species==i))=fishpred;
+            list_fishpred=nicheweb_new(:,species==i);
+            list_fishpred(:,1:end-1)=list_fishpred(:,1:end-1)+list_fishpred(:,end);%CAUTION: The reason why we use this roundabout method of adding the list instead of just setting it directly equal is so we preserve cannibalism (imagine if one of the lifestages already preys on another)
+            nicheweb_new(:,species==i)=list_fishpred;
         end
-    case true %reassigns them according to nichevalues
+    case 2 %reassigns them according to nichevalues
         nicheweb_new(:,givediet)=web_mx(:,givediet);
 end
 if splitdiet==false%assign new diet based on new niche values
@@ -170,13 +170,10 @@ end
 %%  LIFE HISTORY MATRIX - CANNIBALISM SWITCH FOR FISH
 %%-------------------------------------------------------------------------
  
-for i=fish2div %Case true=yes & any stage can cannibalize larger stage (so this loop won't change anything for case true
+for i=fish2div %Case Inf=yes & any stage can cannibalize larger stage (so this loop won't change anything for case Inf)
     fishweb=find(species==i);
-    if cannibal_fish==false %no cannibalism
-        nicheweb_new(fishweb,fishweb)=0;
-    elseif isnumeric(cannibal_fish)==1 %Are fish species partially cannibalistic? The number for cannibal_fish indicates how much younger conspecifics need to be to be cannibalized.  Of note: -1 means strictly younger, 0 means same lifestage or younger
-        nicheweb_new(fishweb,fishweb)=tril(nicheweb_new(fishweb,fishweb),cannibal_fish);
-    end
+    %Are fish species partially cannibalistic? The number for cannibal_fish indicates how much younger conspecifics need to be to be cannibalized.  Of note: -1 means strictly younger, 0 means same lifestage or younger. -Inf means absolutely no cannibalism.
+    nicheweb_new(fishweb,fishweb)=tril(nicheweb_new(fishweb,fishweb),cannibal_fish);
 end
 
 end
