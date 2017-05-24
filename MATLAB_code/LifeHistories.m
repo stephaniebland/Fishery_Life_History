@@ -89,38 +89,40 @@ orig_index=find(orig_nodes');%index of original species
 [aging_table,fecund_table]= LeslieMatrix(leslie,newwebsize,N_stages,is_split,species);
 
 %%-------------------------------------------------------------------------
-%%  NEW NICHEWEB - NEO'S METHOD - SPLIT OLD DIET
+%%  NEW NICHEWEB - Several Methods
 %%-------------------------------------------------------------------------
-%Two ways of doing this, either can split old diet, as recommended by Neo,
-%or we can run the model again and just give new lifestages new diets.
-N_prey=sum(nicheweb,2);%Vector saying how many prey species each species has.
-Nprey_per_stage=ceil(N_prey./N_stages);%Minimum number of prey each lifestage needs to eat to cover entire diet
-%Create new nicheweb
+%Create new nicheweb & Fill in What we already know
 nicheweb_new=zeros(newwebsize);
 nonsplit=1-is_split;
 nicheweb_new(orig_index,orig_index)=nicheweb.*nonsplit;%Rows for invertebrate species that you wish to preserve
-%PROBLEM:  INVERTEBRATES CURRENTLY DONT PREY ON ANY FISH SPECIES
-for i=fish2div%This loop will give a broader overlap
-    selec=find(nicheweb(i,:));
-    selec=find(ismember(orig_species, selec));%convert old species index into the new species index
-    k=(Nprey_per_stage(i)*N_stages(i))-N_prey(i);%How many prey will need to be assigned to two lifestages.
-    n=N_stages(i)-1;%number of neighbouring lifestages.
-    y=randsample(n,k);%Which pairs of lifestages will share a prey species.  with or without replacement. Currently without replacement
-    prey_split=zeros(N_stages(i),newwebsize);
-    u=1;
-    for j=1:N_stages(i)
-        v=u+Nprey_per_stage(i)-1;
-        choose=selec(u:v);
-        prey_split(j,choose)=1;
-        u=v+1-sum(y==j);
+
+%% Neo's Method: Split Old Diet
+if splitdiet==true
+    N_prey=sum(nicheweb,2);%Vector saying how many prey species each species has.
+    Nprey_per_stage=ceil(N_prey./N_stages);%Minimum number of prey each lifestage needs to eat to cover entire diet
+    for i=fish2div%This loop will give a broader overlap
+        selec=find(nicheweb(i,:));
+        selec=find(ismember(orig_species, selec));%convert old species index into the new species index
+        k=(Nprey_per_stage(i)*N_stages(i))-N_prey(i);%How many prey will need to be assigned to two lifestages.
+        n=N_stages(i)-1;%number of neighbouring lifestages.
+        y=randsample(n,k);%Which pairs of lifestages will share a prey species.  with or without replacement. Currently without replacement
+        prey_split=zeros(N_stages(i),newwebsize);
+        u=1;
+        for j=1:N_stages(i)
+            v=u+Nprey_per_stage(i)-1;
+            choose=selec(u:v);
+            prey_split(j,choose)=1;
+            u=v+1-sum(y==j);
+        end
+        nicheweb_new(find(species==i),:)=prey_split;
     end
-    nicheweb_new(find(species==i),:)=prey_split;
 end
 
-%%-------------------------------------------------------------------------
-%%  NEW NICHEWEB - ALTERNATIVE METHODS & ASSIGNING PREDATORS FOR NEW STAGES
-%%-------------------------------------------------------------------------
-
+%% If We Assign Prey Or Predators According to Niche Value:
+% Result of this Section Will be givediet - a web that says what everything
+% will eat if the new niche values are used for the whole web. We will only
+% replace the parts of the web that need patching up (rows and columns for
+% new lifestages)
 if (fishpred==2 | splitdiet==false)
     %Standardize niche values and mass here,then you can use intercept of -4.744e-17, and slope of 2.338e-01 to calculate new niche values for new nodes,then you transform it back to reg.
     fish_n=n_new(find(isfish));%only use adult fish data (all fish, not just is_split)
@@ -151,9 +153,7 @@ if (fishpred==2 | splitdiet==false)
 end
 
 switch fishpred
-    case 1
-        %First approximation is just that if something preys on a species, it will prey on all of the lifestages
-        newnodes=1-orig_nodes;
+    case 1 %First approximation is just that if something preys on a species, it will prey on all of the lifestages
         for i=fish2div
             list_fishpred=nicheweb_new(:,species==i);
             list_fishpred(:,1:end-1)=list_fishpred(:,1:end-1)+list_fishpred(:,end);%CAUTION: The reason why we use this roundabout method of adding the list instead of just setting it directly equal is so we preserve cannibalism (imagine if one of the lifestages already preys on another)
