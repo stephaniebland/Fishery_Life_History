@@ -11,10 +11,10 @@ t_year=1;
 for phase=1:4
     switch phase
         case 1 %{Stabilize Data before you record anything}
-             n_years_in_phase=num_years.stabilize;
-             evolve=false;
-             lstages_linked=lifestages_linked;
-             Effort=0;
+            n_years_in_phase=num_years.stabilize;
+            evolve=false;
+            lstages_linked=lifestages_linked;
+            Effort=0;
         case 2 %{insert lifehistory}
             n_years_in_phase=num_years.pre_fish;
             evolve=false;
