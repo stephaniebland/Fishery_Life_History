@@ -30,6 +30,7 @@ script_name=RunCluster # Name of the file we will be compressing
 myLinux=selenium@129.173.34.107
 declare -a avail_clusters=("fundy" "glooscap" "placentia")
 DATE=`date +%Y%b%d`
+JobID=`date +%m%d`$version
 run_name=$DATE\_$version # Name of the Run, where we store the ACENET file
 # Options to run it locally instead
 # MCR=/Applications/MATLAB/MATLAB_Runtime/v91 # Run on my Mac
@@ -67,9 +68,6 @@ for cluster_num in `seq 0 2`; do
 	if [ "$cluster_name" = "glooscap" ]; then
 		dtnURL=titanium@dtn.$cluster_name.ace-net.ca
 	fi
-	echo $cluster_name
-	echo $URL
-	echo $dtnURL
 # Drop the compiled files in the cluster
 ssh $myLinux << END
 	cd ~/masters
@@ -100,7 +98,7 @@ ssh -T -i ~/.ssh/id_rsa$cluster_name $URL << END
 	for simnum in \`seq $job_0 $job_f\`; do
 		declare -i simnum_0=$simsize*\$simnum+1
 		declare -i simnum_f=$simsize+\$simnum_0-1
-		job_name=run_\$simnum_0\_to_\$simnum_f.job
+		job_name=r$JobID\$simnum_0\_run_\$simnum_0\_to_\$simnum_f.job
 		###############################################
 		# The contents of the job script
 #######################################################
@@ -116,7 +114,18 @@ EOF
 		qsub \$job_name
 	# Finish job script loop
 	done
+# Save the Job-ID associated with this run (for maxvmem)
+#######################################################
+cat > qstat_$JobID.txt << EOF
+\$(qstat | grep $JobID)
+EOF
+# And just the list of jobs
+cat > joblist_$JobID.txt << EOF
+\$( (qstat | grep r05252) | cut -d' ' -f1 )
+EOF
+#######################################################
 END
+
 
 done # FINISH LOOPING THROUGH CLUSTERS
 
@@ -133,6 +142,15 @@ echo "run_name='BLAND';" >> DateVersion.m #
 # chmod 700 ~/.ssh
 # cd ~/.ssh && chmod 600 authorized_keys id_rsa id_rsa.pub known_hosts 
 # cat ~/.ssh/id_rsa.pub | ssh titanium@fundy.ace-net.ca "mkdir -p ~/.ssh && cat >>  ~/.ssh/authorized_keys && chmod go-w ~/ && chmod 700 ~/.ssh && cd ~/.ssh && chmod 600 authorized_keys"
+
+###############################################
+############ USEFUL EXTRA STUFF ###############
+###############################################
+# To find memory requirements for a list of jobs, use this:
+#joblist=$( ( (ls *.o* | grep '.job.o') | cut -d'.' -f3 ) | cut -d'o' -f2)
+#for job in $joblist; do (qstat -j $job | grep maxvmem) | cut -d'=' -f6; done
+# And once the job is done running:
+#for job in $joblist; do (qacct -j $job | grep maxvmem); done
 
 
 
