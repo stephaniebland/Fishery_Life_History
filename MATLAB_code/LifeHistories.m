@@ -159,7 +159,7 @@ switch fishpred
     case 1 %First approximation is just that if something preys on a species, it will prey on all of the lifestages
         for i=fish2div
             list_fishpred=nicheweb_new(:,species==i);
-            list_fishpred(:,1:end-1)=list_fishpred(:,1:end-1)+list_fishpred(:,end);%CAUTION: The reason why we use this roundabout method of adding the list instead of just setting it directly equal is so we preserve cannibalism (imagine if one of the lifestages already preys on another)
+            list_fishpred(:,1:end-1)=max(list_fishpred(:,1:end-1),list_fishpred(:,end)); % CAUTION: This roundabout method is important! We need to preserve predatory links that already exist, which wouldn't happen if we just set all columns equal to the last.
             nicheweb_new(:,species==i)=list_fishpred;
         end
     case 2 %reassigns them according to nichevalues
