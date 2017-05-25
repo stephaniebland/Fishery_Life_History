@@ -15,7 +15,7 @@
 % see http://www.ace-net.ca/training/workshops-seminars/ for details.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function RunCluster(seed_0,simnum_0,simnum_f)
+function RunCluster(seed_0,simnum_0,simnum_f,var_fishpred,var_splitdiet)
     %% Convert Bash script characters into plain numbers
     seed_0=str2num(seed_0);
     simnum_0=str2num(simnum_0);
@@ -34,6 +34,8 @@ function RunCluster(seed_0,simnum_0,simnum_f)
 
         %% Protocol Parameters
         Parameters;
+        lifehis.fishpred=str2num(var_fishpred);%Choose how to assign fish predators. 0 means only adults eaten, 1 means all stages are eaten, and 2 reassigns them according to nichevalues
+        lifehis.splitdiet=str2num(var_splitdiet);%Choose how to split fish diet. true=split orignal diet, false=assign new diet based on new niche values
 
         %% Setup
         setup;% creation of a new food web
@@ -59,7 +61,7 @@ function RunCluster(seed_0,simnum_0,simnum_f)
             end
 
             %% Name for Exporting Data
-            name=sprintf('%s_seed%d_sim%d_Exper%d',run_name,seed_0,simnum,Exper)
+            name=sprintf('%s_seed%d_sim%d_Exper%d_pred%d_prey%d',run_name,seed_0,simnum,Exper,lifehis.fishpred,lifehis.splitdiet)
 
             %% Time Series Simulation (& Export TS dependent Properties)
             simulations;
@@ -74,7 +76,7 @@ function RunCluster(seed_0,simnum_0,simnum_f)
             adj_list=[adj_row, adj_col];%indexed from 1 and up, so if you want first node to be 0, you need to subtract 1.
 
             %% Export Web Properties
-            import_vars={'isfish','basalsp','basal_ls','species','numyears','nichewebsize','ext_thresh','N_stages','lifestage','L_year','Mass','adj_list'};
+            import_vars={'isfish','basalsp','basal_ls','species','numyears','nichewebsize','ext_thresh','N_stages','lifestage','L_year','Mass','adj_list','lifehis.fishpred','lifehis.splitdiet'};
 
             for i=import_vars
                 dlmwrite(strcat(name,'_',char(i),'.txt'),eval(char(i)));

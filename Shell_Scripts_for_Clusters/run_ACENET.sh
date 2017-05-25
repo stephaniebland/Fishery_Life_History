@@ -98,22 +98,26 @@ ssh -T -i ~/.ssh/id_rsa$cluster_name $URL << END
 	# Loop through job scripts
 	###############################################
 	for simnum in \`seq $job_0 $job_f\`; do
-		declare -i simnum_0=$simsize*\$simnum+1
-		declare -i simnum_f=$simsize+\$simnum_0-1
-		job_name=run_\$simnum_0\_to_\$simnum_f.job
-		###############################################
-		# The contents of the job script
+		for fishpred in 0 1 2; do
+			for splitdiet in 0 1; do
+				declare -i simnum_0=$simsize*\$simnum+1
+				declare -i simnum_f=$simsize+\$simnum_0-1
+				job_name=run_\$simnum_0\_\$fishpred\_\$splitdiet.job
+				###############################################
+				# The contents of the job script
 #######################################################
 cat > \$job_name << EOF
 #$ -cwd
 #$ -j yes
 #$ -l h_rt=48:0:0
 #$ -l h_vmem=10G
-./run_$script_name.sh $MCR $seed_0 \$simnum_0 \$simnum_f
+./run_$script_name.sh $MCR $seed_0 \$simnum_0 \$simnum_f \$fishpred \$splitdiet
 EOF
 #######################################################
-		# And finally Run ACENET Cluster
-		qsub \$job_name
+				# And finally Run ACENET Cluster
+				qsub \$job_name
+			done
+		done
 	# Finish job script loop
 	done
 END
