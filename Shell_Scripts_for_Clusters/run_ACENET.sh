@@ -96,7 +96,6 @@ for simnum in `seq $job_0 $job_f`; do
 	declare -i simnum_0=$simsize*$simnum+1
 	declare -i simnum_f=$simsize+$simnum_0-1
 	job_name=run_$simnum_0\_to_$simnum_f.job
-	touch $job_name 
 # The contents of the job script
 cat > $job_name<<EOF
 #$ -cwd
