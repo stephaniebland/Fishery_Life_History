@@ -103,7 +103,7 @@ nicheweb_new(orig_index,orig_index)=nicheweb.*nonsplit;%Rows for invertebrate sp
 % will eat if the new niche values are used for the whole web. We will only
 % replace the parts of the web that need patching up (rows and columns for
 % new lifestages)
-if (fishpred==2 | splitdiet==false)
+if (fishpred==2 || splitdiet==false)
     %Standardize niche values and mass here,then you can use intercept of -4.744e-17, and slope of 2.338e-01 to calculate new niche values for new nodes,then you transform it back to reg.
     fish_n=n_new(isfish);%only use adult fish data (all fish, not just is_split)
     fish_w=log10(W_max(isfish));%log the weight first

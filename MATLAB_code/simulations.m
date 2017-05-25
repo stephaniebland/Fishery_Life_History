@@ -28,7 +28,7 @@ for phase=1:4
             n_years_in_phase=num_years.fishing;
             evolve=true; % Fecundity evolves (fish reach maturity at a younger age)
             %% Shift fish diet according to evolution
-            if (lifehis.fishpred==2 | lifehis.splitdiet==false) % extended_n is not always available - we need to check if it's something we set first.
+            if (lifehis.fishpred==2 || lifehis.splitdiet==false) % extended_n is not always available - we need to check if it's something we set first.
                 reorder_by_size=extended_n;
             else
                 reorder_by_size=1:nichewebsize;%eh, just don't bother reordering if you dont use an extended web that starts with new niche values.
