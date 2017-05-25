@@ -49,7 +49,7 @@ git bundle create ~/Documents/master\'s\ Backup/backup_$DATE.bundle master ACENE
 
 ###############################################
 # Compile MATLAB On Selenium to get a Linux Executable:
-ssh -T $myLinux <<END
+ssh -T $myLinux << END
 	rm -rf masters/
 	git clone -b ACENET-RUNS ~/GIT/masters.git/
 	/usr/local/MATLAB/R2017a/bin/matlab -nodisplay -r "cd('~/masters/');mcc -m $script_name.m;quit"
@@ -71,9 +71,9 @@ for cluster_num in `seq 0 2`; do
 	echo $URL
 	echo $dtnURL
 # Drop the compiled files in the cluster
-ssh $myLinux <<END
+ssh $myLinux << END
 	cd ~/masters
-	sftp -i ~/.ssh/id_rsa$cluster_name $dtnURL <<END
+	sftp -i ~/.ssh/id_rsa$cluster_name $dtnURL << END
 		mkdir /home/titanium/$run_name
 		cd $run_name
 		put $script_name
@@ -91,33 +91,32 @@ declare -i job_f=$job_0+$jobs_per_cluster-1
 ######### LOOP THROUGH JOB SCRIPTS ############
 ###############################################
 # These loops happen within the cluster loops
-for simnum in `seq $job_0 $job_f`; do
-	# Create Job Scripts Locally
-	declare -i simnum_0=$simsize*$simnum+1
-	declare -i simnum_f=$simsize+$simnum_0-1
-	job_name=run_$simnum_0\_to_$simnum_f.job
-# The contents of the job script
-cat > $job_name<<EOF
+ssh -T -i ~/.ssh/id_rsa$cluster_name $URL << END
+	cd $run_name
+	chmod +x $script_name run_$script_name.sh
+	###############################################
+	# Loop through job scripts
+	###############################################
+	for simnum in \`seq $job_0 $job_f\`; do
+		declare -i simnum_0=$simsize*\$simnum+1
+		declare -i simnum_f=$simsize+\$simnum_0-1
+		job_name=run_\$simnum_0\_to_\$simnum_f.job
+		###############################################
+		# The contents of the job script
+#######################################################
+cat > \$job_name << EOF
 #$ -cwd
 #$ -j yes
 #$ -l h_rt=48:0:0
 #$ -l h_vmem=10G
-./run_$script_name.sh $MCR $seed_0 $simnum_0 $simnum_f
+./run_$script_name.sh $MCR $seed_0 \$simnum_0 \$simnum_f
 EOF
-
-# Drop the job script on the cluster
-sftp -i ~/.ssh/id_rsa$cluster_name $dtnURL <<END
-	cd $run_name
-	put $job_name
+#######################################################
+		# And finally Run ACENET Cluster
+		qsub \$job_name
+	# Finish job script loop
+	done
 END
-rm $job_name
-# And finally Run ACENET Cluster
-ssh -T -i ~/.ssh/id_rsa$cluster_name $URL <<END
-	cd $run_name
-	chmod +x $script_name run_$script_name.sh
-	qsub $job_name
-END
-done # FINISH LOOPING THROUGH JOB SCRIPTS
 
 done # FINISH LOOPING THROUGH CLUSTERS
 
