@@ -55,7 +55,7 @@ ssh -T $myLinux << END
 	/usr/local/MATLAB/R2017a/bin/matlab -nodisplay -r "cd('~/masters/');mcc -m $script_name.m;quit"
 END
 # To compile it on my mac instead to get a mac executable use:
-# /Applications/MATLAB_R2016b.app/bin/matlab -nodisplay -r "cd('/Users/JurassicPark/Google Drive/GIT/Masters Project');mcc -m RunCluster.m;quit"
+# /Applications/MATLAB_R2016b.app/bin/matlab -nodisplay -r "cd('~/GIT/MastersProject');mcc -m RunCluster.m;quit"
 
 ###############################################
 ########### LOOP THROUGH CLUSTERS #############
