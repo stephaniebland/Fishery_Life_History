@@ -4,21 +4,22 @@
 B_year_end=nan(N_years,nichewebsize);
 % AllCatch=nan(nichewebsize,N_years*L_year);
 % B_stable_phase=[]; %Capture annual variation once the data set stabilized
-%B0=B_orig;
 t_days=0;
 t_year=1;
+%% Make sure you reset Values for Experimental Treatments
+nicheweb=extended_web;
+%B0=B_orig; % Not needed this round as we use custom B0 for Experimental Treatments
+
 %Run one time phase at a time, each phase has different conditions
 for phase=1:4
     switch phase
         case 1 %{Stabilize Data before you record anything}
-             n_years_in_phase=num_years.stabilize;
-             evolve=false;
-             lstages_linked=lifestages_linked;
-             Effort=0;
+            n_years_in_phase=num_years.stabilize;
+            evolve=false;
+            Effort=0;
         case 2 %{insert lifehistory}
             n_years_in_phase=num_years.pre_fish;
             evolve=false;
-            lstages_linked=lifestages_linked;
             Effort=0;
         case 3 %{insert fishing}
             %% Save Deterministic Data For Replicates
@@ -27,7 +28,7 @@ for phase=1:4
             n_years_in_phase=num_years.fishing;
             evolve=true; % Fecundity evolves (fish reach maturity at a younger age)
             %% Shift fish diet according to evolution
-            if (lifehis.fishpred==true | lifehis.splitdiet==false)
+            if (lifehis.fishpred==2 || lifehis.splitdiet==false) % extended_n is not always available - we need to check if it's something we set first.
                 reorder_by_size=extended_n;
             else
                 reorder_by_size=1:nichewebsize;%eh, just don't bother reordering if you dont use an extended web that starts with new niche values.
@@ -49,7 +50,7 @@ for phase=1:4
             ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,L_year+1,ext_thresh);
         B_end=x(L_year+1,1:nichewebsize)'; % use the final biomasses as the initial conditions
         B0=B_end;
-        if lstages_linked==true
+        if lifestages_linked==true
             %% Move biomass from one life history to the next
             fish_gain_tot=sum(x(1:L_year,(1:nichewebsize)+nichewebsize),1)';
             if cont_reprod==false
