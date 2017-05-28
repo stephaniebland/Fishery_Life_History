@@ -22,13 +22,13 @@
 version=0 # Version
 declare -i seed_0=0
 simsize=5
-sims_per_cluster=100
+sims_per_cluster=10
 
 ###############################################
 # Setup
-script_name=RunCluster # Name of the file we will be compressing
+script_name=testing # Name of the file we will be compressing
 myLinux=selenium@129.173.34.107
-declare -a avail_clusters=("fundy" "glooscap" "placentia")
+declare -a avail_clusters=("fundy")
 DATE=`date +%Y%b%d`
 JobID=`date +%m%d`$version
 run_name=$DATE\_$version # Name of the Run, where we store the ACENET file
@@ -37,47 +37,32 @@ run_name=$DATE\_$version # Name of the Run, where we store the ACENET file
 # MCR=/usr/local/MATLAB/MATLAB_Runtime/v92 # Run on linux (Selenium)
 MCR=/usr/local/matlab-runtime/r2017a/v92 # Run on ACENET
 
-###############################################
-# Push commits to Linux and Backup Servers (& Bundle Backups):
-# This runs on my mac
-rm DateVersion.m
-echo "run_name='$run_name';" >> DateVersion.m
-git commit -m "$run_name" DateVersion.m
-git push origin master ACENET-RUNS # Push MATLAB code to Selenium Server 
-ssh-agent sh -c 'ssh-add ~/.ssh/id_rsaPterodactyl; git push backup --all -u' # Push all MATLAB code to Shadow Server
-git bundle create ~/Documents/master\'s\ Backup/backup_$DATE.bundle master ACENET-RUNS # Save a local backup of your work
-# git bundle create ~/Documents/master\'s\ Backup/backup_$DATE_all.bundle --all #Stores all branches
 
 ###############################################
 # Compile MATLAB On Selenium to get a Linux Executable:
-ssh -T $myLinux << END
-	rm -rf masters/
-	git clone -b ACENET-RUNS ~/GIT/masters.git/
-	/usr/local/MATLAB/R2017a/bin/matlab -nodisplay -r "cd('~/masters/');mcc -m $script_name.m;quit"
-END
+#ssh -T $myLinux << END
+#	/usr/local/MATLAB/R2017a/bin/matlab -nodisplay -r "mcc -m $script_name.m;quit"
+#END
 # To compile it on my mac instead to get a mac executable use:
 # /Applications/MATLAB_R2016b.app/bin/matlab -nodisplay -r "cd('~/GIT/MastersProject');mcc -m RunCluster.m;quit"
 
 ###############################################
 ########### LOOP THROUGH CLUSTERS #############
 ###############################################
-for cluster_num in `seq 0 2`; do
-	cluster_name=${avail_clusters[$cluster_num]}
+for cluster_num in 0; do
+	cluster_name=fundy
 	URL=titanium@$cluster_name.ace-net.ca
 	dtnURL="$URL"
-	if [ "$cluster_name" = "glooscap" ]; then
-		dtnURL=titanium@dtn.$cluster_name.ace-net.ca
-	fi
 	# Drop the compiled files in the cluster
-	ssh $myLinux << END
-		cd ~/masters
-		sftp -i ~/.ssh/id_rsa$cluster_name $dtnURL << END
-			mkdir /home/titanium/$run_name
-			cd $run_name
-			put $script_name
-			put run_$script_name.sh
-		END
-	END
+#	ssh $myLinux << END
+#		#cd ~/masters
+#		sftp -i ~/.ssh/id_rsa$cluster_name $dtnURL << END
+#			mkdir /home/titanium/$run_name
+#			cd $run_name
+#			put $script_name
+#			put run_$script_name.sh
+#		END
+#	END
 
 	#Find the total number of jobs to do in each cluster
 	declare -i jobs_per_cluster=$sims_per_cluster/$simsize
@@ -89,49 +74,49 @@ for cluster_num in `seq 0 2`; do
 	######### LOOP THROUGH JOB SCRIPTS ############
 	###############################################
 	# These loops happen within the cluster loops
-	ssh -T -i ~/.ssh/id_rsa$cluster_name $URL << END
-		cd $run_name
-		chmod +x $script_name run_$script_name.sh
-		###############################################
-		# Loop through job scripts
-		###############################################
-		for simnum in \`seq $job_0 $job_f\`; do
-			declare -i simnum_0=$simsize*\$simnum+1
-			declare -i simnum_f=$simsize+\$simnum_0-1
-			echo \$simnum_0 \$simnum_f >> ls_$JobID.sh
-		# Finish job script loop
-		done
-		###############################################
-		# The contents of the job script
+ssh -T -i ~/.ssh/id_rsa$cluster_name $URL << END
+	cd $run_name
+	chmod +x $script_name run_$script_name.sh
+	###############################################
+	# Loop through job scripts
+	###############################################
+	for simnum in \`seq $job_0 $job_f\`; do
+		declare -i simnum_0=$simsize*\$simnum+1
+		declare -i simnum_f=$simsize+\$simnum_0-1
+		echo \$simnum_0 \$simnum_f >> ls_$JobID.sh
+		echo ./run_$script_name.sh $MCR $seed_0  \$simnum_0 \$simnum_f >> ls_$JobID.sh
+		echo touch hello\$simnum_0.txt >> ls_$JobID.sh # Make a simple file
+	# Finish job script loop
+	done
+	###############################################
+	# The contents of the job script
 #######################################################
 cat > r$JobID.job << \EOF
 #$ -cwd
 #$ -j yes
-#$ -l h_rt=48:0:0
-#$ -l h_vmem=10G
-#$ -t 1-3
+#$ -l test=true
+#$ -l h_rt=0:01:0
+#$ -l h_vmem=1G
+#$ -t 1-8
 SEEDFILE=~/$run_name/ls_$JobID.sh
 SEED=\$(awk "NR==\$SGE_TASK_ID" \$SEEDFILE)
+\$SEED
+echo ./run_$script_name.sh $MCR $seed_0 \$SEED >> whatev.txt
 ./run_$script_name.sh $MCR $seed_0 \$SEED
 EOF
 #######################################################
-	# And finally Run ACENET Cluster
-	qsub r$JobID.job
-	# Save the Job-ID associated with this run (for maxvmem)
-	#######################################################
-	echo \$(qstat | grep $JobID) > qstat_$JobID.txt
-	# And just the list of jobs
-	echo \$( (qstat | grep $JobID) | cut -d' ' -f1 ) > joblist_$JobID.txt
-	#######################################################
-	END
+# And finally Run ACENET Cluster
+qsub r$JobID.job
+# Save the Job-ID associated with this run (for maxvmem)
+#######################################################
+echo \$(qstat | grep $JobID) > qstat_$JobID.txt
+# And just the list of jobs
+echo \$( (qstat | grep $JobID) | cut -d' ' -f1 ) > joblist_$JobID.txt
+#######################################################
+END
 
 done # FINISH LOOPING THROUGH CLUSTERS
 
-###############################################
-############# DONE NOW CLEAN UP ###############
-###############################################
-rm DateVersion.m 
-echo "run_name='BLAND';" >> DateVersion.m # 
 
 ## Manual setup
 ## Set up keygen on Selenium
