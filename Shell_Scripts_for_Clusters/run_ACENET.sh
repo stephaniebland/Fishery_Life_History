@@ -114,16 +114,12 @@ EOF
 		qsub \$job_name
 	# Finish job script loop
 	done
-# Save the Job-ID associated with this run (for maxvmem)
-#######################################################
-cat > qstat_$JobID.txt << EOF
-\$(qstat | grep $JobID)
-EOF
-# And just the list of jobs
-cat > joblist_$JobID.txt << EOF
-\$( (qstat | grep r05252) | cut -d' ' -f1 )
-EOF
-#######################################################
+	# Save the Job-ID associated with this run (for maxvmem)
+	#######################################################
+	echo \$(qstat | grep $JobID) > qstat_$JobID.txt
+	# And just the list of jobs
+	echo \$( (qstat | grep $JobID) | cut -d' ' -f1 ) > joblist_$JobID.txt
+	#######################################################
 END
 
 
