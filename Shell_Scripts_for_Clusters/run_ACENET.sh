@@ -40,8 +40,7 @@ MCR=/usr/local/matlab-runtime/r2017a/v92 # Run on ACENET
 ###############################################
 # Push commits to Linux and Backup Servers (& Bundle Backups):
 # This runs on my mac
-rm DateVersion.m
-echo "run_name='$run_name';" >> DateVersion.m
+echo "run_name='$run_name';" > DateVersion.m
 git commit -m "$run_name" DateVersion.m
 git push origin master ACENET-RUNS # Push MATLAB code to Selenium Server 
 ssh-agent sh -c 'ssh-add ~/.ssh/id_rsaPterodactyl; git push backup --all -u' # Push all MATLAB code to Shadow Server
@@ -128,8 +127,7 @@ done # FINISH LOOPING THROUGH CLUSTERS
 ###############################################
 ############# DONE NOW CLEAN UP ###############
 ###############################################
-rm DateVersion.m 
-echo "run_name='BLAND';" >> DateVersion.m # 
+echo "run_name='BLAND';" > DateVersion.m 
 
 ## Manual setup
 ## Set up keygen on Selenium
