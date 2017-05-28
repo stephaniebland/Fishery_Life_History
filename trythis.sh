@@ -75,6 +75,7 @@ for cluster_num in 0; do
 	###############################################
 	# These loops happen within the cluster loops
 ssh -T -i ~/.ssh/id_rsa$cluster_name $URL << END
+	#mkdir $run_name
 	cd $run_name
 	chmod +x $script_name run_$script_name.sh
 	###############################################
@@ -102,6 +103,7 @@ SEEDFILE=~/$run_name/ls_$JobID.sh
 SEED=\$(awk "NR==\$SGE_TASK_ID" \$SEEDFILE)
 \$SEED
 echo ./run_$script_name.sh $MCR $seed_0 \$SEED >> whatev.txt
+echo ./run_$script_name.sh $MCR $seed_0 \$SEED >> whatev2.txt
 ./run_$script_name.sh $MCR $seed_0 \$SEED
 EOF
 #######################################################
