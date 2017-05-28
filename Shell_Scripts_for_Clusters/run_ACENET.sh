@@ -68,39 +68,39 @@ for cluster_num in `seq 0 2`; do
 	if [ "$cluster_name" = "glooscap" ]; then
 		dtnURL=titanium@dtn.$cluster_name.ace-net.ca
 	fi
-# Drop the compiled files in the cluster
-ssh $myLinux << END
-	cd ~/masters
-	sftp -i ~/.ssh/id_rsa$cluster_name $dtnURL << END
-		mkdir /home/titanium/$run_name
-		cd $run_name
-		put $script_name
-		put run_$script_name.sh
+	# Drop the compiled files in the cluster
+	ssh $myLinux << END
+		cd ~/masters
+		sftp -i ~/.ssh/id_rsa$cluster_name $dtnURL << END
+			mkdir /home/titanium/$run_name
+			cd $run_name
+			put $script_name
+			put run_$script_name.sh
+		END
 	END
-END
 
-#Find the total number of jobs to do in each cluster
-declare -i jobs_per_cluster=$sims_per_cluster/$simsize
-declare -i job_0=$cluster_num*$jobs_per_cluster
-declare -i job_f=$job_0+$jobs_per_cluster-1
+	#Find the total number of jobs to do in each cluster
+	declare -i jobs_per_cluster=$sims_per_cluster/$simsize
+	declare -i job_0=$cluster_num*$jobs_per_cluster
+	declare -i job_f=$job_0+$jobs_per_cluster-1
 
 
-###############################################
-######### LOOP THROUGH JOB SCRIPTS ############
-###############################################
-# These loops happen within the cluster loops
-ssh -T -i ~/.ssh/id_rsa$cluster_name $URL << END
-	cd $run_name
-	chmod +x $script_name run_$script_name.sh
 	###############################################
-	# Loop through job scripts
+	######### LOOP THROUGH JOB SCRIPTS ############
 	###############################################
-	for simnum in \`seq $job_0 $job_f\`; do
-		declare -i simnum_0=$simsize*\$simnum+1
-		declare -i simnum_f=$simsize+\$simnum_0-1
-		job_name=r$JobID\$simnum_0\_run_\$simnum_0\_to_\$simnum_f.job
+	# These loops happen within the cluster loops
+	ssh -T -i ~/.ssh/id_rsa$cluster_name $URL << END
+		cd $run_name
+		chmod +x $script_name run_$script_name.sh
 		###############################################
-		# The contents of the job script
+		# Loop through job scripts
+		###############################################
+		for simnum in \`seq $job_0 $job_f\`; do
+			declare -i simnum_0=$simsize*\$simnum+1
+			declare -i simnum_f=$simsize+\$simnum_0-1
+			job_name=r$JobID\$simnum_0\_run_\$simnum_0\_to_\$simnum_f.job
+			###############################################
+			# The contents of the job script
 #######################################################
 cat > \$job_name << EOF
 #$ -cwd
@@ -110,22 +110,21 @@ cat > \$job_name << EOF
 ./run_$script_name.sh $MCR $seed_0 \$simnum_0 \$simnum_f
 EOF
 #######################################################
-		# And finally Run ACENET Cluster
-		qsub \$job_name
-	# Finish job script loop
-	done
-# Save the Job-ID associated with this run (for maxvmem)
-#######################################################
-cat > qstat_$JobID.txt << EOF
-\$(qstat | grep $JobID)
-EOF
-# And just the list of jobs
-cat > joblist_$JobID.txt << EOF
-\$( (qstat | grep r05252) | cut -d' ' -f1 )
-EOF
-#######################################################
-END
-
+			# And finally Run ACENET Cluster
+			qsub \$job_name
+		# Finish job script loop
+		done
+	# Save the Job-ID associated with this run (for maxvmem)
+	#######################################################
+	cat > qstat_$JobID.txt << EOF
+	\$(qstat | grep $JobID)
+	EOF
+	# And just the list of jobs
+	cat > joblist_$JobID.txt << EOF
+	\$( (qstat | grep r05252) | cut -d' ' -f1 )
+	EOF
+	#######################################################
+	END
 
 done # FINISH LOOPING THROUGH CLUSTERS
 
