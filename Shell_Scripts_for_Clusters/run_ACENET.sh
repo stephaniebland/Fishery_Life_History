@@ -70,7 +70,7 @@ for cluster_num in 0; do
 # Drop the compiled files in the cluster
 ssh $myLinux << END
 	cd ~/masters
-	sftp -i ~/.ssh/id_rsa$cluster_name $dtnURL << END
+	sftp -i ~/.ssh/id_rsa$cluster_name $dtnURL <<- END
 		mkdir /home/titanium/$run_name
 		cd $run_name
 		put $script_name
@@ -122,7 +122,7 @@ EOF
 # Run script every few minutes to check if the job is done:
 #######################################################
 crontab -l > tmp_cron.sh
-sed -i '' "/$JobID/d" tmp_cron.sh
+sed -i "/$JobID/d" tmp_cron.sh
 echo \*/10 \* \* \* \* ~/task_$JobID\_done.sh >> tmp_cron.sh
 crontab tmp_cron.sh
 rm tmp_cron.sh
@@ -131,8 +131,8 @@ rm tmp_cron.sh
 # Crontab script for linux:
 #######################################################
 cd ~
-cat > ~/task_$JobID\_done.sh << EOF
-if $[ \$(qstat | grep -c $JobID) -eq 0 ]; then
+cat > ~/task_$JobID\_done.sh << \EOF
+if [ \$(qstat | grep -c $JobID) -eq 0 ]; then
 	# If the job is done we can:
 	# a) Compress the file in Zip form
 	zip -r temp.zip $run_name
