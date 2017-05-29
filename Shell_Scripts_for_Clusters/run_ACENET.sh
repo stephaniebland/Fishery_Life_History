@@ -122,6 +122,7 @@ EOF
 # Run script every few minutes to check if the job is done:
 #######################################################
 crontab -l > tmp_cron.sh
+sed -i '' "/$JobID/d" tmp_cron.sh
 echo \*/10 \* \* \* \* ~/task_$JobID\_done.sh >> tmp_cron.sh
 crontab tmp_cron.sh
 rm tmp_cron.sh
@@ -131,7 +132,7 @@ rm tmp_cron.sh
 #######################################################
 cd ~
 cat > ~/task_$JobID\_done.sh << EOF
-if \$[ \$(qstat | grep -c $JobID) -eq 0 ]; then
+if $[ \$(qstat | grep -c $JobID) -eq 0 ]; then
 	# If the job is done we can:
 	# a) Compress the file in Zip form
 	zip -r temp.zip $run_name
@@ -150,6 +151,7 @@ END
 
 # And then over on my mac, crontab a script to look for the zip files
 crontab -l > tmp_cron.sh
+sed -i '' "/$JobID$cluster_name/d" tmp_cron.sh
 echo \*/10 \* \* \* \* ~/$JobID$cluster_name.sh >> tmp_cron.sh
 crontab tmp_cron.sh
 rm tmp_cron.sh
