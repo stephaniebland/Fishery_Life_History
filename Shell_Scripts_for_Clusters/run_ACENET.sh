@@ -30,6 +30,7 @@ script_name=RunCluster # Name of the file we will be compressing
 myLinux=selenium@129.173.34.107
 declare -a avail_clusters=("fundy" "glooscap" "placentia")
 DATE=`date +%Y%b%d`
+JobID=`date +%m%d`$version
 run_name=$DATE\_$version # Name of the Run, where we store the ACENET file
 # Options to run it locally instead
 # MCR=/Applications/MATLAB/MATLAB_Runtime/v91 # Run on my Mac
@@ -39,8 +40,7 @@ MCR=/usr/local/matlab-runtime/r2017a/v92 # Run on ACENET
 ###############################################
 # Push commits to Linux and Backup Servers (& Bundle Backups):
 # This runs on my mac
-rm DateVersion.m
-echo "run_name='$run_name';" >> DateVersion.m
+echo "run_name='$run_name';" > DateVersion.m
 git commit -m "$run_name" DateVersion.m
 git push origin master ACENET-RUNS # Push MATLAB code to Selenium Server 
 ssh-agent sh -c 'ssh-add ~/.ssh/id_rsaPterodactyl; git push backup --all -u' # Push all MATLAB code to Shadow Server
@@ -55,7 +55,7 @@ ssh -T $myLinux << END
 	/usr/local/MATLAB/R2017a/bin/matlab -nodisplay -r "cd('~/masters/');mcc -m $script_name.m;quit"
 END
 # To compile it on my mac instead to get a mac executable use:
-# /Applications/MATLAB_R2016b.app/bin/matlab -nodisplay -r "cd('/Users/JurassicPark/Google Drive/GIT/Masters Project');mcc -m RunCluster.m;quit"
+# /Applications/MATLAB_R2016b.app/bin/matlab -nodisplay -r "cd('~/GIT/MastersProject');mcc -m RunCluster.m;quit"
 
 ###############################################
 ########### LOOP THROUGH CLUSTERS #############
@@ -67,9 +67,6 @@ for cluster_num in `seq 0 2`; do
 	if [ "$cluster_name" = "glooscap" ]; then
 		dtnURL=titanium@dtn.$cluster_name.ace-net.ca
 	fi
-	echo $cluster_name
-	echo $URL
-	echo $dtnURL
 # Drop the compiled files in the cluster
 ssh $myLinux << END
 	cd ~/masters
@@ -100,7 +97,7 @@ ssh -T -i ~/.ssh/id_rsa$cluster_name $URL << END
 	for simnum in \`seq $job_0 $job_f\`; do
 		declare -i simnum_0=$simsize*\$simnum+1
 		declare -i simnum_f=$simsize+\$simnum_0-1
-		job_name=run_\$simnum_0\_to_\$simnum_f.job
+		job_name=r$JobID\$simnum_0\_run_\$simnum_0\_to_\$simnum_f.job
 		###############################################
 		# The contents of the job script
 #######################################################
@@ -116,15 +113,21 @@ EOF
 		qsub \$job_name
 	# Finish job script loop
 	done
+	# Save the Job-ID associated with this run (for maxvmem)
+	#######################################################
+	echo \$(qstat | grep $JobID) > qstat_$JobID.txt
+	# And just the list of jobs
+	echo \$( (qstat | grep $JobID) | cut -d' ' -f1 ) > joblist_$JobID.txt
+	#######################################################
 END
+
 
 done # FINISH LOOPING THROUGH CLUSTERS
 
 ###############################################
 ############# DONE NOW CLEAN UP ###############
 ###############################################
-rm DateVersion.m 
-echo "run_name='BLAND';" >> DateVersion.m # 
+echo "run_name='BLAND';" > DateVersion.m 
 
 ## Manual setup
 ## Set up keygen on Selenium
@@ -133,6 +136,15 @@ echo "run_name='BLAND';" >> DateVersion.m #
 # chmod 700 ~/.ssh
 # cd ~/.ssh && chmod 600 authorized_keys id_rsa id_rsa.pub known_hosts 
 # cat ~/.ssh/id_rsa.pub | ssh titanium@fundy.ace-net.ca "mkdir -p ~/.ssh && cat >>  ~/.ssh/authorized_keys && chmod go-w ~/ && chmod 700 ~/.ssh && cd ~/.ssh && chmod 600 authorized_keys"
+
+###############################################
+############ USEFUL EXTRA STUFF ###############
+###############################################
+# To find memory requirements for a list of jobs, use this:
+#joblist=$( ( (ls *.o* | grep '.job.o') | cut -d'.' -f3 ) | cut -d'o' -f2)
+#for job in $joblist; do (qstat -j $job | grep maxvmem) | cut -d'=' -f6; done
+# And once the job is done running:
+#for job in $joblist; do (qacct -j $job | grep maxvmem); done
 
 
 
