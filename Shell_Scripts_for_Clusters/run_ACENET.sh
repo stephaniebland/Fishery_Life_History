@@ -19,10 +19,10 @@
 # qacct -j 6793085 | grep maxvmem
 ###############################################
 # Variable Names:
-version=0 # Version
+version=1 # Version
 declare -i seed_0=0
 simsize=1
-sims_per_cluster=100
+sims_per_cluster=5
 
 ###############################################
 # Setup
@@ -42,25 +42,25 @@ MCR=/usr/local/matlab-runtime/r2017a/v92 # Run on ACENET
 # This runs on my mac
 echo "run_name='$run_name';" > DateVersion.m
 git commit -m "$run_name" DateVersion.m
-git push origin master ACENET-Autotransfer-files # Push MATLAB code to Selenium Server 
+#git push origin master ACENET-Autotransfer-files # Push MATLAB code to Selenium Server 
 #ssh-agent sh -c 'ssh-add ~/.ssh/id_rsaPterodactyl; git push backup --all -u' # Push all MATLAB code to Shadow Server
 #git bundle create ~/Documents/master\'s\ Backup/backup_$DATE.bundle master ACENET-Autotransfer-files # Save a local backup of your work
 # git bundle create ~/Documents/master\'s\ Backup/backup_$DATE_all.bundle --all #Stores all branches
 
 ###############################################
 # Compile MATLAB On Selenium to get a Linux Executable:
-ssh -T $myLinux << END
-	rm -rf masters/
-	git clone -b ACENET-Autotransfer-files ~/GIT/masters.git/
-	/usr/local/MATLAB/R2017a/bin/matlab -nodisplay -r "cd('~/masters/');mcc -m $script_name.m;quit"
-END
+#ssh -T $myLinux << END
+#	rm -rf masters/
+#	git clone -b ACENET-Autotransfer-files ~/GIT/masters.git/
+#	/usr/local/MATLAB/R2017a/bin/matlab -nodisplay -r "cd('~/masters/');mcc -m $script_name.m;quit"
+#END
 # To compile it on my mac instead to get a mac executable use:
 # /Applications/MATLAB_R2016b.app/bin/matlab -nodisplay -r "cd('~/GIT/MastersProject');mcc -m RunCluster.m;quit"
 
 ###############################################
 ########### LOOP THROUGH CLUSTERS #############
 ###############################################
-for cluster_num in `seq 0 2`; do
+for cluster_num in 0; do
 	cluster_name=${avail_clusters[$cluster_num]}
 	URL=titanium@$cluster_name.ace-net.ca
 	dtnURL="$URL"
@@ -129,8 +129,9 @@ rm tmp_cron.sh
 #######################################################
 # Crontab script for linux:
 #######################################################
-cat > task_$JobID\_done.sh << EOF
-if [ \$(qstat | grep -c $JobID) -eq 0 ]; then
+cd ~
+cat > ~/task_$JobID\_done.sh << EOF
+if \$[ \$(qstat | grep -c $JobID) -eq 0 ]; then
 	# If the job is done we can:
 	# a) Compress the file in Zip form
 	zip -r temp.zip $run_name
@@ -155,6 +156,7 @@ rm tmp_cron.sh
 #######################################################
 # Crontab script for my mac:
 #######################################################
+cd ~
 cat > $JobID$cluster_name.sh << EOF
 # Bring them over to my mac
 if ssh -i .ssh/id_rsa$cluster_name $URL test -e $JobID$cluster_name.zip; then
