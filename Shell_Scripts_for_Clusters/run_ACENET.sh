@@ -19,7 +19,7 @@
 # qacct -j 6793085 | grep maxvmem
 ###############################################
 # Variable Names:
-version=0 # Version
+version=1 # Version
 declare -i seed_0=0
 simsize=1
 sims_per_cluster=5
@@ -134,7 +134,7 @@ for cluster_num in 0; do
 			if [ \$(qstat | grep -c $JobID) -eq 0 ]; then
 				# If the job is done we can:
 				# a) Compress the file in Zip form
-				zip -r temp.zip $run_name
+				zip -r -T temp.zip $run_name
 				# b) Rename the zip file. (Two steps so it's not transferred until fully compressed.)
 				mv temp.zip $JobID$cluster_name.zip
 				# c) Delete the crontab task
