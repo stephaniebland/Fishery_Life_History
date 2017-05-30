@@ -168,7 +168,7 @@ for cluster_num in 0; do
 			END
 			# b) And uncompress them 
 			mv $JobID$cluster_name.zip ~/GIT/Analysis/$JobID$cluster_name.zip
-			unzip -q -j ~/GIT/Analysis/$JobID$cluster_name.zip -d  ~/GIT/Analysis/$run_name
+			unzip -q -j ~/GIT/Analysis/$JobID$cluster_name.zip -d ~/GIT/Analysis/$run_name
 			# c) When this is done, we can delete the crontab task
 			crontab -l > tmp_cron2.sh
 			sed -i '' "/$JobID$cluster_name/d" tmp_cron2.sh
