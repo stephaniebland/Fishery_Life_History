@@ -101,7 +101,7 @@ ssh -T -i ~/.ssh/id_rsa$cluster_name $URL << END
 		###############################################
 		# The contents of the job script
 #######################################################
-cat > \$job_name << EOF
+cat > \$job_name <<- EOF
 #$ -cwd
 #$ -j yes
 #$ -l h_rt=48:0:0
@@ -130,8 +130,7 @@ rm tmp_cron.sh
 #######################################################
 # Crontab script for linux:
 #######################################################
-cd ~
-cat > ~/task_$JobID\_done.sh << \EOF
+cat > ~/task_$JobID\_done.sh <<- \EOF
 if [ \$(qstat | grep -c $JobID) -eq 0 ]; then
 	# If the job is done we can:
 	# a) Compress the file in Zip form
@@ -140,12 +139,14 @@ if [ \$(qstat | grep -c $JobID) -eq 0 ]; then
 	mv temp.zip $JobID$cluster_name.zip
 	# c) Delete the crontab task
 	crontab -l > tmp_cron2.sh
-	sed -i '' "/$JobID/d" tmp_cron2.sh
+	sed -i "/$JobID/d" tmp_cron2.sh
 	crontab tmp_cron2.sh
 	rm tmp_cron2.sh
+	# And remove itself - no need for clutter!
+	rm task_$JobID\_done.sh
 fi
 EOF
-chmod +x task_$JobID\_done.sh
+chmod +x ~/task_$JobID\_done.sh
 #######################################################	
 END
 
@@ -158,12 +159,11 @@ rm tmp_cron.sh
 #######################################################
 # Crontab script for my mac:
 #######################################################
-cd ~
-cat > $JobID$cluster_name.sh << EOF
+cat > ~/$JobID$cluster_name.sh <<- EOF
 # Bring them over to my mac
 if ssh -i .ssh/id_rsa$cluster_name $URL test -e $JobID$cluster_name.zip; then
 	# Retrieve the file:
-	sftp -i ~/.ssh/id_rsa$cluster_name $dtnURL <<- END
+	sftp -i .ssh/id_rsa$cluster_name $dtnURL <<- END
 		get $JobID$cluster_name.zip
 	END
 	# And uncompress them 
@@ -174,9 +174,11 @@ if ssh -i .ssh/id_rsa$cluster_name $URL test -e $JobID$cluster_name.zip; then
 	sed -i '' "/$JobID$cluster_name/d" tmp_cron2.sh
 	crontab tmp_cron2.sh
 	rm tmp_cron2.sh
+	# And remove itself - no need for clutter!
+	rm $JobID$cluster_name.sh
 fi
 EOF
-chmod +x $JobID$cluster_name.sh
+chmod +x ~/$JobID$cluster_name.sh
 
 done # FINISH LOOPING THROUGH CLUSTERS
 
