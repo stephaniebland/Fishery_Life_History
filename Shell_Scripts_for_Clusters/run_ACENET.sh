@@ -142,7 +142,7 @@ for cluster_num in 0; do
 				sed -i "/$JobID/d" tmp_cron2.sh
 				crontab tmp_cron2.sh
 				rm tmp_cron2.sh
-				# And remove itself - no need for clutter!
+				# d) And remove itself - no need for clutter!
 				rm task_$JobID\_done.sh
 			fi
 		EOF
@@ -162,19 +162,19 @@ for cluster_num in 0; do
 	cat > ~/$JobID$cluster_name.sh <<- EOF
 		# Bring them over to my mac
 		if ssh -i .ssh/id_rsa$cluster_name $URL test -e $JobID$cluster_name.zip; then
-			# Retrieve the file:
+			# a) Retrieve the file:
 			sftp -i .ssh/id_rsa$cluster_name $dtnURL <<- END
 				get $JobID$cluster_name.zip
 			END
-			# And uncompress them 
+			# b) And uncompress them 
 			mv $JobID$cluster_name.zip ~/GIT/Analysis/$JobID$cluster_name.zip
 			unzip ~/GIT/Analysis/$JobID$cluster_name.zip
-			# When this is done, we can delete the crontab task
+			# c) When this is done, we can delete the crontab task
 			crontab -l > tmp_cron2.sh
 			sed -i '' "/$JobID$cluster_name/d" tmp_cron2.sh
 			crontab tmp_cron2.sh
 			rm tmp_cron2.sh
-			# And remove itself - no need for clutter!
+			# d) And remove itself - no need for clutter!
 			rm $JobID$cluster_name.sh
 		fi
 	EOF
