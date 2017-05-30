@@ -1,4 +1,7 @@
 #!/bin/bash
+# To run automatically use:
+# crontab -e 
+# 01 11 * * 1 chmod +x ~/.BACKUP_GIT.sh && ~/.BACKUP_GIT.sh
 # BACKUP ALL GIT DATA
 # This script pushes all data to selenium and backs it up in google drive and apple storage
 ###############################################
@@ -37,3 +40,6 @@ for i in *; do
 	###############################################
 	cd ~/GIT
 done
+
+
+
