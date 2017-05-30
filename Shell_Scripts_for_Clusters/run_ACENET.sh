@@ -19,7 +19,7 @@
 # qacct -j 6793085 | grep maxvmem
 ###############################################
 # Variable Names:
-version=1 # Version
+version=4 # Version
 declare -i seed_0=0
 simsize=1
 sims_per_cluster=5
@@ -67,118 +67,118 @@ for cluster_num in 0; do
 	if [ "$cluster_name" = "glooscap" ]; then
 		dtnURL=titanium@dtn.$cluster_name.ace-net.ca
 	fi
-# Drop the compiled files in the cluster
-ssh $myLinux << END
-	cd ~/masters
-	sftp -i ~/.ssh/id_rsa$cluster_name $dtnURL <<- END
-		mkdir /home/titanium/$run_name
+	# Drop the compiled files in the cluster
+	ssh $myLinux <<- END
+		cd ~/masters
+		sftp -i ~/.ssh/id_rsa$cluster_name $dtnURL <<- ENDsftp
+			mkdir /home/titanium/$run_name
+			cd $run_name
+			put $script_name
+			put run_$script_name.sh
+		ENDsftp
+	END
+
+	#Find the total number of jobs to do in each cluster
+	declare -i jobs_per_cluster=$sims_per_cluster/$simsize
+	declare -i job_0=$cluster_num*$jobs_per_cluster
+	declare -i job_f=$job_0+$jobs_per_cluster-1
+
+
+	###############################################
+	######### LOOP THROUGH JOB SCRIPTS ############
+	###############################################
+	# These loops happen within the cluster loops
+	ssh -T -i ~/.ssh/id_rsa$cluster_name $URL <<- END
 		cd $run_name
-		put $script_name
-		put run_$script_name.sh
-	END
-END
-
-#Find the total number of jobs to do in each cluster
-declare -i jobs_per_cluster=$sims_per_cluster/$simsize
-declare -i job_0=$cluster_num*$jobs_per_cluster
-declare -i job_f=$job_0+$jobs_per_cluster-1
-
-
-###############################################
-######### LOOP THROUGH JOB SCRIPTS ############
-###############################################
-# These loops happen within the cluster loops
-ssh -T -i ~/.ssh/id_rsa$cluster_name $URL << END
-	cd $run_name
-	chmod +x $script_name run_$script_name.sh
-	###############################################
-	# Loop through job scripts
-	###############################################
-	for simnum in \`seq $job_0 $job_f\`; do
-		declare -i simnum_0=$simsize*\$simnum+1
-		declare -i simnum_f=$simsize+\$simnum_0-1
-		job_name=r$JobID\$simnum_0\_run_\$simnum_0\_to_\$simnum_f.job
+		chmod +x $script_name run_$script_name.sh
 		###############################################
-		# The contents of the job script
-#######################################################
-cat > \$job_name <<- EOF
-#$ -cwd
-#$ -j yes
-#$ -l h_rt=48:0:0
-#$ -l h_vmem=10G
-./run_$script_name.sh $MCR $seed_0 \$simnum_0 \$simnum_f
-EOF
-#######################################################
-		# And finally Run ACENET Cluster
-		qsub \$job_name
-	# Finish job script loop
-	done
-	# Save the Job-ID associated with this run (for maxvmem)
-	#######################################################
-	echo \$(qstat | grep $JobID) > qstat_$JobID.txt
-	# And just the list of jobs
-	echo \$( (qstat | grep $JobID) | cut -d' ' -f1 ) > joblist_$JobID.txt
-#######################################################
-# Run script every few minutes to check if the job is done:
-#######################################################
-crontab -l > tmp_cron.sh
-sed -i "/$JobID/d" tmp_cron.sh
-echo \*/10 \* \* \* \* ~/task_$JobID\_done.sh >> tmp_cron.sh
-crontab tmp_cron.sh
-rm tmp_cron.sh
-# Check if job is done:
-#######################################################
-# Crontab script for linux:
-#######################################################
-cat > ~/task_$JobID\_done.sh <<- \EOF
-if [ \$(qstat | grep -c $JobID) -eq 0 ]; then
-	# If the job is done we can:
-	# a) Compress the file in Zip form
-	zip -r temp.zip $run_name
-	# b) Rename the zip file. (Two steps so it's not transferred until fully compressed.)
-	mv temp.zip $JobID$cluster_name.zip
-	# c) Delete the crontab task
-	crontab -l > tmp_cron2.sh
-	sed -i "/$JobID/d" tmp_cron2.sh
-	crontab tmp_cron2.sh
-	rm tmp_cron2.sh
-	# And remove itself - no need for clutter!
-	rm task_$JobID\_done.sh
-fi
-EOF
-chmod +x ~/task_$JobID\_done.sh
-#######################################################	
-END
-
-# And then over on my mac, crontab a script to look for the zip files
-crontab -l > tmp_cron.sh
-sed -i '' "/$JobID$cluster_name/d" tmp_cron.sh
-echo \*/10 \* \* \* \* ~/$JobID$cluster_name.sh >> tmp_cron.sh
-crontab tmp_cron.sh
-rm tmp_cron.sh
-#######################################################
-# Crontab script for my mac:
-#######################################################
-cat > ~/$JobID$cluster_name.sh <<- EOF
-# Bring them over to my mac
-if ssh -i .ssh/id_rsa$cluster_name $URL test -e $JobID$cluster_name.zip; then
-	# Retrieve the file:
-	sftp -i .ssh/id_rsa$cluster_name $dtnURL <<- END
-		get $JobID$cluster_name.zip
+		# Loop through job scripts
+		###############################################
+		for simnum in \`seq $job_0 $job_f\`; do
+			declare -i simnum_0=$simsize*\$simnum+1
+			declare -i simnum_f=$simsize+\$simnum_0-1
+			job_name=r$JobID\$simnum_0\_run_\$simnum_0\_to_\$simnum_f.job
+			###############################################
+			# The contents of the job script
+			#######################################################
+			cat > \$job_name <<- EOF
+				#$ -cwd
+				#$ -j yes
+				#$ -l h_rt=48:0:0
+				#$ -l h_vmem=10G
+				./run_$script_name.sh $MCR $seed_0 \$simnum_0 \$simnum_f
+			EOF
+			#######################################################
+			# And finally Run ACENET Cluster
+			qsub \$job_name
+		# Finish job script loop
+		done
+		# Save the Job-ID associated with this run (for maxvmem)
+		#######################################################
+		echo \$(qstat | grep $JobID) > qstat_$JobID.txt
+		# And just the list of jobs
+		echo \$( (qstat | grep $JobID) | cut -d' ' -f1 ) > joblist_$JobID.txt
+		#######################################################
+		# Run script every few minutes to check if the job is done:
+		#######################################################
+		crontab -l > tmp_cron.sh
+		sed -i "/$JobID/d" tmp_cron.sh
+		echo \*/10 \* \* \* \* ~/task_$JobID\_done.sh >> tmp_cron.sh
+		crontab tmp_cron.sh
+		rm tmp_cron.sh
+		# Check if job is done:
+		#######################################################
+		# Crontab script for linux:
+		#######################################################
+		cat > ~/task_$JobID\_done.sh <<- \EOF
+			if [ \$(qstat | grep -c $JobID) -eq 0 ]; then
+				# If the job is done we can:
+				# a) Compress the file in Zip form
+				zip -r temp.zip $run_name
+				# b) Rename the zip file. (Two steps so it's not transferred until fully compressed.)
+				mv temp.zip $JobID$cluster_name.zip
+				# c) Delete the crontab task
+				crontab -l > tmp_cron2.sh
+				sed -i "/$JobID/d" tmp_cron2.sh
+				crontab tmp_cron2.sh
+				rm tmp_cron2.sh
+				# And remove itself - no need for clutter!
+				rm task_$JobID\_done.sh
+			fi
+		EOF
+		chmod +x ~/task_$JobID\_done.sh
+		#######################################################	
 	END
-	# And uncompress them 
-	mv $JobID$cluster_name.zip ~/GIT/Analysis/$JobID$cluster_name.zip
-	unzip ~/GIT/Analysis/$JobID$cluster_name.zip
-	# When this is done, we can delete the crontab task
-	crontab -l > tmp_cron2.sh
-	sed -i '' "/$JobID$cluster_name/d" tmp_cron2.sh
-	crontab tmp_cron2.sh
-	rm tmp_cron2.sh
-	# And remove itself - no need for clutter!
-	rm $JobID$cluster_name.sh
-fi
-EOF
-chmod +x ~/$JobID$cluster_name.sh
+
+	# And then over on my mac, crontab a script to look for the zip files
+	crontab -l > tmp_cron.sh
+	sed -i '' "/$JobID$cluster_name/d" tmp_cron.sh
+	echo \*/10 \* \* \* \* ~/$JobID$cluster_name.sh >> tmp_cron.sh
+	crontab tmp_cron.sh
+	rm tmp_cron.sh
+	#######################################################
+	# Crontab script for my mac:
+	#######################################################
+	cat > ~/$JobID$cluster_name.sh <<- EOF
+		# Bring them over to my mac
+		if ssh -i .ssh/id_rsa$cluster_name $URL test -e $JobID$cluster_name.zip; then
+			# Retrieve the file:
+			sftp -i .ssh/id_rsa$cluster_name $dtnURL <<- END
+				get $JobID$cluster_name.zip
+			END
+			# And uncompress them 
+			mv $JobID$cluster_name.zip ~/GIT/Analysis/$JobID$cluster_name.zip
+			unzip ~/GIT/Analysis/$JobID$cluster_name.zip
+			# When this is done, we can delete the crontab task
+			crontab -l > tmp_cron2.sh
+			sed -i '' "/$JobID$cluster_name/d" tmp_cron2.sh
+			crontab tmp_cron2.sh
+			rm tmp_cron2.sh
+			# And remove itself - no need for clutter!
+			rm $JobID$cluster_name.sh
+		fi
+	EOF
+	chmod +x ~/$JobID$cluster_name.sh
 
 done # FINISH LOOPING THROUGH CLUSTERS
 
