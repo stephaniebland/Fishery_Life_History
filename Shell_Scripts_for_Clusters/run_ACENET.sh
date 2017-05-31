@@ -131,7 +131,7 @@ for cluster_num in `seq 0 2`; do
 		# Crontab script for linux:
 		#######################################################
 		cat > ~/task_$JobID\_done.sh <<- \EOF
-			# IMPORTANT: First load bashrc so you can see qstat:
+			# IMPORTANT: First load bashrc so crontab can see qstat:
 			source /usr/local/lib/bashrc 
 			if [ \$(qstat | grep -c $JobID) -eq 0 ]; then
 				# If the job is done we can:
