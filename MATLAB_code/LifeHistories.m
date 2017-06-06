@@ -140,8 +140,8 @@ if splitdiet==true
         selec=find(nicheweb(i,:));
         selec=find(ismember(orig_species, selec));%convert old species index into the new species index
         k=(Nprey_per_stage(i)*N_stages(i))-N_prey(i);%How many prey will need to be assigned to two lifestages.
-        n=N_stages(i)-1;%number of neighbouring lifestages.
-        y=randsample(n,k);%Which pairs of lifestages will share a prey species.  with or without replacement. Currently without replacement
+        n_neigh=N_stages(i)-1;%number of neighbouring lifestages. (Fencepost problem).
+        y=randsample(n_neigh,k);%Which pairs of lifestages will share a prey species.  with or without replacement. Currently without replacement
         prey_split=zeros(N_stages(i),newwebsize);
         u=1;
         for j=1:N_stages(i)
