@@ -136,10 +136,7 @@ for cluster_num in `seq 0 2`; do
 			if [ \$(qstat | grep -c $JobID) -eq 0 ]; then
 				# If the job is done we can:
 				# a) Remove the crontab task first, so that we only execute script once:
-				crontab -l > tmp_cron2.sh
-				sed -i "/$JobID/d" tmp_cron2.sh
-				crontab tmp_cron2.sh
-				rm tmp_cron2.sh
+				crontab -l | sed "/$JobID/d" | crontab -
 				# b) Compress the file in Zip form
 				zip -r -T temp.zip $run_name
 				# c) Rename the zip file. (Two steps so it's not transferred until fully compressed.)
@@ -165,10 +162,7 @@ for cluster_num in `seq 0 2`; do
 		# Bring them over to my mac
 		if ssh -i .ssh/id_rsa$cluster_name $URL test -e $JobID$cluster_name.zip; then
 			# a) Remove the crontab task first, so that we only execute script once:
-			crontab -l > tmp_cron2.sh
-			sed -i '' "/$JobID$cluster_name/d" tmp_cron2.sh
-			crontab tmp_cron2.sh
-			rm tmp_cron2.sh
+			crontab -l | sed "/$JobID$cluster_name/d" | crontab -
 			# b) Retrieve the file:
 			sftp -i .ssh/id_rsa$cluster_name $dtnURL <<- END
 				get $JobID$cluster_name.zip
