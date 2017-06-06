@@ -135,15 +135,15 @@ for cluster_num in `seq 0 2`; do
 			source /usr/local/lib/bashrc 
 			if [ \$(qstat | grep -c $JobID) -eq 0 ]; then
 				# If the job is done we can:
-				# a) Compress the file in Zip form
-				zip -r -T temp.zip $run_name
-				# b) Rename the zip file. (Two steps so it's not transferred until fully compressed.)
-				mv temp.zip $JobID$cluster_name.zip
-				# c) Delete the crontab task
+				# a) Remove the crontab task first, so that we only execute script once:
 				crontab -l > tmp_cron2.sh
 				sed -i "/$JobID/d" tmp_cron2.sh
 				crontab tmp_cron2.sh
 				rm tmp_cron2.sh
+				# b) Compress the file in Zip form
+				zip -r -T temp.zip $run_name
+				# c) Rename the zip file. (Two steps so it's not transferred until fully compressed.)
+				mv temp.zip $JobID$cluster_name.zip
 				# d) And remove itself - no need for clutter!
 				rm task_$JobID\_done.sh
 			fi
@@ -164,18 +164,18 @@ for cluster_num in `seq 0 2`; do
 	cat > ~/$JobID$cluster_name.sh <<- EOF
 		# Bring them over to my mac
 		if ssh -i .ssh/id_rsa$cluster_name $URL test -e $JobID$cluster_name.zip; then
-			# a) Retrieve the file:
-			sftp -i .ssh/id_rsa$cluster_name $dtnURL <<- END
-				get $JobID$cluster_name.zip
-			END
-			# b) And uncompress them 
-			mv $JobID$cluster_name.zip ~/GIT/Analysis/$JobID$cluster_name.zip
-			unzip -q -j ~/GIT/Analysis/$JobID$cluster_name.zip -d ~/GIT/Analysis/$run_name
-			# c) When this is done, we can delete the crontab task
+			# a) Remove the crontab task first, so that we only execute script once:
 			crontab -l > tmp_cron2.sh
 			sed -i '' "/$JobID$cluster_name/d" tmp_cron2.sh
 			crontab tmp_cron2.sh
 			rm tmp_cron2.sh
+			# b) Retrieve the file:
+			sftp -i .ssh/id_rsa$cluster_name $dtnURL <<- END
+				get $JobID$cluster_name.zip
+			END
+			# c) And uncompress them 
+			mv $JobID$cluster_name.zip ~/GIT/Analysis/$JobID$cluster_name.zip
+			unzip -q -j ~/GIT/Analysis/$JobID$cluster_name.zip -d ~/GIT/Analysis/$run_name			
 			# d) And remove itself - no need for clutter!
 			rm $JobID$cluster_name.sh
 		fi
