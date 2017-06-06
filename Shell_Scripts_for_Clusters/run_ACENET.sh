@@ -97,7 +97,9 @@ for cluster_num in `seq 0 2`; do
 		for simnum in \`seq $job_0 $job_f\`; do
 			declare -i simnum_0=$simsize*\$simnum+1
 			declare -i simnum_f=$simsize+\$simnum_0-1
-			job_name=r$JobID\$simnum_0\_run_\$simnum_0\_to_\$simnum_f.job
+			for fishpred in 0 1 2; do
+			for splitdiet in 0 1; do
+			job_name=r$JobID\_\$simnum_0\_\$fishpred\_\$splitdiet.job
 			###############################################
 			# The contents of the job script
 			#######################################################
@@ -106,11 +108,13 @@ for cluster_num in `seq 0 2`; do
 				#$ -j yes
 				#$ -l h_rt=48:0:0
 				#$ -l h_vmem=10G
-				./run_$script_name.sh $MCR $seed_0 \$simnum_0 \$simnum_f
+				./run_$script_name.sh $MCR $seed_0 \$simnum_0 \$simnum_f \$fishpred \$splitdiet
 			EOF
 			#######################################################
 			# And finally Run ACENET Cluster
 			qsub \$job_name
+			done
+			done
 		# Finish job script loop
 		done
 		# Save the Job-ID associated with this run (for maxvmem)
