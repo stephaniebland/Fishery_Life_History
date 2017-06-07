@@ -119,9 +119,9 @@ for cluster_num in `seq 0 2`; do
 		done
 		# Save the Job-ID associated with this run (for maxvmem)
 		#######################################################
-		echo \$(qstat | grep $JobID) > qstat_$JobID.txt
+		echo \$(qstat | grep r$JobID) > qstat_$JobID.txt
 		# And just the list of jobs
-		echo \$( (qstat | grep $JobID) | cut -d' ' -f1 ) > joblist_$JobID.txt
+		echo \$( (qstat | grep r$JobID) | cut -d' ' -f1 ) > joblist_$JobID.txt
 		#######################################################
 		# Run script every few minutes to check if the job is done:
 		#######################################################
@@ -137,7 +137,7 @@ for cluster_num in `seq 0 2`; do
 		cat > ~/task_$JobID\_done.sh <<- \EOF
 			# IMPORTANT: First load bashrc so crontab can see qstat:
 			source /usr/local/lib/bashrc 
-			if [ \$(qstat | grep -c $JobID) -eq 0 ]; then
+			if [ \$(qstat | grep -c r$JobID) -eq 0 ]; then
 				# If the job is done we can:
 				# a) Remove the crontab task first, so that we only execute script once:
 				crontab -l > tmp_cron2.sh
