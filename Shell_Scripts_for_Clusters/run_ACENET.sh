@@ -119,9 +119,9 @@ for cluster_num in `seq 0 2`; do
 		done
 		# Save the Job-ID associated with this run (for maxvmem)
 		#######################################################
-		echo \$(qstat | grep $JobID) > qstat_$JobID.txt
+		echo \$(qstat | grep r$JobID) > qstat_$JobID.txt
 		# And just the list of jobs
-		echo \$( (qstat | grep $JobID) | cut -d' ' -f1 ) > joblist_$JobID.txt
+		echo \$( (qstat | grep r$JobID) | cut -d' ' -f1 ) > joblist_$JobID.txt
 		#######################################################
 		# Run script every few minutes to check if the job is done:
 		#######################################################
@@ -134,21 +134,36 @@ for cluster_num in `seq 0 2`; do
 		#######################################################
 		# Crontab script for linux:
 		#######################################################
-		cat > ~/task_$JobID\_done.sh <<- \EOF
+		cat > ~/task_$JobID\_done.sh <<- EOF
+			totaljobs=\$(qstat | grep -c r$JobID)
+		EOF
+		cat >> ~/task_$JobID\_done.sh <<- \EOF
 			# IMPORTANT: First load bashrc so crontab can see qstat:
 			source /usr/local/lib/bashrc 
-			if [ \$(qstat | grep -c $JobID) -eq 0 ]; then
+			# Keep track of progress through acenet runs:
+			declare -i progress=100-100*\$(qstat | grep -c r$JobID)/\$totaljobs
+			echo \$progress"% through" > $run_name/progress_$JobID$cluster_name.txt
+			if [ \$(qstat | grep -c r$JobID) -eq 0 ]; then
 				# If the job is done we can:
 				# a) Remove the crontab task first, so that we only execute script once:
 				crontab -l > tmp_cron2.sh
 				sed -i "/$JobID/d" tmp_cron2.sh
 				crontab tmp_cron2.sh
 				rm tmp_cron2.sh
-				# b) Compress the file in Zip form
+				# b.1) Store memory usage stats (This step is slow)
+				declare -a alljobs=(\$(cat $run_name/joblist_$JobID.txt))
+				for job in "\${alljobs[@]}"; do 
+					echo \$job \$(qacct -j \$job | grep maxvmem) >> $run_name/maxvmem_$JobID$cluster_name.txt
+				done
+				# b.2) Store time it took to complete all jobs:
+				START=$(date +%s);
+				END=\$(date +%s);
+				echo \$((\$END-START)) | awk '{printf "%d days and %02d:%02d", \$1/3600, (\$1/60)%60, \$1%60}' > $run_name/progress_$JobID$cluster_name.txt
+				# c) Compress the file in Zip form
 				zip -r -T temp.zip $run_name
-				# c) Rename the zip file. (Two steps so it's not transferred until fully compressed.)
+				# d) Rename the zip file. (Two steps so it's not transferred until fully compressed.)
 				mv temp.zip $JobID$cluster_name.zip
-				# d) And remove itself - no need for clutter!
+				# e) And remove itself - no need for clutter!
 				rm task_$JobID\_done.sh
 			fi
 		EOF
@@ -182,6 +197,11 @@ for cluster_num in `seq 0 2`; do
 			unzip -q -j ~/GIT/Analysis/$JobID$cluster_name.zip -d ~/GIT/Analysis/$run_name			
 			# d) And remove itself - no need for clutter!
 			rm $JobID$cluster_name.sh
+			rm progress_$JobID$cluster_name.txt
+		else
+			sftp -i .ssh/id_rsa$cluster_name $dtnURL <<- END
+				get $run_name/progress_$JobID$cluster_name.txt
+			END
 		fi
 	EOF
 	chmod +x ~/$JobID$cluster_name.sh
