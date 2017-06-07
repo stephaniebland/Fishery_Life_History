@@ -144,11 +144,16 @@ for cluster_num in `seq 0 2`; do
 				sed -i "/$JobID/d" tmp_cron2.sh
 				crontab tmp_cron2.sh
 				rm tmp_cron2.sh
-				# b) Compress the file in Zip form
+				# b) Store memory usage stats (This step is slow)
+				declare -a alljobs=(\$(cat $run_name/joblist_$JobID.txt))
+				for job in "\${alljobs[@]}"; do 
+					echo \$job \$(qacct -j \$job | grep maxvmem) >> $run_name/maxvmem_$JobID$cluster_name.txt
+				done
+				# c) Compress the file in Zip form
 				zip -r -T temp.zip $run_name
-				# c) Rename the zip file. (Two steps so it's not transferred until fully compressed.)
+				# d) Rename the zip file. (Two steps so it's not transferred until fully compressed.)
 				mv temp.zip $JobID$cluster_name.zip
-				# d) And remove itself - no need for clutter!
+				# e) And remove itself - no need for clutter!
 				rm task_$JobID\_done.sh
 			fi
 		EOF
