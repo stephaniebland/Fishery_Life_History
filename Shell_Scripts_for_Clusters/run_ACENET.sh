@@ -28,7 +28,7 @@ sims_per_cluster=100
 # Setup
 script_name=RunCluster # Name of the file we will be compressing
 myLinux=selenium@129.173.34.107
-declare -a avail_clusters=("fundy" "glooscap" "placentia")
+declare -a avail_clusters=("fundy" "glooscap" "placentia" "mahone")
 DATE=`date +%Y%b%d`
 JobID=`date +%m%d`$version
 run_name=$DATE\_$version # Name of the Run, where we store the ACENET file
@@ -60,7 +60,7 @@ END
 ###############################################
 ########### LOOP THROUGH CLUSTERS #############
 ###############################################
-for cluster_num in `seq 0 2`; do
+for cluster_num in `seq 0 3`; do
 	cluster_name=${avail_clusters[$cluster_num]}
 	URL=titanium@$cluster_name.ace-net.ca
 	dtnURL="$URL"
