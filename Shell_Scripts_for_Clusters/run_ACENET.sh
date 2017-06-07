@@ -41,7 +41,12 @@ MCR=/usr/local/matlab-runtime/r2017a/v92 # Run on ACENET
 # Push commits to Linux and Backup Servers (& Bundle Backups):
 # This runs on my mac
 echo "run_name='$run_name';" > DateVersion.m
-git commit -m "$run_name" DateVersion.m
+git commit -m "$run_name Loop Through Switches for Diet Links
+
+Experiment with predation and prey switches:
+lifehis.fishpred=2;%Choose how to assign fish predators. 0 means only adults eaten, 1 means all stages are eaten, and 2 reassigns them according to nichevalues
+lifehis.splitdiet=false;%Choose how to split fish diet. true=split orignal diet, false=assign new diet based on new niche values
+" DateVersion.m Parameters.m run_ACENET.sh
 git push origin master ACENET-RUNS # Push MATLAB code to Selenium Server 
 ssh-agent sh -c 'ssh-add ~/.ssh/id_rsaPterodactyl; git push backup --all -u' # Push all MATLAB code to Shadow Server
 git bundle create ~/Documents/master\'s\ Backup/backup_$DATE.bundle master ACENET-RUNS # Save a local backup of your work
