@@ -134,9 +134,15 @@ for cluster_num in `seq 0 2`; do
 		#######################################################
 		# Crontab script for linux:
 		#######################################################
-		cat > ~/task_$JobID\_done.sh <<- \EOF
+		cat > ~/task_$JobID\_done.sh <<- EOF
+			totaljobs=\$(qstat | grep -c r$JobID)
+		EOF
+		cat >> ~/task_$JobID\_done.sh <<- \EOF
 			# IMPORTANT: First load bashrc so crontab can see qstat:
 			source /usr/local/lib/bashrc 
+			# Keep track of progress through acenet runs:
+			declare -i progress=100-100*\$(qstat | grep -c r$JobID)/\$totaljobs
+			echo \$progress"% through" > $run_name/progress_$JobID$cluster_name.txt
 			if [ \$(qstat | grep -c r$JobID) -eq 0 ]; then
 				# If the job is done we can:
 				# a) Remove the crontab task first, so that we only execute script once:
@@ -144,11 +150,15 @@ for cluster_num in `seq 0 2`; do
 				sed -i "/$JobID/d" tmp_cron2.sh
 				crontab tmp_cron2.sh
 				rm tmp_cron2.sh
-				# b) Store memory usage stats (This step is slow)
+				# b.1) Store memory usage stats (This step is slow)
 				declare -a alljobs=(\$(cat $run_name/joblist_$JobID.txt))
 				for job in "\${alljobs[@]}"; do 
 					echo \$job \$(qacct -j \$job | grep maxvmem) >> $run_name/maxvmem_$JobID$cluster_name.txt
 				done
+				# b.2) Store time it took to complete all jobs:
+				START=$(date +%s);
+				END=\$(date +%s);
+				echo \$((\$END-START)) | awk '{printf "%d days and %02d:%02d", \$1/3600, (\$1/60)%60, \$1%60}' > $run_name/progress_$JobID$cluster_name.txt
 				# c) Compress the file in Zip form
 				zip -r -T temp.zip $run_name
 				# d) Rename the zip file. (Two steps so it's not transferred until fully compressed.)
@@ -187,6 +197,11 @@ for cluster_num in `seq 0 2`; do
 			unzip -q -j ~/GIT/Analysis/$JobID$cluster_name.zip -d ~/GIT/Analysis/$run_name			
 			# d) And remove itself - no need for clutter!
 			rm $JobID$cluster_name.sh
+			rm progress_$JobID$cluster_name.txt
+		else
+			sftp -i .ssh/id_rsa$cluster_name $dtnURL <<- END
+				get $run_name/progress_$JobID$cluster_name.txt
+			END
 		fi
 	EOF
 	chmod +x ~/$JobID$cluster_name.sh
