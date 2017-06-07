@@ -19,14 +19,14 @@
 # qacct -j 6793085 | grep maxvmem
 ###############################################
 # Variable Names:
-version=0 # Version
+version=1 # Version
 declare -i seed_0=0
 simsize=1
-sims_per_cluster=100
+sims_per_cluster=5
 
 ###############################################
 # Setup
-script_name=RunCluster # Name of the file we will be compressing
+script_name=testing # Name of the file we will be compressing
 myLinux=selenium@129.173.34.107
 declare -a avail_clusters=("fundy" "glooscap" "placentia")
 DATE=`date +%Y%b%d`
@@ -40,19 +40,20 @@ MCR=/usr/local/matlab-runtime/r2017a/v92 # Run on ACENET
 ###############################################
 # Push commits to Linux and Backup Servers (& Bundle Backups):
 # This runs on my mac
-echo "run_name='$run_name';" > DateVersion.m
-git commit -m "$run_name" DateVersion.m
-git push origin master ACENET-RUNS # Push MATLAB code to Selenium Server 
-ssh-agent sh -c 'ssh-add ~/.ssh/id_rsaPterodactyl; git push backup --all -u' # Push all MATLAB code to Shadow Server
-git bundle create ~/Documents/master\'s\ Backup/backup_$DATE.bundle master ACENET-RUNS # Save a local backup of your work
+#echo "run_name='$run_name';" > DateVersion.m
+#git commit -m "$run_name" DateVersion.m
+#git push origin master ACENET-RUNS # Push MATLAB code to Selenium Server 
+#ssh-agent sh -c 'ssh-add ~/.ssh/id_rsaPterodactyl; git push backup --all -u' # Push all MATLAB code to Shadow Server
+#git bundle create ~/Documents/master\'s\ Backup/backup_$DATE.bundle master ACENET-RUNS # Save a local backup of your work
 # git bundle create ~/Documents/master\'s\ Backup/backup_$DATE_all.bundle --all #Stores all branches
 
 ###############################################
 # Compile MATLAB On Selenium to get a Linux Executable:
 ssh -T $myLinux << END
-	rm -rf masters/
-	git clone -b ACENET-RUNS ~/GIT/masters.git/
-	/usr/local/MATLAB/R2017a/bin/matlab -nodisplay -r "cd('~/masters/');mcc -m $script_name.m;quit"
+	echo "A=magic(5); B=3; A*B" > $script_name.m
+	#rm -rf masters/
+	#git clone -b ACENET-RUNS ~/GIT/masters.git/
+	/usr/local/MATLAB/R2017a/bin/matlab -nodisplay -r "mcc -m $script_name.m;quit"
 END
 # To compile it on my mac instead to get a mac executable use:
 # /Applications/MATLAB_R2016b.app/bin/matlab -nodisplay -r "cd('~/GIT/MastersProject');mcc -m RunCluster.m;quit"
@@ -60,7 +61,7 @@ END
 ###############################################
 ########### LOOP THROUGH CLUSTERS #############
 ###############################################
-for cluster_num in `seq 0 2`; do
+for cluster_num in 0; do
 	cluster_name=${avail_clusters[$cluster_num]}
 	URL=titanium@$cluster_name.ace-net.ca
 	dtnURL="$URL"
@@ -69,7 +70,7 @@ for cluster_num in `seq 0 2`; do
 	fi
 	# Drop the compiled files in the cluster
 	ssh $myLinux <<- END
-		cd ~/masters
+		#cd ~/masters
 		sftp -i ~/.ssh/id_rsa$cluster_name $dtnURL <<- ENDsftp
 			mkdir /home/titanium/$run_name
 			cd $run_name
@@ -97,8 +98,8 @@ for cluster_num in `seq 0 2`; do
 		for simnum in \`seq $job_0 $job_f\`; do
 			declare -i simnum_0=$simsize*\$simnum+1
 			declare -i simnum_f=$simsize+\$simnum_0-1
-			for fishpred in 0 1 2; do
-			for splitdiet in 0 1; do
+			#for fishpred in 0 1 2; do
+			#for splitdiet in 0 1; do
 			job_name=r$JobID\_\$simnum_0\_\$fishpred\_\$splitdiet.job
 			###############################################
 			# The contents of the job script
@@ -106,15 +107,16 @@ for cluster_num in `seq 0 2`; do
 			cat > \$job_name <<- EOF
 				#$ -cwd
 				#$ -j yes
-				#$ -l h_rt=48:0:0
-				#$ -l h_vmem=10G
-				./run_$script_name.sh $MCR $seed_0 \$simnum_0 \$simnum_f \$fishpred \$splitdiet
+				#$ -l test=true
+				#$ -l h_rt=00:01:00
+				#$ -l h_vmem=1G
+				./run_$script_name.sh $MCR
 			EOF
 			#######################################################
 			# And finally Run ACENET Cluster
 			qsub \$job_name
-			done
-			done
+			#done
+			#done
 		# Finish job script loop
 		done
 		# Save the Job-ID associated with this run (for maxvmem)
@@ -127,7 +129,7 @@ for cluster_num in `seq 0 2`; do
 		#######################################################
 		crontab -l > tmp_cron.sh
 		sed -i "/$JobID/d" tmp_cron.sh
-		echo \*/10 \* \* \* \* ~/task_$JobID\_done.sh >> tmp_cron.sh
+		echo \*/1 \* \* \* \* ~/task_$JobID\_done.sh >> tmp_cron.sh
 		crontab tmp_cron.sh
 		rm tmp_cron.sh
 		# Check if job is done:
