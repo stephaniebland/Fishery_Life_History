@@ -231,7 +231,35 @@ echo "run_name='BLAND';" > DateVersion.m
 #for job in $joblist; do (qacct -j $job | grep maxvmem); done
 
 
-
+# Short little script to clean up messes you made on every cluster
+# WARNING THIS SCRIPT IS VERY POWERFUL AND DANGEROUS
+#       version=1
+#       DATE=2017Jun07
+#       JobID=0607$version
+#       
+#       run_name=$DATE\_$version 
+#       declare -a avail_clusters=("fundy" "glooscap" "placentia" "mahone")
+#       for cluster_num in `seq 0 3`; do
+#       cluster_name=${avail_clusters[$cluster_num]}
+#       URL=titanium@$cluster_name.ace-net.ca
+#       echo $URL
+#       ssh -T -i ~/.ssh/id_rsa$cluster_name $URL <<- END
+#       # 1. CLEAR CRONTAB
+#       # crontab -l
+#       # 2. CLEAR QUEUE
+#       # qstat
+#       # 3. CLEAN BAD FILES
+#       # ls
+#       END
+#       done # FINISH LOOPING THROUGH CLUSTERS
+#       
+#       # And clean up local computer
+#       # 1. CLEAR CRONTAB
+#       # crontab -l
+#       # 2. CLEAN BAD FILES
+#       # ls
+#       # cd ~/GIT/Analysis 
+#       # ls
 
 
 
