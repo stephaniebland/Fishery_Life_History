@@ -218,8 +218,8 @@ echo "run_name='BLAND';" > DateVersion.m
 # ssh-keygen -t rsa #Hit enter three times
 # chmod go-w ~/
 # chmod 700 ~/.ssh
-# cd ~/.ssh && chmod 600 authorized_keys id_rsa id_rsa.pub known_hosts 
-# cat ~/.ssh/id_rsa.pub | ssh titanium@fundy.ace-net.ca "mkdir -p ~/.ssh && cat >>  ~/.ssh/authorized_keys && chmod go-w ~/ && chmod 700 ~/.ssh && cd ~/.ssh && chmod 600 authorized_keys"
+# cd ~/.ssh && chmod 600 authorized_keys id_rsa* known_hosts 
+# cat ~/.ssh/id_rsafundy.pub | ssh titanium@fundy.ace-net.ca "mkdir -p ~/.ssh && cat >>  ~/.ssh/authorized_keys && chmod go-w ~/ && chmod 700 ~/.ssh && cd ~/.ssh && chmod 600 authorized_keys"
 
 ###############################################
 ############ USEFUL EXTRA STUFF ###############
