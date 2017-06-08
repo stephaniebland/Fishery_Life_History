@@ -110,6 +110,7 @@ for cluster_num in 0; do
 				#$ -l test=true
 				#$ -l h_rt=00:01:00
 				#$ -l h_vmem=1G
+				sleep 360
 				./run_$script_name.sh $MCR
 			EOF
 			#######################################################
