@@ -242,25 +242,27 @@ echo "run_name='BLAND';" > DateVersion.m
 #       for cluster_num in `seq 0 3`; do
 #       cluster_name=${avail_clusters[$cluster_num]}
 #       URL=titanium@$cluster_name.ace-net.ca
+#       echo "###############################################"
+#       echo "###############################################"
+#       echo "###############################################"
 #       echo $URL
 #       ssh -T -i ~/.ssh/id_rsa$cluster_name $URL <<- END
-#       # 1. CLEAR CRONTAB
-#       # crontab -l
-#       # 2. CLEAR QUEUE
-#       # qstat
-#       # 3. CLEAN BAD FILES
-#       # ls
+#       echo "1. CLEAR CRONTAB-------------------------------"
+#       crontab -l
+#       echo "2. CLEAR QUEUE---------------------------------"
+#       ( (qstat | grep r$JobID) | cut -d' ' -f1 ) 
+#       qstat
+#       echo "2. CLEAN BAD FILES-----------------------------"
+#       ls
 #       END
 #       done # FINISH LOOPING THROUGH CLUSTERS
 #       
 #       # And clean up local computer
-#       # 1. CLEAR CRONTAB
-#       # crontab -l
-#       # 2. CLEAN BAD FILES
-#       # ls
-#       # cd ~/GIT/Analysis 
-#       # ls
-
+#       echo "1. CLEAR CRONTAB-------------------------------"
+#       crontab -l
+#       echo "2. CLEAN BAD FILES-----------------------------"
+#       cd ~; ls
+#       cd ~/GIT/Analysis; ls
 
 
 
