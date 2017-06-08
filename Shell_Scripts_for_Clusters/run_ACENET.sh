@@ -53,7 +53,7 @@ ssh -T $myLinux << END
 	echo "A=magic(5); B=3; A*B" > $script_name.m
 	#rm -rf masters/
 	#git clone -b ACENET-RUNS ~/GIT/masters.git/
-	/usr/local/MATLAB/R2017a/bin/matlab -nodisplay -r "mcc -m $script_name.m;quit"
+#	/usr/local/MATLAB/R2017a/bin/matlab -nodisplay -r "mcc -m $script_name.m;quit"
 END
 # To compile it on my mac instead to get a mac executable use:
 # /Applications/MATLAB_R2016b.app/bin/matlab -nodisplay -r "cd('~/GIT/MastersProject');mcc -m RunCluster.m;quit"
