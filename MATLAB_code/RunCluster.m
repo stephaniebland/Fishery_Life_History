@@ -41,7 +41,7 @@ function RunCluster(seed_0,simnum_0,simnum_f,var_fishpred,var_splitdiet)
         setup;% creation of a new food web
         
         %% Experimental Parameters
-        for Exper=1:3
+        for Exper=2
             switch Exper
                 case 1
                     %% 1st Simulation: Extended_nicheweb + Lifehistory: B_orig & linked
