@@ -36,7 +36,7 @@ x0=[B0;zeros(b_size*2,1);E0];%Initial Biomass, initial Effort
 
     while t_init<t_final-1 %integration stops at t_final
         
-        [t,x, te,xe,ie] = ode45(@biomass,t_init:t_final,x0,options,b_size,K,int_growth,meta, ...
+        [t,x,te,xe,~] = ode45(@biomass,t_init:t_final,x0,options,b_size,K,int_growth,meta, ...
                     max_assim,effic,Bsd,nicheweb,q,c,f_a,f_m,ca,co,mu,p_a,p_b,ext_thresh);
         
         xkc=size(xe)
@@ -47,19 +47,23 @@ x0=[B0;zeros(b_size*2,1);E0];%Initial Biomass, initial Effort
             dbstop in dynamic_fn at 48
             xkc
         end
-        % Accumulate output
-        tout = [tout; t(2:end)];
-        xout = [xout; x(2:end,:)];
-    
+        
         % Set the new initial conditions
         if ~isempty(xe)
-            dead = logical(xe(1:b_size)<=ext_thresh);
-            x0 = xe;
+            dead = logical(xe(1,1:b_size)<=ext_thresh);
+            x0 = xe(1,:);
             x0(dead) = 0;
+        else
+            te=t(end); % If ODE was uninterrupted, integration stopped at end
         end
-    
-        t_init = t(end); %to continue the integration where it was stopped
-    
+        
+        % Accumulate output - Add time steps from before interruption:
+        tout = [tout; t(0<t & t<=te(1))];
+        xout = [xout; x(0<t & t<=te(1),:)];
+        
+        % Continue the integration where it was stopped:
+        t_init=te(1);
+        
     end
 %--------------------------------------------------------------------------
 
