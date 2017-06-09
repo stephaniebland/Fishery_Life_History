@@ -46,7 +46,7 @@ for phase=1:4
         i
         if i==8
             %dbstop in biomass at 16
-            dbstop in simulations at 50
+            %dbstop in simulations at 50
             i
             %dbstop in dynamic_fn at 69
         end
