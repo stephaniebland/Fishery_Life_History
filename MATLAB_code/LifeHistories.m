@@ -130,6 +130,10 @@ if (fishpred==2 || splitdiet==false)
     allfish=find(repelem(is_split,N_stages));
     [web_mx]=CreateWeb(sum(N_stages),connectance,n,n_new,r_new,c_new,orig_index,allfish);%Create a new web with the new niche values
     givediet=find(repelem(is_split,N_stages));%Find all lifestages that were split, and give them a new diet.  This includes adults in both fishpred AND splitdiet, because new lifestages might eat them. Esp. important for splitdiet though, so that adults actually have food.
+else
+    % We need to set niche values for dietary shifts. If we don't use new
+    % niche values for the extended web we default to regular order.
+    n=1:newwebsize;
 end
 
 %% PREY - Neo's Method: Split Old Diet
