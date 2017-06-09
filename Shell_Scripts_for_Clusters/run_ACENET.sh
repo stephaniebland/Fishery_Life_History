@@ -151,10 +151,12 @@ for cluster_num in `seq 0 3`; do
 				crontab tmp_cron2.sh
 				rm tmp_cron2.sh
 				# b.1) Store memory usage stats (This step is slow)
-				declare -a alljobs=(\$(cat $run_name/joblist_$JobID.txt))
+				cd $run_name
+				declare -a alljobs=(\$(cat joblist_$JobID.txt))
 				for job in "\${alljobs[@]}"; do 
-					echo \$job \$(qacct -j \$job | grep maxvmem) >> $run_name/maxvmem_$JobID$cluster_name.txt
+					echo \$job \$(qacct -j \$job | grep -E 'ru_wallclock|maxvmem') \$(ls *\$job | cut -d'.' -f1) >> maxvmem_$JobID$cluster_name.txt
 				done
+				cd ~
 				# b.2) Store time it took to complete all jobs:
 				START=$(date +%s);
 				END=\$(date +%s);
