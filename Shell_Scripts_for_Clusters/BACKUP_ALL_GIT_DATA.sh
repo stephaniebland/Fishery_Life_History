@@ -13,7 +13,7 @@ for i in *; do
 	############## STANDARD BACKUPS ###############
 	###############################################
 	git bundle create ~/Google\ Drive/GIT\_Backup/$i\_backup\_all.bundle --all
-	git bundle create ~/Library/Mobile\ Documents/com~apple~CloudDocs/BackupGIT/$i\_backup\_all.bundle --all
+	git bundle create ~/Library/Mobile\ Documents/com~apple~CloudDocs/Documents/BackupGIT/$i\_backup\_all.bundle --all
 	git bundle create ~/BackupGIT/$i\_backup\_$DATE\_all.bundle --all
 	###############################################
 	################# INITIALIZE ##################
