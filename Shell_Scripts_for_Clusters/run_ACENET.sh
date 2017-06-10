@@ -28,7 +28,7 @@ sims_per_cluster=100
 # Setup
 script_name=RunCluster # Name of the file we will be compressing
 myLinux=selenium@129.173.34.107
-declare -a avail_clusters=("fundy" "glooscap" "placentia")
+declare -a avail_clusters=("fundy" "glooscap" "placentia" "mahone")
 DATE=`date +%Y%b%d`
 JobID=`date +%m%d`$version
 run_name=$DATE\_$version # Name of the Run, where we store the ACENET file
@@ -60,7 +60,7 @@ END
 ###############################################
 ########### LOOP THROUGH CLUSTERS #############
 ###############################################
-for cluster_num in `seq 0 2`; do
+for cluster_num in `seq 0 3`; do
 	cluster_name=${avail_clusters[$cluster_num]}
 	URL=titanium@$cluster_name.ace-net.ca
 	dtnURL="$URL"
@@ -97,7 +97,9 @@ for cluster_num in `seq 0 2`; do
 		for simnum in \`seq $job_0 $job_f\`; do
 			declare -i simnum_0=$simsize*\$simnum+1
 			declare -i simnum_f=$simsize+\$simnum_0-1
-			job_name=r$JobID\$simnum_0\_run_\$simnum_0\_to_\$simnum_f.job
+			for fishpred in 0 1 2; do
+			for splitdiet in 0 1; do
+			job_name=r$JobID\_\$simnum_0\_\$fishpred\_\$splitdiet.job
 			###############################################
 			# The contents of the job script
 			#######################################################
@@ -106,18 +108,20 @@ for cluster_num in `seq 0 2`; do
 				#$ -j yes
 				#$ -l h_rt=48:0:0
 				#$ -l h_vmem=10G
-				./run_$script_name.sh $MCR $seed_0 \$simnum_0 \$simnum_f
+				./run_$script_name.sh $MCR $seed_0 \$simnum_0 \$simnum_f \$fishpred \$splitdiet
 			EOF
 			#######################################################
 			# And finally Run ACENET Cluster
 			qsub \$job_name
+			done
+			done
 		# Finish job script loop
 		done
 		# Save the Job-ID associated with this run (for maxvmem)
 		#######################################################
-		echo \$(qstat | grep $JobID) > qstat_$JobID.txt
+		echo \$(qstat | grep r$JobID) > qstat_$JobID.txt
 		# And just the list of jobs
-		echo \$( (qstat | grep $JobID) | cut -d' ' -f1 ) > joblist_$JobID.txt
+		echo \$( (qstat | grep r$JobID) | cut -d' ' -f1 ) > joblist_$JobID.txt
 		#######################################################
 		# Run script every few minutes to check if the job is done:
 		#######################################################
@@ -130,21 +134,38 @@ for cluster_num in `seq 0 2`; do
 		#######################################################
 		# Crontab script for linux:
 		#######################################################
-		cat > ~/task_$JobID\_done.sh <<- \EOF
+		cat > ~/task_$JobID\_done.sh <<- EOF
+			totaljobs=\$(qstat | grep -c r$JobID)
+		EOF
+		cat >> ~/task_$JobID\_done.sh <<- \EOF
 			# IMPORTANT: First load bashrc so crontab can see qstat:
 			source /usr/local/lib/bashrc 
-			if [ \$(qstat | grep -c $JobID) -eq 0 ]; then
+			# Keep track of progress through acenet runs:
+			declare -i progress=100-100*\$(qstat | grep -c r$JobID)/\$totaljobs
+			echo \$progress"% through" > $run_name/progress_$JobID$cluster_name.txt
+			if [ \$(qstat | grep -c r$JobID) -eq 0 ]; then
 				# If the job is done we can:
-				# a) Compress the file in Zip form
-				zip -r -T temp.zip $run_name
-				# b) Rename the zip file. (Two steps so it's not transferred until fully compressed.)
-				mv temp.zip $JobID$cluster_name.zip
-				# c) Delete the crontab task
+				# a) Remove the crontab task first, so that we only execute script once:
 				crontab -l > tmp_cron2.sh
 				sed -i "/$JobID/d" tmp_cron2.sh
 				crontab tmp_cron2.sh
 				rm tmp_cron2.sh
-				# d) And remove itself - no need for clutter!
+				# b.1) Store memory usage stats (This step is slow)
+				cd $run_name
+				declare -a alljobs=(\$(cat joblist_$JobID.txt))
+				for job in "\${alljobs[@]}"; do 
+					echo \$job \$(qacct -j \$job | grep -E 'ru_wallclock|maxvmem') \$(ls *\$job | cut -d'.' -f1) >> maxvmem_$JobID$cluster_name.txt
+				done
+				cd ~
+				# b.2) Store time it took to complete all jobs:
+				START=$(date +%s);
+				END=\$(date +%s);
+				echo \$((\$END-START)) | awk '{printf "%d days and %02d:%02d", \$1/3600, (\$1/60)%60, \$1%60}' > $run_name/progress_$JobID$cluster_name.txt
+				# c) Compress the file in Zip form
+				zip -r -T temp.zip $run_name
+				# d) Rename the zip file. (Two steps so it's not transferred until fully compressed.)
+				mv temp.zip $JobID$cluster_name.zip
+				# e) And remove itself - no need for clutter!
 				rm task_$JobID\_done.sh
 			fi
 		EOF
@@ -164,20 +185,25 @@ for cluster_num in `seq 0 2`; do
 	cat > ~/$JobID$cluster_name.sh <<- EOF
 		# Bring them over to my mac
 		if ssh -i .ssh/id_rsa$cluster_name $URL test -e $JobID$cluster_name.zip; then
-			# a) Retrieve the file:
-			sftp -i .ssh/id_rsa$cluster_name $dtnURL <<- END
-				get $JobID$cluster_name.zip
-			END
-			# b) And uncompress them 
-			mv $JobID$cluster_name.zip ~/GIT/Analysis/$JobID$cluster_name.zip
-			unzip -q -j ~/GIT/Analysis/$JobID$cluster_name.zip -d ~/GIT/Analysis/$run_name
-			# c) When this is done, we can delete the crontab task
+			# a) Remove the crontab task first, so that we only execute script once:
 			crontab -l > tmp_cron2.sh
 			sed -i '' "/$JobID$cluster_name/d" tmp_cron2.sh
 			crontab tmp_cron2.sh
 			rm tmp_cron2.sh
+			# b) Retrieve the file:
+			sftp -i .ssh/id_rsa$cluster_name $dtnURL <<- END
+				get $JobID$cluster_name.zip
+			END
+			# c) And uncompress them 
+			mv $JobID$cluster_name.zip ~/GIT/Analysis/$JobID$cluster_name.zip
+			unzip -q -j ~/GIT/Analysis/$JobID$cluster_name.zip -d ~/GIT/Analysis/$run_name			
 			# d) And remove itself - no need for clutter!
 			rm $JobID$cluster_name.sh
+			rm progress_$JobID$cluster_name.txt
+		else
+			sftp -i .ssh/id_rsa$cluster_name $dtnURL <<- END
+				get $run_name/progress_$JobID$cluster_name.txt
+			END
 		fi
 	EOF
 	chmod +x ~/$JobID$cluster_name.sh
@@ -194,8 +220,8 @@ echo "run_name='BLAND';" > DateVersion.m
 # ssh-keygen -t rsa #Hit enter three times
 # chmod go-w ~/
 # chmod 700 ~/.ssh
-# cd ~/.ssh && chmod 600 authorized_keys id_rsa id_rsa.pub known_hosts 
-# cat ~/.ssh/id_rsa.pub | ssh titanium@fundy.ace-net.ca "mkdir -p ~/.ssh && cat >>  ~/.ssh/authorized_keys && chmod go-w ~/ && chmod 700 ~/.ssh && cd ~/.ssh && chmod 600 authorized_keys"
+# cd ~/.ssh && chmod 600 authorized_keys id_rsa* known_hosts 
+# cat ~/.ssh/id_rsafundy.pub | ssh titanium@fundy.ace-net.ca "mkdir -p ~/.ssh && cat >>  ~/.ssh/authorized_keys && chmod go-w ~/ && chmod 700 ~/.ssh && cd ~/.ssh && chmod 600 authorized_keys"
 
 ###############################################
 ############ USEFUL EXTRA STUFF ###############
@@ -207,8 +233,38 @@ echo "run_name='BLAND';" > DateVersion.m
 #for job in $joblist; do (qacct -j $job | grep maxvmem); done
 
 
-
-
+# Short little script to clean up messes you made on every cluster
+# WARNING THIS SCRIPT IS VERY POWERFUL AND DANGEROUS
+#       version=1
+#       DATE=2017Jun07
+#       JobID=0607$version
+#       
+#       run_name=$DATE\_$version 
+#       declare -a avail_clusters=("fundy" "glooscap" "placentia" "mahone")
+#       for cluster_num in `seq 0 3`; do
+#       cluster_name=${avail_clusters[$cluster_num]}
+#       URL=titanium@$cluster_name.ace-net.ca
+#       echo "###############################################"
+#       echo "###############################################"
+#       echo "###############################################"
+#       echo $URL
+#       ssh -T -i ~/.ssh/id_rsa$cluster_name $URL <<- END
+#       echo "1. CLEAR CRONTAB-------------------------------"
+#       crontab -l
+#       echo "2. CLEAR QUEUE---------------------------------"
+#       ( (qstat | grep r$JobID) | cut -d' ' -f1 ) 
+#       qstat
+#       echo "2. CLEAN BAD FILES-----------------------------"
+#       ls
+#       END
+#       done # FINISH LOOPING THROUGH CLUSTERS
+#       
+#       # And clean up local computer
+#       echo "1. CLEAR CRONTAB-------------------------------"
+#       crontab -l
+#       echo "2. CLEAN BAD FILES-----------------------------"
+#       cd ~; ls
+#       cd ~/GIT/Analysis; ls
 
 
 
