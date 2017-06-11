@@ -10,6 +10,26 @@ cd ~/GIT
 for i in *; do
 	cd $i
 	###############################################
+	############# COMMIT BIBLIOGRAPHY #############
+	###############################################
+	if [ "$i" = "LaTeX_Packages" ]; then
+		# Remember current branch
+		curr_branch=$(git symbolic-ref --short -q HEAD)
+		# curr_branch=$(git branch --list | grep '*' | cut -d' ' -f2) # This also works
+		# Grab the files shift over to Bibliography for commit
+		git add library.bib
+		git stash
+		git checkout Bibliography
+		git stash pop
+		git commit -m "Update Bibliography" library.bib
+		# Go back to where you left off
+		git stash
+		git checkout $curr_branch
+		# Update current branch so that you aren't missing refs
+		git merge Bibliography -m  "Merge branch 'Bibliography'"
+		git stash pop
+	fi
+	###############################################
 	############## STANDARD BACKUPS ###############
 	###############################################
 	git bundle create ~/Google\ Drive/GIT\_Backup/$i\_backup\_all.bundle --all
