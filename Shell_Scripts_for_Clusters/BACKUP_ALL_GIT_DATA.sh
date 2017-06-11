@@ -15,7 +15,6 @@ for i in *; do
 	if [ "$i" = "LaTeX_Packages" ]; then
 		# Remember current branch
 		curr_branch=$(git symbolic-ref --short -q HEAD)
-		# curr_branch=$(git branch --list | grep '*' | cut -d' ' -f2) # This also works
 		# Grab the files shift over to Bibliography for commit
 		git add library.bib
 		git stash
