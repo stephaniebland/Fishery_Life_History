@@ -32,6 +32,7 @@ declare -a avail_clusters=("fundy" "glooscap" "placentia" "mahone")
 DATE=`date +%Y%b%d`
 JobID=`date +%m%d`$version
 run_name=$DATE\_$version # Name of the Run, where we store the ACENET file
+exe_name=$script_name\_$run_name # Name of the executable
 # Options to run it locally instead
 # MCR=/Applications/MATLAB/MATLAB_Runtime/v91 # Run on my Mac
 # MCR=/usr/local/MATLAB/MATLAB_Runtime/v92 # Run on linux (Selenium)
@@ -52,10 +53,10 @@ git bundle create ~/Documents/master\'s\ Backup/backup_$DATE.bundle master ACENE
 ssh -T $myLinux << END
 	rm -rf masters/
 	git clone -b ACENET-RUNS ~/GIT/masters.git/
-	/usr/local/MATLAB/R2017a/bin/matlab -nodisplay -r "cd('~/masters/');mcc -m $script_name.m;quit"
+	/usr/local/MATLAB/R2017a/bin/matlab -nodisplay -r "cd('~/masters/');mcc -m $script_name.m -o $exe_name;quit"
 END
 # To compile it on my mac instead to get a mac executable use:
-# /Applications/MATLAB_R2016b.app/bin/matlab -nodisplay -r "cd('~/GIT/MastersProject');mcc -m RunCluster.m;quit"
+# /Applications/MATLAB_R2016b.app/bin/matlab -nodisplay -r "cd('~/GIT/MastersProject');mcc -m $script_name.m -o $exe_name;quit"
 
 ###############################################
 ########### LOOP THROUGH CLUSTERS #############
@@ -73,8 +74,8 @@ for cluster_num in `seq 0 3`; do
 		sftp -i ~/.ssh/id_rsa$cluster_name $dtnURL <<- ENDsftp
 			mkdir /home/titanium/$run_name
 			cd $run_name
-			put $script_name
-			put run_$script_name.sh
+			put $exe_name
+			put run_$exe_name.sh
 		ENDsftp
 	END
 
@@ -90,7 +91,7 @@ for cluster_num in `seq 0 3`; do
 	# These loops happen within the cluster loops
 	ssh -T -i ~/.ssh/id_rsa$cluster_name $URL <<- END
 		cd $run_name
-		chmod +x $script_name run_$script_name.sh
+		chmod +x $exe_name run_$exe_name.sh
 		###############################################
 		# Loop through job scripts
 		###############################################
@@ -108,7 +109,7 @@ for cluster_num in `seq 0 3`; do
 				#$ -j yes
 				#$ -l h_rt=48:0:0
 				#$ -l h_vmem=10G
-				./run_$script_name.sh $MCR $seed_0 \$simnum_0 \$simnum_f \$fishpred \$splitdiet
+				./run_$exe_name.sh $MCR $seed_0 \$simnum_0 \$simnum_f \$fishpred \$splitdiet
 			EOF
 			#######################################################
 			# And finally Run ACENET Cluster
