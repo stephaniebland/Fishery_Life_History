@@ -32,6 +32,7 @@ declare -a avail_clusters=("fundy" "glooscap" "placentia" "mahone")
 DATE=`date +%Y%b%d`
 JobID=`date +%m%d`$version
 run_name=$DATE\_$version # Name of the Run, where we store the ACENET file
+exe_name=$script_name\_$run_name # Name of the executable
 # Options to run it locally instead
 # MCR=/Applications/MATLAB/MATLAB_Runtime/v91 # Run on my Mac
 # MCR=/usr/local/MATLAB/MATLAB_Runtime/v92 # Run on linux (Selenium)
@@ -53,10 +54,10 @@ ssh -T $myLinux << END
 	echo "A=magic(5); B=3; A*B" > $script_name.m
 	#rm -rf masters/
 	#git clone -b ACENET-RUNS ~/GIT/masters.git/
-#	/usr/local/MATLAB/R2017a/bin/matlab -nodisplay -r "mcc -m $script_name.m;quit"
+	/usr/local/MATLAB/R2017a/bin/matlab -nodisplay -r "mcc -m $script_name.m -o $exe_name;quit"
 END
 # To compile it on my mac instead to get a mac executable use:
-# /Applications/MATLAB_R2016b.app/bin/matlab -nodisplay -r "cd('~/GIT/MastersProject');mcc -m RunCluster.m;quit"
+# /Applications/MATLAB_R2016b.app/bin/matlab -nodisplay -r "cd('~/GIT/MastersProject');mcc -m $script_name.m -o $exe_name;quit"
 
 ###############################################
 ########### LOOP THROUGH CLUSTERS #############
@@ -74,8 +75,8 @@ for cluster_num in 0; do
 		sftp -i ~/.ssh/id_rsa$cluster_name $dtnURL <<- ENDsftp
 			mkdir /home/titanium/$run_name
 			cd $run_name
-			put $script_name
-			put run_$script_name.sh
+			put $exe_name
+			put run_$exe_name.sh
 		ENDsftp
 	END
 
@@ -91,7 +92,7 @@ for cluster_num in 0; do
 	# These loops happen within the cluster loops
 	ssh -T -i ~/.ssh/id_rsa$cluster_name $URL <<- END
 		cd $run_name
-		chmod +x $script_name run_$script_name.sh
+		chmod +x $exe_name run_$exe_name.sh
 		###############################################
 		# Loop through job scripts
 		###############################################
@@ -108,10 +109,10 @@ for cluster_num in 0; do
 				#$ -cwd
 				#$ -j yes
 				#$ -l test=true
-				#$ -l h_rt=00:01:00
+				#$ -l h_rt=00:10:00
 				#$ -l h_vmem=1G
-				sleep 360
-				./run_$script_name.sh $MCR
+				sleep 1
+				./run_$exe_name.sh $MCR
 			EOF
 			#######################################################
 			# And finally Run ACENET Cluster
@@ -154,10 +155,12 @@ for cluster_num in 0; do
 				crontab tmp_cron2.sh
 				rm tmp_cron2.sh
 				# b.1) Store memory usage stats (This step is slow)
-				declare -a alljobs=(\$(cat $run_name/joblist_$JobID.txt))
+				cd $run_name
+				declare -a alljobs=(\$(cat joblist_$JobID.txt))
 				for job in "\${alljobs[@]}"; do 
-					echo \$job \$(qacct -j \$job | grep maxvmem) >> $run_name/maxvmem_$JobID$cluster_name.txt
+					echo \$job \$(qacct -j \$job | grep -E 'ru_wallclock|maxvmem') \$(ls *\$job | cut -d'.' -f1) >> maxvmem_$JobID$cluster_name.txt
 				done
+				cd ~
 				# b.2) Store time it took to complete all jobs:
 				START=$(date +%s);
 				END=\$(date +%s);
@@ -221,8 +224,8 @@ echo "run_name='BLAND';" > DateVersion.m
 # ssh-keygen -t rsa #Hit enter three times
 # chmod go-w ~/
 # chmod 700 ~/.ssh
-# cd ~/.ssh && chmod 600 authorized_keys id_rsa id_rsa.pub known_hosts 
-# cat ~/.ssh/id_rsa.pub | ssh titanium@fundy.ace-net.ca "mkdir -p ~/.ssh && cat >>  ~/.ssh/authorized_keys && chmod go-w ~/ && chmod 700 ~/.ssh && cd ~/.ssh && chmod 600 authorized_keys"
+# cd ~/.ssh && chmod 600 authorized_keys id_rsa* known_hosts 
+# cat ~/.ssh/id_rsafundy.pub | ssh titanium@fundy.ace-net.ca "mkdir -p ~/.ssh && cat >>  ~/.ssh/authorized_keys && chmod go-w ~/ && chmod 700 ~/.ssh && cd ~/.ssh && chmod 600 authorized_keys"
 
 ###############################################
 ############ USEFUL EXTRA STUFF ###############
@@ -245,25 +248,27 @@ echo "run_name='BLAND';" > DateVersion.m
 #       for cluster_num in `seq 0 3`; do
 #       cluster_name=${avail_clusters[$cluster_num]}
 #       URL=titanium@$cluster_name.ace-net.ca
+#       echo "###############################################"
+#       echo "###############################################"
+#       echo "###############################################"
 #       echo $URL
 #       ssh -T -i ~/.ssh/id_rsa$cluster_name $URL <<- END
-#       # 1. CLEAR CRONTAB
-#       # crontab -l
-#       # 2. CLEAR QUEUE
-#       # qstat
-#       # 3. CLEAN BAD FILES
-#       # ls
+#       echo "1. CLEAR CRONTAB-------------------------------"
+#       crontab -l
+#       echo "2. CLEAR QUEUE---------------------------------"
+#       ( (qstat | grep r$JobID) | cut -d' ' -f1 ) 
+#       qstat
+#       echo "2. CLEAN BAD FILES-----------------------------"
+#       ls
 #       END
 #       done # FINISH LOOPING THROUGH CLUSTERS
 #       
 #       # And clean up local computer
-#       # 1. CLEAR CRONTAB
-#       # crontab -l
-#       # 2. CLEAN BAD FILES
-#       # ls
-#       # cd ~/GIT/Analysis 
-#       # ls
-
+#       echo "1. CLEAR CRONTAB-------------------------------"
+#       crontab -l
+#       echo "2. CLEAN BAD FILES-----------------------------"
+#       cd ~; ls
+#       cd ~/GIT/Analysis; ls
 
 
 
