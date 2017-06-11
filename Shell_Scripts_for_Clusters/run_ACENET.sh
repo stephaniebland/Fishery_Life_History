@@ -51,10 +51,11 @@ MCR=/usr/local/matlab-runtime/r2017a/v92 # Run on ACENET
 ###############################################
 # Compile MATLAB On Selenium to get a Linux Executable:
 ssh -T $myLinux << END
-	echo "A=magic(5); B=3; A*B" > $script_name.m
+	rm -rf tmptesting; mkdir tmptesting
+	echo "A=magic(5); B=3; A*B" > ~/tmptesting/$script_name.m
 	#rm -rf masters/
 	#git clone -b ACENET-RUNS ~/GIT/masters.git/
-	/usr/local/MATLAB/R2017a/bin/matlab -nodisplay -r "mcc -m $script_name.m -o $exe_name;quit"
+	/usr/local/MATLAB/R2017a/bin/matlab -nodisplay -r "cd('~/tmptesting');mcc -m $script_name.m -o $exe_name;quit"
 END
 # To compile it on my mac instead to get a mac executable use:
 # /Applications/MATLAB_R2016b.app/bin/matlab -nodisplay -r "cd('~/GIT/MastersProject');mcc -m $script_name.m -o $exe_name;quit"
@@ -71,7 +72,7 @@ for cluster_num in 0; do
 	fi
 	# Drop the compiled files in the cluster
 	ssh $myLinux <<- END
-		#cd ~/masters
+		cd ~/tmptesting
 		sftp -i ~/.ssh/id_rsa$cluster_name $dtnURL <<- ENDsftp
 			mkdir /home/titanium/$run_name
 			cd $run_name
