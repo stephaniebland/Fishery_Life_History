@@ -161,7 +161,7 @@ for cluster_num in `seq 0 3`; do
 				# b.2) Store time it took to complete all jobs:
 				START=$(date +%s);
 				END=\$(date +%s);
-				echo \$((\$END-START)) | awk '{printf "%d days and %02d:%02d", \$1/3600, (\$1/60)%60, \$1%60}' > $run_name/progress_$JobID$cluster_name.txt
+				echo \$((\$END-START)) | awk '{printf "%d days and %02d:%02d", \$1/86400, (\$1/3600)%24, (\$1/60)%60}' > $run_name/progress_$JobID$cluster_name.txt
 				# c) Compress the file in Zip form
 				zip -r -T temp.zip $run_name
 				# d) Rename the zip file. (Two steps so it's not transferred until fully compressed.)
