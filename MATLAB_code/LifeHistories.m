@@ -21,7 +21,7 @@
 %old nicheweb, so as to not mess up the entire model.  (So you are
 %basically just adding rows and columns for your new life stages).
 
-function [nicheweb_new,Mass,orig_nodes,species,N_stages,is_split,aging_table,fecund_table,n]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance,W_scaled)
+function [nicheweb_new,Mass,orig_nodes,species,N_stages,is_split,aging_table,fecund_table,n,clumped_web]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance,W_scaled)
 attach(orig); attach(lifehis);
 %%-------------------------------------------------------------------------
 %%  SELECT FISH SPECIES TO BE SPLIT
@@ -178,12 +178,27 @@ end
 %%-------------------------------------------------------------------------
 %%  LIFE HISTORY MATRIX - CANNIBALISM SWITCH FOR FISH
 %%-------------------------------------------------------------------------
- 
 for i=fish2div %Case Inf=yes & any stage can cannibalize larger stage (so this loop won't change anything for case Inf)
     fishweb=find(species==i);
     %Are fish species partially cannibalistic? The number for cannibal_fish indicates how much younger conspecifics need to be to be cannibalized.  Of note: -1 means strictly younger, 0 means same lifestage or younger. -Inf means absolutely no cannibalism.
     nicheweb_new(fishweb,fishweb)=tril(nicheweb_new(fishweb,fishweb),cannibal_fish);
 end
+
+%%-------------------------------------------------------------------------
+%%  CLUMPED WEB - Make a web where adults have all the prey and predators
+%%-------------------------------------------------------------------------
+% Comes after cannibalism because if we want to exclude cannibalism we
+% should do that first.
+clump_rows=zeros(nichewebsize,newwebsize);
+clumped_web=zeros(nichewebsize);
+for i=1:nichewebsize
+    clump_rows(i,:)=sum(nicheweb_new(species==i,:),1);
+end
+for i=1:nichewebsize
+    clumped_web(:,i)=sum(clump_rows(:,species==i),2);
+end
+clumped_web=logical(clumped_web);
+% ERROR THIS ISN'T THE RIGHT SIZE WE NEED A 39 BY 39 MATRIX GRRRRR
 
 end
 

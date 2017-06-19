@@ -7,7 +7,7 @@ B_year_end=nan(N_years,nichewebsize);
 t_days=0;
 t_year=1;
 %% Make sure you reset Values for Experimental Treatments
-nicheweb=extended_web;
+%nicheweb=extended_web; % Not needed for this round because experiment 4 is weird.
 %B0=B_orig; % Not needed this round as we use custom B0 for Experimental Treatments
 
 %Run one time phase at a time, each phase has different conditions
