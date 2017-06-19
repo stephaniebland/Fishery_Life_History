@@ -197,8 +197,8 @@ end
 for i=1:nichewebsize
     clumped_web(:,i)=sum(clump_rows(:,species==i),2);
 end
+clumped_web=repelem(clumped_web,N_stages,N_stages);
 clumped_web=logical(clumped_web);
-% ERROR THIS ISN'T THE RIGHT SIZE WE NEED A 39 BY 39 MATRIX GRRRRR
 
 end
 
