@@ -47,25 +47,21 @@ function RunCluster(seed_0,simnum_0,simnum_f,var_fishpred,var_splitdiet)
                     %% 1st Simulation: Extended_nicheweb + Lifehistory: B_orig & linked
                     lifestages_linked=true;
                     B0=B_orig;
-                    Adults_only=0;
                     nicheweb=extended_web;
                 case 2
                     %% 2nd Simulation: Extended_nicheweb: B_orig & NOT linked
                     lifestages_linked=false;
                     B0=B_orig;
-                    Adults_only=0;
                     nicheweb=extended_web;
                 case 3 
                     %% 3rd Simulation: Nicheweb: B_orig=B_orig.*orig.nodes';%(Start with adults only) & NOT linked
                     lifestages_linked=false;
                     B0=B_orig.*orig.nodes';%Start with adults only. %CAUTION - changes total biomass, consider normalizing so all experiments have same total biomass. Or maybe sum juvenile stages to adult instead.
-                    Adults_only=1;
                     nicheweb=extended_web;
                 case 4
                     %% 4th Simulation: Nicheweb but where adults have the union of the prey and predators from all lifestages. So if any lifestage eats j, then adult will eat it.
                     lifestages_linked=false;
                     B0=B_orig.*orig.nodes';%Start with adults only. %CAUTION - changes total biomass, consider normalizing so all experiments have same total biomass. Or maybe sum juvenile stages to adult instead.
-                    Adults_only=1;
                     nicheweb=clumped_web;
             end
 
