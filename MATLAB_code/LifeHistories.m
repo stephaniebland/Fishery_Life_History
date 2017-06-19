@@ -190,19 +190,15 @@ end
 % Comes after cannibalism because if we want to exclude cannibalism we
 % should do that first.
 clump_rows=zeros(nichewebsize,newwebsize);
-clump_rows2=nicheweb_new;
 clumped_web=zeros(nichewebsize);
 for i=1:nichewebsize
     clump_rows(i,:)=sum(nicheweb_new(species==i,:),1);
-    clump_rows2(species==i,:)=repmat(sum(clump_rows2(species==i,:),1),sum(species==i),1);
-    clump_rows2(:,species==i)=repmat(sum(clump_rows2(:,species==i),2),1,sum(species==i));
 end
 for i=1:nichewebsize
     clumped_web(:,i)=sum(clump_rows(:,species==i),2);
 end
 clumped_web=repelem(clumped_web,N_stages,N_stages);
 clumped_web=logical(clumped_web);
-clump_rows2=logical(clump_rows2);
 
 end
 
