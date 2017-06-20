@@ -191,14 +191,26 @@ end
 % should do that first.
 clump_rows=zeros(nichewebsize,newwebsize);
 clumped_web=zeros(nichewebsize);
+% First, find a 30x30 (orig nichewebsize) matrix where each row & column is
+% a unique species, and a_ij is whether any lifestage of i eats any
+% lifestage of j. We need to 
 for i=1:nichewebsize
+    % First clump the rows together. Like folding paper in a z pattern, we
+    % can't fold horizontally and vertically simultaneously, and dimensions
+    % work out better if you take all horizontal folds first, and then go
+    % on to vertical folds. 
     clump_rows(i,:)=sum(nicheweb_new(species==i,:),1);
 end
 for i=1:nichewebsize
+    % In a separate loop, clump the columns.
     clumped_web(:,i)=sum(clump_rows(:,species==i),2);
 end
+% Now, we can expand the small matrix back into a 39x39 matrix, with
+% redundant rows and columns. It's just easier to stick to one size of web
+% to use in the simulations - we won't need to alter the size of any other
+% variables.
 clumped_web=repelem(clumped_web,N_stages,N_stages);
-clumped_web=logical(clumped_web);
+clumped_web=logical(clumped_web); % Logical to clear sums >1. 
 
 end
 
