@@ -21,7 +21,7 @@
 %old nicheweb, so as to not mess up the entire model.  (So you are
 %basically just adding rows and columns for your new life stages).
 
-function [nicheweb_new,Mass,orig_nodes,species,N_stages,is_split,aging_table,fecund_table,n]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance,W_scaled)
+function [nicheweb_new,Mass,orig_nodes,species,N_stages,is_split,aging_table,fecund_table,n,clumped_web]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance,W_scaled)
 attach(orig); attach(lifehis);
 %%-------------------------------------------------------------------------
 %%  SELECT FISH SPECIES TO BE SPLIT
@@ -178,12 +178,39 @@ end
 %%-------------------------------------------------------------------------
 %%  LIFE HISTORY MATRIX - CANNIBALISM SWITCH FOR FISH
 %%-------------------------------------------------------------------------
- 
 for i=fish2div %Case Inf=yes & any stage can cannibalize larger stage (so this loop won't change anything for case Inf)
     fishweb=find(species==i);
     %Are fish species partially cannibalistic? The number for cannibal_fish indicates how much younger conspecifics need to be to be cannibalized.  Of note: -1 means strictly younger, 0 means same lifestage or younger. -Inf means absolutely no cannibalism.
     nicheweb_new(fishweb,fishweb)=tril(nicheweb_new(fishweb,fishweb),cannibal_fish);
 end
+
+%%-------------------------------------------------------------------------
+%%  CLUMPED WEB - Make a web where adults have all the prey and predators
+%%-------------------------------------------------------------------------
+% Comes after cannibalism because if we want to exclude cannibalism we
+% should do that first.
+clump_rows=zeros(nichewebsize,newwebsize);
+clumped_web=zeros(nichewebsize);
+% First, find a 30x30 (orig nichewebsize) matrix where each row & column is
+% a unique species, and a_ij is whether any lifestage of i eats any
+% lifestage of j. We need to 
+for i=1:nichewebsize
+    % First clump the rows together. Like folding paper in a z pattern, we
+    % can't fold horizontally and vertically simultaneously, and dimensions
+    % work out better if you take all horizontal folds first, and then go
+    % on to vertical folds. 
+    clump_rows(i,:)=sum(nicheweb_new(species==i,:),1);
+end
+for i=1:nichewebsize
+    % In a separate loop, clump the columns.
+    clumped_web(:,i)=sum(clump_rows(:,species==i),2);
+end
+% Now, we can expand the small matrix back into a 39x39 matrix, with
+% redundant rows and columns. It's just easier to stick to one size of web
+% to use in the simulations - we won't need to alter the size of any other
+% variables.
+clumped_web=repelem(clumped_web,N_stages,N_stages);
+clumped_web=logical(clumped_web); % Logical to clear sums >1. 
 
 end
 
