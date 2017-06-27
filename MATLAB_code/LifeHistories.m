@@ -21,14 +21,14 @@
 %old nicheweb, so as to not mess up the entire model.  (So you are
 %basically just adding rows and columns for your new life stages).
 
-function [nicheweb_new,Mass,orig_nodes,species,N_stages,is_split,aging_table,fecund_table,n]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance,W_scaled)
+function [nicheweb_new,Mass,orig_nodes,species,N_stages,is_split,aging_table,fecund_table,n,clumped_web]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance,W_scaled)
 attach(orig); attach(lifehis);
 %%-------------------------------------------------------------------------
 %%  SELECT FISH SPECIES TO BE SPLIT
 %%-------------------------------------------------------------------------
 is_split=isfish;
 fish2div=find(is_split');
-if isnan(lstages_maxfish)==0  
+if isnan(lstages_maxfish)==0
     can_split=min(lstages_maxfish,sum(isfish));%limit to total number of fish.
     split_fish_i=randsample(sum(isfish),can_split);%Choose which fish species to split, indexed by fish species
     is_split=zeros(nichewebsize,1);
@@ -89,42 +89,24 @@ orig_index=find(orig_nodes');%index of original species
 [aging_table,fecund_table]= LeslieMatrix(leslie,newwebsize,N_stages,is_split,species);
 
 %%-------------------------------------------------------------------------
-%%  NEW NICHEWEB - NEO'S METHOD - SPLIT OLD DIET
+%%  EXTENDED NICHEWEB - Several Methods
 %%-------------------------------------------------------------------------
-%Two ways of doing this, either can split old diet, as recommended by Neo,
-%or we can run the model again and just give new lifestages new diets.
-N_prey=sum(nicheweb,2);%Vector saying how many prey species each species has.
-Nprey_per_stage=ceil(N_prey./N_stages);%Minimum number of prey each lifestage needs to eat to cover entire diet
-%Create new nicheweb
+%Create new nicheweb & Fill in what we already know
 nicheweb_new=zeros(newwebsize);
 nonsplit=1-is_split;
 nicheweb_new(orig_index,orig_index)=nicheweb.*nonsplit;%Rows for invertebrate species that you wish to preserve
-%PROBLEM:  INVERTEBRATES CURRENTLY DONT PREY ON ANY FISH SPECIES
-for i=fish2div%This loop will give a broader overlap
-    selec=find(nicheweb(i,:));
-    selec=find(ismember(orig_species, selec));%convert old species index into the new species index
-    k=(Nprey_per_stage(i)*N_stages(i))-N_prey(i);%How many prey will need to be assigned to two lifestages.
-    n=N_stages(i)-1;%number of neighbouring lifestages.
-    y=randsample(n,k);%Which pairs of lifestages will share a prey species.  with or without replacement. Currently without replacement
-    prey_split=zeros(N_stages(i),newwebsize);
-    u=1;
-    for j=1:N_stages(i)
-        v=u+Nprey_per_stage(i)-1;
-        choose=selec(u:v);
-        prey_split(j,choose)=1;
-        u=v+1-sum(y==j);
-    end
-    nicheweb_new(find(species==i),:)=prey_split;
-end
 
-%%-------------------------------------------------------------------------
-%%  NEW NICHEWEB - ALTERNATIVE METHODS & ASSIGNING PREDATORS FOR NEW STAGES
-%%-------------------------------------------------------------------------
-
-if (fishpred==true | splitdiet==false)
+%% IF WE USE NICHE VALUE TO ASSIGN PREY OR PREDATORS
+% (If we give the new web a similar structure to original web *per node* -
+% then each lifestage will be treated a separate species)
+% Result of this Section Will be givediet - a web that says what everything
+% will eat if the new niche values are used for the whole web. We will only
+% replace the parts of the web that need patching up (rows and columns for
+% new lifestages)
+if (fishpred==2 || splitdiet==false)
     %Standardize niche values and mass here,then you can use intercept of -4.744e-17, and slope of 2.338e-01 to calculate new niche values for new nodes,then you transform it back to reg.
-    fish_n=n_new(find(isfish));%only use adult fish data (all fish, not just is_split)
-    fish_w=log10(W_max(find(isfish)));%log the weight first
+    fish_n=n_new(isfish);%only use adult fish data (all fish, not just is_split)
+    fish_w=log10(W_max(isfish));%log the weight first
     f_mean_n=mean(fish_n);%We will be standardizing the weights and niche values by the mean & std for adult fish, because that's how I calculated the linear regression.
     f_std_n=std(fish_n);
     f_mean_w=mean(fish_w);
@@ -137,31 +119,58 @@ if (fishpred==true | splitdiet==false)
     n(orig_index)=n_new;
     stand_n=(n-f_mean_n)/f_std_n;%standardize all niche values by adult fish niche values
     for i=fish2div
-        x=stand_w(find(species==i));
-        y=stand_n(find(species==i));
+        x=stand_w(species==i);
+        y=stand_n(species==i);
         alignx=x-x(end);
         find_y_vals=alignx*2.338e-01;
         fixedy=find_y_vals+y(end);
-        stand_n(find(species==i))=fixedy;
+        stand_n(species==i)=fixedy;
     end
     n=stand_n*f_std_n+f_mean_n;%Transform niche values back to original values.
     allfish=find(repelem(is_split,N_stages));
     [web_mx]=CreateWeb(sum(N_stages),connectance,n,n_new,r_new,c_new,orig_index,allfish);%Create a new web with the new niche values
     givediet=find(repelem(is_split,N_stages));%Find all lifestages that were split, and give them a new diet.  This includes adults in both fishpred AND splitdiet, because new lifestages might eat them. Esp. important for splitdiet though, so that adults actually have food.
+else
+    % We need to set niche values for dietary shifts. If we don't use new
+    % niche values for the extended web we default to regular order.
+    n=1:newwebsize;
 end
 
-switch fishpred
-    case 1
-        %First approximation is just that if something preys on a species, it will prey on all of the lifestages
-        newnodes=1-orig_nodes;
-        for i=fish2div
-            fishpred=nicheweb_new(:,find(species==i));
-            fishpred(:,1:end-1)=fishpred(:,1:end-1)+fishpred(:,end);
-            nicheweb_new(:,find(species==i))=fishpred;
+%% PREY - Neo's Method: Split Old Diet
+if splitdiet==true
+    N_prey=sum(nicheweb,2);%Vector saying how many prey species each species has.
+    Nprey_per_stage=ceil(N_prey./N_stages);%Minimum number of prey each lifestage needs to eat to cover entire diet
+    for i=fish2div%This loop will give a broader overlap
+        selec=find(nicheweb(i,:));
+        selec=find(ismember(orig_species, selec));%convert old species index into the new species index
+        k=(Nprey_per_stage(i)*N_stages(i))-N_prey(i);%How many prey will need to be assigned to two lifestages.
+        n_neigh=N_stages(i)-1;%number of neighbouring lifestages. (Fencepost problem).
+        y=randsample(n_neigh,k);%Which pairs of lifestages will share a prey species.  with or without replacement. Currently without replacement
+        prey_split=zeros(N_stages(i),newwebsize);
+        u=1;
+        for j=1:N_stages(i)
+            v=u+Nprey_per_stage(i)-1;
+            choose=selec(u:v);
+            prey_split(j,choose)=1;
+            u=v+1-sum(y==j);
         end
-    case true %reassigns them according to nichevalues
+        nicheweb_new(species==i,:)=prey_split;
+    end
+end
+
+%% PREDATORS
+switch fishpred
+    case 1 %First approximation is just that if something preys on a species, it will prey on all of the lifestages
+        for i=fish2div
+            list_fishpred=nicheweb_new(:,species==i);
+            list_fishpred(:,1:end-1)=max(list_fishpred(:,1:end-1),list_fishpred(:,end)); % CAUTION: This roundabout method is important! We need to preserve predatory links that already exist, which wouldn't happen if we just set all columns equal to the last.
+            nicheweb_new(:,species==i)=list_fishpred;
+        end
+    case 2 %reassigns them according to nichevalues
         nicheweb_new(:,givediet)=web_mx(:,givediet);
 end
+
+%% PREY - Niche Values
 if splitdiet==false%assign new diet based on new niche values
     nicheweb_new(givediet,:)=web_mx(givediet,:);%Also need to reassign diet for adult lifestages,
 end
@@ -169,15 +178,39 @@ end
 %%-------------------------------------------------------------------------
 %%  LIFE HISTORY MATRIX - CANNIBALISM SWITCH FOR FISH
 %%-------------------------------------------------------------------------
- 
-for i=fish2div %Case true=yes & any stage can cannibalize larger stage (so this loop won't change anything for case true
+for i=fish2div %Case Inf=yes & any stage can cannibalize larger stage (so this loop won't change anything for case Inf)
     fishweb=find(species==i);
-    if cannibal_fish==false %no cannibalism
-        nicheweb_new(fishweb,fishweb)=0;
-    elseif isnumeric(cannibal_fish)==1 %Are fish species partially cannibalistic? The number for cannibal_fish indicates how much younger conspecifics need to be to be cannibalized.  Of note: -1 means strictly younger, 0 means same lifestage or younger
-        nicheweb_new(fishweb,fishweb)=tril(nicheweb_new(fishweb,fishweb),cannibal_fish);
-    end
+    %Are fish species partially cannibalistic? The number for cannibal_fish indicates how much younger conspecifics need to be to be cannibalized.  Of note: -1 means strictly younger, 0 means same lifestage or younger. -Inf means absolutely no cannibalism.
+    nicheweb_new(fishweb,fishweb)=tril(nicheweb_new(fishweb,fishweb),cannibal_fish);
 end
+
+%%-------------------------------------------------------------------------
+%%  CLUMPED WEB - Make a web where adults have all the prey and predators
+%%-------------------------------------------------------------------------
+% Comes after cannibalism because if we want to exclude cannibalism we
+% should do that first.
+clump_rows=zeros(nichewebsize,newwebsize);
+clumped_web=zeros(nichewebsize);
+% First, find a 30x30 (orig nichewebsize) matrix where each row & column is
+% a unique species, and a_ij is whether any lifestage of i eats any
+% lifestage of j. We need to 
+for i=1:nichewebsize
+    % First clump the rows together. Like folding paper in a z pattern, we
+    % can't fold horizontally and vertically simultaneously, and dimensions
+    % work out better if you take all horizontal folds first, and then go
+    % on to vertical folds. 
+    clump_rows(i,:)=sum(nicheweb_new(species==i,:),1);
+end
+for i=1:nichewebsize
+    % In a separate loop, clump the columns.
+    clumped_web(:,i)=sum(clump_rows(:,species==i),2);
+end
+% Now, we can expand the small matrix back into a 39x39 matrix, with
+% redundant rows and columns. It's just easier to stick to one size of web
+% to use in the simulations - we won't need to alter the size of any other
+% variables.
+clumped_web=repelem(clumped_web,N_stages,N_stages);
+clumped_web=logical(clumped_web); % Logical to clear sums >1. 
 
 end
 
