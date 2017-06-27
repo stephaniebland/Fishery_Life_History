@@ -46,7 +46,14 @@ end
 %%-------------------------------------------------------------------------
 %%  NUMBER OF LIFESTAGES & WEIGHTS
 %%-------------------------------------------------------------------------
-W_max=W_scaled.*is_split;%You only want to add lifestages to fish. This is their adult weight.
+% Now that we know which stages should be split, we want to find out what
+% they look like. We want to define characteristics - how long do they
+% live? How large is each age class? 
+% We will use Von-Bertallanfy to find the mass of new lifestages. 
+
+% Start by finding the adult weights for the fish species you will split.
+W_max=W_scaled.*is_split;
+% Then we define the age that they reach maturity. The default age  
 t_max=ones(nichewebsize,1);%set to ones because dividing by zero is a pain.
 t_max(fish2div)=randi(agerange,sum(is_split),1);%BE CAREFUL - THIS IS LIKE NUMBER OF ADDITIONAL LIFE STAGES (you may want N_stages instead)
 %Jeff said most fish are within 2-6 [1 5] years for age at maturity (and t_max excludes the first year, so it's fine.)
@@ -77,7 +84,8 @@ for i=find(is_split')%only does the loop for fish species that you split
 end
 %Now convert to a vector.
 Mass=reshape(Mass_matrix',numel(Mass_matrix),1);
-Mass(isnan(Mass))=[];%Alternate identical method: Mass=Mass(find(isnan(Mass)==0));
+% Clear all NaN values
+Mass(isnan(Mass))=[];
 %Get a vector that says what species each lifestage is part of
 N_stages=is_split+t_max;%Number of lifestages for each species. Necessary because fish with t_max=1 means it has 2 lifestages, and didn't want to use 0 for other species because K=3/t_max doesn't like it.
 species=[];%Vector saying what species each new node is part of.
