@@ -26,14 +26,21 @@ attach(orig); attach(lifehis);
 %%-------------------------------------------------------------------------
 %%  SELECT FISH SPECIES TO BE SPLIT
 %%-------------------------------------------------------------------------
+% The default is just to split (add life history to) every fish species:
 is_split=isfish;
 fish2div=find(is_split');
+% But suppose we want to limit the number of fish species to split, so if
+% we have 5 fish species, but only want to endow life history to 3 of them.
 if isnan(lstages_maxfish)==0
-    can_split=min(lstages_maxfish,sum(isfish));%limit to total number of fish.
-    split_fish_i=randsample(sum(isfish),can_split);%Choose which fish species to split, indexed by fish species
-    is_split=zeros(nichewebsize,1);
-    is_split(fish2div(split_fish_i))=1;%fish that will be split are 1s, species that aren't are 0.
-    fish2div=find(is_split');
+    % First, we limit the number of species to split by the total number
+    % of fish species. We can_split at least this number of fish.
+    can_split=min(lstages_maxfish,sum(isfish));
+    % Then, choose without replacement from the list of fish species. This
+    % gives an indexed list of fish species to split. 
+    fish2div=randsample(fish2div,can_split);
+    % And finally we can set a logical vector of fish2div, where 1=split.
+    is_split=false(nichewebsize,1);
+    is_split(fish2div)=true;
 end
 
 %%-------------------------------------------------------------------------
