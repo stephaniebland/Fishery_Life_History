@@ -9,7 +9,7 @@
 %  some comments
 %--------------------------------------------------------------------------
 %  Assigns Life History Stages
-%  Reference: 
+%  Reference:
 %  Uses the following parameters:
 %  nicheweb,nichewebsize,connectance,basalsp,IsFish
 %--------------------------------------------------------------------------
@@ -38,7 +38,7 @@ if isnan(lstages_maxfish)==0
     % of fish species. We can_split at least this number of fish.
     can_split=min(lstages_maxfish,sum(isfish));
     % Then, choose without replacement from the list of fish species. This
-    % gives an indexed list of fish species to split. 
+    % gives an indexed list of fish species to split.
     fish2div=randsample(fish2div,can_split);
     % And finally we can set a logical vector of fish2div, where 1=split.
     is_split=false(nichewebsize,1);
@@ -49,11 +49,11 @@ end
 %% LIFE HISTORY CHARACTERISTICS
 % Now that we know which stages should be split, we want to find out what
 % they look like. We want to define characteristics - how long do they
-% live? How large is each age class? 
+% live? How large is each age class?
 %%-------------------------------------------------------------------------
 
 %% Number of Life Stages
-% Now we can define the number of lifestages each species has. 
+% Now we can define the number of lifestages each species has.
 
 % Every species has at least one life stage, while the split species are
 % given any number within the range of lifehis.agerange.
@@ -63,7 +63,7 @@ N_stages(fish2div)=randi(agerange,sum(is_split),1);
 t_max=N_stages-1;
 
 %% Life Stage Individual Body Size
-% We will use Von-Bertallanfy to find the mass of new lifestages. 
+% We will use Von-Bertallanfy to find the mass of new lifestages.
 
 % Start by finding the adult weights for the fish species you will split.
 W_max=W_scaled.*is_split;
@@ -80,7 +80,7 @@ K=3./t_max;
 % This is the age at which fish have a weight of 0, which would happen
 % before the egg is formed (at meiosis for gametes)
 % Requirement: t_0 must be negative. This is so a) the math works out, and
-% b) it's biologically realistic. 
+% b) it's biologically realistic.
 % For small adult weights (ex: W_max=88.7630), this breaks down and starts
 % giving positive t_0. I force it to be negative in those cases.
 t_0=t_max+((1./K).*log(1-(L_max./L_inf)));
@@ -247,12 +247,12 @@ clump_rows=zeros(nichewebsize,newwebsize);
 clumped_web=zeros(nichewebsize);
 % First, find a 30x30 (orig nichewebsize) matrix where each row & column is
 % a unique species, and a_ij is whether any lifestage of i eats any
-% lifestage of j. We need to 
+% lifestage of j.
 for i=1:nichewebsize
     % First clump the rows together. Like folding paper in a z pattern, we
     % can't fold horizontally and vertically simultaneously, and dimensions
     % work out better if you take all horizontal folds first, and then go
-    % on to vertical folds. 
+    % on to vertical folds. This is why we need two nearly identical loops.
     clump_rows(i,:)=sum(nicheweb_new(species==i,:),1);
 end
 for i=1:nichewebsize
@@ -264,7 +264,7 @@ end
 % to use in the simulations - we won't need to alter the size of any other
 % variables.
 clumped_web=repelem(clumped_web,N_stages,N_stages);
-clumped_web=logical(clumped_web); % Logical to clear sums >1. 
+clumped_web=logical(clumped_web); % Logical to clear sums >1.
 
 end
 
