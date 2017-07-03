@@ -85,7 +85,6 @@
 %% LifeHistories
     lifehis.agerange=[4, 4]; %WARNING!!!: only works right now for [4 4] (fix LeslieMatrix). %Range of total number of fish lifestages to add.  You can choose any number within that range. %Jeff said most fish are within 2-6 [2 6] years for age at maturity.
     lifehis.growth_exp=3;%Growth exponent, 3 is for isometric growth (Sangun et al. 2007)
-    lifehis.q=0.0125;%Conversion factor from weight to length
     
 %% LeslieMatrix
     prob_mat.invest=[1,0.9,0.85,0.8]; % allocation to growth for class 1,2 and 3

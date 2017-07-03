@@ -67,33 +67,31 @@ t_max=N_stages-1;
 
 % Start by finding the adult weights for the fish species you will split.
 W_max=W_scaled.*is_split;
-% It turns out to be way easier to deal with fish length rather than mass,
-% so we will convert mass to length
-L_max=(W_max/q).^(1/growth_exp); % (Sangun et al. 2007)
-% Then we can approximate the asymptotic fish length - if fish were
-% immortal they would eventually max out at this size.
-L_inf=(10^0.044)*(L_max.^0.9841);
 % K is the curvature of the von-bert, and we use this simple approximation.
 % It works for most cases, we only modify it when it yields a postive t_0
 K=3./t_max;
+% Then we can approximate the asymptotic fish length - if fish were
+% immortal they would eventually max out at this size.
+W_inf=W_max*(1-exp(-K*(t_max-t_0)))^(-3)
 % Next, we find t_0, which is the x-intercept of a weight vs. age plot.
 % This is the age at which fish have a weight of 0, which would happen
 % before the egg is formed (at meiosis for gametes)
-% Requirement: t_0 must be negative. This is so a) the math works out, and
+% Requirement: t_0 must be negative. This is so 
+% a) the math works out, and
 % b) it's biologically realistic.
 % For small adult weights (ex: W_max=88.7630), this breaks down and starts
 % giving positive t_0. I force it to be negative in those cases.
-t_0=t_max+((1./K).*log(1-(L_max./L_inf)));
+t_0=t_max+((1./K).*log(1-(W_max./W_inf)^(1/3)));
 % Temporary solution to K being too large.  I'll just force it to be small
 % enough to get a negative t_0
 for i=find(t_0>=0)'
     % So first find K such that t_0=0
-    K(i)=-log(1-(L_max(i)/L_inf(i)))/t_max(i);
+    K(i)=-log(1-(W_max(i)/W_inf(i))^(1/3))/t_max(i);
     % Then we reduce K by an arbitrary amount to force t_0 to be negative.
     K(i)=0.9*K(i); % I have no justification for choosing 90%
 end
 % Recalculate t_0 now that K is corrected.
-t_0=t_max+((1./K).*log(1-(L_max./L_inf)));
+t_0=t_max+((1./K).*log(1-(W_max./W_inf)^(1/3)));
 
 % Create a matrix lifestage_Mass/Mass_matrix that describes the weight of
 % each life stage j for each fish i (so species are in rows, and lifestages
@@ -107,9 +105,7 @@ Mass_matrix(:,1)=W_scaled;
 for i=find(is_split')
     for t=0:t_max(i)
         % Von-Bertalanffy growth model
-        L_t=L_inf(i)*(1-exp(-K(i)*(t-t_0(i))));
-        % Length to weight conversion (Sangun et al. 2007)
-        W_t=q*(L_t^growth_exp);
+        W_t=W_inf(i)*(1-exp(-K(i)*(t-t_0(i))))^3;
         Mass_matrix(i,t+1)=W_t;
     end
 end
