@@ -149,4 +149,4 @@ switch maxweight
         W_scaled=Mvec/W_scalar;%Scale the weight of all species
 end
     
-    end
+end
