@@ -86,7 +86,7 @@ W_inf=W_max/0.9;
 % Next, we find t_0, which is the x-intercept of a weight vs. age plot.
 % This is the age at which fish have a weight of 0, which would happen
 % before the egg is formed (at meiosis for gametes)
-t_0=t_max+((1./K).*log(1-(W_max./W_inf).^(1/3)));
+t_0=t_max+((1./K).*log(1-(W_max./W_inf).^(1/growth_exp)));
 % Create a matrix lifestage_Mass/Mass_matrix that describes the weight of
 % each life stage j for each fish i (so species are in rows, and lifestages
 % are in columns.
@@ -99,7 +99,7 @@ Mass_matrix(:,1)=W_scaled;
 for i=find(is_split')
     for t=0:t_max(i)
         % Von-Bertalanffy growth model
-        W_t=W_inf(i)*(1-exp(-K(i)*(t-t_0(i))))^3;
+        W_t=W_inf(i)*(1-exp(-K(i)*(t-t_0(i))))^growth_exp;
         Mass_matrix(i,t+1)=W_t;
     end
 end
