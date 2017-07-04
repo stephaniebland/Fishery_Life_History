@@ -79,13 +79,17 @@ t_max=N_stages-1;
 W_max=Mvec;
 % K is the curvature of the von-bert, and we use this simple approximation.
 % It works for most cases, we only modify it when it yields a postive t_0
+% Source: Froese, R. and C. Binohlan. 2000. Empirical relationships...
 K=3./t_max;
 % Then we can approximate the asymptotic fish length - if fish were
-% immortal they would eventually max out at this size.  
+% immortal they would eventually max out at this size.
+% Source: I made it up just now. 0.9 constrains $t_0$ to be negative, but
+% other than that, it's arbitrary.
 W_inf=W_max/0.9;
 % Next, we find t_0, which is the x-intercept of a weight vs. age plot.
 % This is the age at which fish have a weight of 0, which would happen
-% before the egg is formed (at meiosis for gametes)
+% before the egg is formed (at meiosis for gametes).
+% For t_max=3, K=3./t_max, and W_max./W_inf=0.9 --> t_0=-0.3665
 t_0=t_max+((1./K).*log(1-(W_max./W_inf).^(1/growth_exp)));
 % Create a matrix lifestage_Mass/Mass_matrix that describes the weight of
 % each life stage j for each fish i (so species are in rows, and lifestages
