@@ -21,7 +21,7 @@
 %old nicheweb, so as to not mess up the entire model.  (So you are
 %basically just adding rows and columns for your new life stages).
 
-function [nicheweb_new,Mass,orig_nodes,species,N_stages,is_split,aging_table,fecund_table,n,clumped_web]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance,W_scaled)
+function [nicheweb_new,Mass,orig_nodes,species,N_stages,is_split,aging_table,fecund_table,n,clumped_web]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance)
 attach(orig); attach(lifehis);
 %%-------------------------------------------------------------------------
 %% SELECT FISH SPECIES TO BE SPLIT
@@ -76,7 +76,7 @@ t_max=N_stages-1;
 % $(1-e^{-Kt_{max}})^3<\frac{W_{max}}{W_\infty}$
 
 % Start by finding the adult weights for the fish species you will split.
-W_max=W_scaled.*is_split;
+W_max=Mvec.*is_split;
 % K is the curvature of the von-bert, and we use this simple approximation.
 % It works for most cases, we only modify it when it yields a postive t_0
 K=3./t_max;
@@ -94,7 +94,7 @@ t_0=t_max+((1./K).*log(1-(W_max./W_inf).^(1/growth_exp)));
 Mass_matrix=nan(nichewebsize,max(N_stages));
 % First column is the weight of all species (fish rows will be overwritten
 % with weight of youngest lifestage, for correct order when reshaped)
-Mass_matrix(:,1)=W_scaled;
+Mass_matrix(:,1)=Mvec;
 % Loop through split species:
 for i=find(is_split')
     for t=0:t_max(i)

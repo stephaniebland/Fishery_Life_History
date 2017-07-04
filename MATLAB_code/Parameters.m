@@ -64,7 +64,6 @@
     lifehis.cannibal_fish=-Inf;%-Inf=none,Inf=yes & any stage can cannibalize larger stages, -1=cannibalism on strictly smaller stages,0=cannibalism on own stages and smaller stages.% The number for cannibal_fish indicates how much younger conspecifics need to be to be cannibalized.  Of note: -1 means strictly younger, 0 means same lifestage or younger
     lifehis.fishpred=2;%Choose how to assign fish predators. 0 means only adults eaten, 1 means all stages are eaten, and 2 reassigns them according to nichevalues
     lifehis.splitdiet=false;%Choose how to split fish diet. true=split orignal diet, false=assign new diet based on new niche values
-    rescalemass=true;%simulations only look nice if set to true, but be careful, true means von-bert scaling is invalid since it reverts weights (temp bug bandage)%rescales mass back to original weights after scaled from masscalc.maxweight.  So it only works if maxweight is a value (not "false").
     cont_reprod=true;%does reproductive effort account for growth on daily timesteps.
     evolv_diet=0;%Fishing evolution induced dietary shifts, so shifts diet to the left or right.  negative numbers make fish eat smaller things, positive numbers make them eat larger (to test whether it's just a matter of messing up the food web). 0 is no diet shift. if diet is already eating smallest node then untransformed.   
     
@@ -80,7 +79,6 @@
     masscalc.v_fish   =100;   % standard deviation for fishes
     masscalc.m_invert =100;   % mean for invertebrates
     masscalc.v_invert =100;   % standard deviation for invertebrates
-    masscalc.maxweight=100000;% false=0 means you skip this step (risky, bc von-bert wants it scaled) %Factor by which you can scale all the weights, so that the maximum fish weight is *exactly* this number.  So every ecosystem will always have top predator that weighs exactly that amount (unless it goes extinct). Important because Von-Bert growth model doesn't work for species over certain weight. 
     
 %% LifeHistories
     lifehis.agerange=[4, 4]; %WARNING!!!: only works right now for [4 4] (fix LeslieMatrix). %Range of total number of fish lifestages to add.  You can choose any number within that range. %Jeff said most fish are within 2-6 [2 6] years for age at maturity.
