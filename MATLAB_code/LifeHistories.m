@@ -85,7 +85,7 @@ K=3./t_max;
 % immortal they would eventually max out at this size.
 % Source: I made it up just now. 0.9 constrains $t_0$ to be negative, but
 % other than that, it's arbitrary.
-W_inf=W_max/0.9;
+W_inf=W_max/infsize;
 % Next, we find t_0, which is the x-intercept of a weight vs. age plot.
 % This is the age at which fish have a weight of 0, which would happen
 % before the egg is formed (at meiosis for gametes).
