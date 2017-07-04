@@ -75,8 +75,8 @@ t_max=N_stages-1;
 % $K$, and chose $W_\infty$ such that $t_0<0$ with this:
 % $(1-e^{-Kt_{max}})^3<\frac{W_{max}}{W_\infty}$
 
-% Start by finding the adult weights for the fish species you will split.
-W_max=Mvec.*is_split;
+% Start by assuming that model assigns adult weights for all species:
+W_max=Mvec;
 % K is the curvature of the von-bert, and we use this simple approximation.
 % It works for most cases, we only modify it when it yields a postive t_0
 K=3./t_max;
