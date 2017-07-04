@@ -64,6 +64,16 @@ t_max=N_stages-1;
 
 %% Life Stage Individual Body Size
 % We will use Von-Bertallanfy to find the mass of new lifestages.
+%%
+% $$W_t=W_\infty (1-e^{-K(t-t_0)})^3$$
+% We have several requirements:
+%%
+% * The curve must pass through $(t,W_t)=(t_{max},W_{max})$
+% * $t_0$ must be negative for mathematical reasons and biological realism
+% Once we fix $(t_{max},W_{max})$, we need to choose two more parameters.
+% We can choose from $W_\infty$, $K$, and $t_0$. I chose to limit it with
+% $K$, and chose $W_\infty$ such that $t_0<0$ with this:
+% $(1-e^{-Kt_{max}})^3<\frac{W_{max}}{W_\infty}$
 
 % Start by finding the adult weights for the fish species you will split.
 W_max=W_scaled.*is_split;
@@ -71,28 +81,12 @@ W_max=W_scaled.*is_split;
 % It works for most cases, we only modify it when it yields a postive t_0
 K=3./t_max;
 % Then we can approximate the asymptotic fish length - if fish were
-% immortal they would eventually max out at this size.
-W_inf=W_max*(1-exp(-K*(t_max-t_0)))^(-3)
+% immortal they would eventually max out at this size.  
+W_inf=W_max/0.9;
 % Next, we find t_0, which is the x-intercept of a weight vs. age plot.
 % This is the age at which fish have a weight of 0, which would happen
 % before the egg is formed (at meiosis for gametes)
-% Requirement: t_0 must be negative. This is so 
-% a) the math works out, and
-% b) it's biologically realistic.
-% For small adult weights (ex: W_max=88.7630), this breaks down and starts
-% giving positive t_0. I force it to be negative in those cases.
-t_0=t_max+((1./K).*log(1-(W_max./W_inf)^(1/3)));
-% Temporary solution to K being too large.  I'll just force it to be small
-% enough to get a negative t_0
-for i=find(t_0>=0)'
-    % So first find K such that t_0=0
-    K(i)=-log(1-(W_max(i)/W_inf(i))^(1/3))/t_max(i);
-    % Then we reduce K by an arbitrary amount to force t_0 to be negative.
-    K(i)=0.9*K(i); % I have no justification for choosing 90%
-end
-% Recalculate t_0 now that K is corrected.
-t_0=t_max+((1./K).*log(1-(W_max./W_inf)^(1/3)));
-
+t_0=t_max+((1./K).*log(1-(W_max./W_inf).^(1/3)));
 % Create a matrix lifestage_Mass/Mass_matrix that describes the weight of
 % each life stage j for each fish i (so species are in rows, and lifestages
 % are in columns.
