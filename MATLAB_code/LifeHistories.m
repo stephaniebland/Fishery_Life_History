@@ -101,11 +101,10 @@ Mass_matrix=nan(nichewebsize,max(N_stages));
 Mass_matrix(:,1)=Mvec;
 % Loop through split species:
 for i=find(is_split')
-    for t=0:t_max(i)
-        % Von-Bertalanffy growth model
-        W_t=W_inf(i)*(1-exp(-K(i)*(t-t_0(i))))^growth_exp;
-        Mass_matrix(i,t+1)=W_t;
-    end
+    t=0:t_max(i); % Life stages for that species
+    % Von-Bertalanffy growth model
+    W_t=W_inf(i)*(1-exp(-K(i)*(t-t_0(i)))).^growth_exp;
+    Mass_matrix(i,t+1)=W_t;
 end
 % Now convert to a vector.
 Mass=reshape(Mass_matrix',numel(Mass_matrix),1);
