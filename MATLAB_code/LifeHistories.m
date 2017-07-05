@@ -151,8 +151,10 @@ nicheweb_new(orig_index,orig_index)=nicheweb.*nonsplit;%Rows for invertebrate sp
 % replace the parts of the web that need patching up (rows and columns for
 % new lifestages)
 if (fishpred==2 || splitdiet==false)
-    % Standardize niche values and mass here,then you can use intercept of -4.744e-17, and slope of 2.338e-01 to calculate new niche values for new nodes,then you transform it back to reg.
-    fish_n=n_new(isfish);%only use adult fish data (all fish, not just is_split)
+    % Standardize niche values and mass here, then you can use intercept of
+    % -4.744e-17, and slope of 2.338e-01 to calculate new niche values for
+    % new nodes, then you transform it back to reg.
+    fish_n=n_new(isfish);%only use adult fish data (all adult fish, not just is_split)
     fish_w=log10(W_max(isfish));%log the weight first
     f_mean_n=mean(fish_n);%We will be standardizing the weights and niche values by the mean & std for adult fish, because that's how I calculated the linear regression.
     f_std_n=std(fish_n);
@@ -165,11 +167,17 @@ if (fishpred==2 || splitdiet==false)
     n=zeros(sum(N_stages),1);
     n(orig_index)=n_new;
     stand_n=(n-f_mean_n)/f_std_n;%standardize all niche values by adult fish niche values
+    % Go through each fish species separately so you can preserve adult n.
     for i=fish2div
+        % So given these weights, what niche values should we assign them?
         x=stand_w(species==i);
         y=stand_n(species==i);
+        % Preserve the niche value for the adult, and scale the other life
+        % stages accordingly
         alignx=x-x(end);
+        % We only multiply here, the intercept is so small it's negligible.
         find_y_vals=alignx*2.338e-01;
+        % Preserve adult niche value (again)
         fixedy=find_y_vals+y(end);
         stand_n(species==i)=fixedy;
     end
