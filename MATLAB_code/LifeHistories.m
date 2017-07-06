@@ -78,7 +78,6 @@ t_max=N_stages-1;
 % Start by assuming that model assigns adult weights for all species:
 W_max=Mvec;
 % K is the curvature of the von-bert, and we use this simple approximation.
-% It works for most cases, we only modify it when it yields a postive t_0
 % Source: Froese, R. and C. Binohlan. 2000. Empirical relationships...
 K=3./t_max;
 % Then we can approximate the asymptotic fish length - if fish were
@@ -153,35 +152,27 @@ nicheweb_new(orig_index,orig_index)=nicheweb.*nonsplit;%Rows for invertebrate sp
 if (fishpred==2 || splitdiet==false)
     % Standardize niche values and mass here, then you can use intercept of
     % -4.744e-17, and slope of 2.338e-01 to calculate new niche values for
-    % new nodes, then you transform it back to reg.
+    % new nodes, then you transform it back to reg. I don't use the
+    % intercept because it seems insignificant.
     fish_n=n_new(isfish);%only use adult fish data (all adult fish, not just is_split)
     fish_w=log10(W_max(isfish));%log the weight first
-    f_mean_n=mean(fish_n);%We will be standardizing the weights and niche values by the mean & std for adult fish, because that's how I calculated the linear regression.
+    % We will be standardizing the weights and niche values by the mean & std for adult fish, because that's how I calculated the linear regression.
     f_std_n=std(fish_n);
-    f_mean_w=mean(fish_w);
     f_std_w=std(fish_w);
-    
-    stand_w=log10(Mass);%log the weight, because that's how I found the linear regression
-    stand_w=(stand_w-f_mean_w)/f_std_w;%standardize all weights by adult fish values
-    
+    % Log of weight, because the linear regression was for the log(mass)
+    log_Mass=log10(Mass);
+    % Find the new niche values for younger life stages, based on adult's n
     n=zeros(sum(N_stages),1);
     n(orig_index)=n_new;
-    stand_n=(n-f_mean_n)/f_std_n;%standardize all niche values by adult fish niche values
-    % Go through each fish species separately so you can preserve adult n.
     for i=fish2div
-        % So given these weights, what niche values should we assign them?
-        x=stand_w(species==i);
-        y=stand_n(species==i);
-        % Preserve the niche value for the adult, and scale the other life
-        % stages accordingly
-        alignx=x-x(end);
-        % We only multiply here, the intercept is so small it's negligible.
-        find_y_vals=alignx*2.338e-01;
-        % Preserve adult niche value (again)
-        fixedy=find_y_vals+y(end);
-        stand_n(species==i)=fixedy;
+        % The linear regression can be applied to untransformed data:
+        lm_const=2.338e-01*f_std_n/f_std_w;
+        % x is the logged mass for that species
+        x=log_Mass(species==i);
+        % y will be the adult's niche value
+        y=n(species==i);
+        n(species==i)=lm_const*(x-x(end))+y(end);
     end
-    n=stand_n*f_std_n+f_mean_n;%Transform niche values back to original values.
     allfish=find(repelem(is_split,N_stages));
     [web_mx]=CreateWeb(sum(N_stages),connectance,n,n_new,r_new,c_new,orig_index,allfish);%Create a new web with the new niche values
     givediet=find(repelem(is_split,N_stages));%Find all lifestages that were split, and give them a new diet.  This includes adults in both fishpred AND splitdiet, because new lifestages might eat them. Esp. important for splitdiet though, so that adults actually have food.
