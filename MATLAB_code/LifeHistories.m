@@ -153,10 +153,12 @@ if (fishpred==2 || splitdiet==false)
     % Standardize niche values and mass here, then you can use intercept of
     % -4.744e-17, and slope of 2.338e-01 to calculate new niche values for
     % new nodes, then you transform it back to reg. I don't use the
-    % intercept because it seems insignificant.
+    % intercept because we will use the adult's niche value for that.
     fish_n=n_new(isfish);%only use adult fish data (all adult fish, not just is_split)
     fish_w=log10(W_max(isfish));%log the weight first
-    % We will be standardizing the weights and niche values by the mean & std for adult fish, because that's how I calculated the linear regression.
+    % We will be standardizing the weights and niche values by the mean &
+    % std for adult fish, because that's how I calculated the linear
+    % regression.
     f_std_n=std(fish_n);
     f_std_w=std(fish_w);
     % Log of weight, because the linear regression was for the log(mass)
@@ -177,7 +179,8 @@ if (fishpred==2 || splitdiet==false)
     % both fishpred AND splitdiet, because new lifestages might eat them.
     % Esp. important for splitdiet though, so that adults have food. 
     givediet=find(repelem(is_split,N_stages));
-    [web_mx]=CreateWeb(sum(N_stages),connectance,n,n_new,r_new,c_new,orig_index,givediet);%Create a new web with the new niche values
+    % Create a new web with the new niche values
+    [web_mx]=CreateWeb(sum(N_stages),connectance,n,n_new,r_new,c_new,orig_index,givediet);
 else
     % We need to set niche values for dietary shifts. If we don't use new
     % niche values for the extended web we default to regular order.
