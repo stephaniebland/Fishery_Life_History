@@ -13,7 +13,7 @@
 % A(i,j) = 1 if i eats j.(row eats column)
 %--------------------------------------------------------------------------
 
-function [web_mx,n_new,r_new,c_new]=CreateWeb(num_nodes,connectance,n,n_old,r_old,c_old,orig_index,allfish)
+function [web_mx,n_new,r_new,c_new]=CreateWeb(num_nodes,connectance,n,n_old,r_old,c_old,orig_index,givediet)
 %% Parameters for beta distribution:
 alpha = 1;
 beta = (1-2*connectance)/(2*connectance); %Coralie : ???
@@ -61,7 +61,7 @@ web_mx=(n_mx>=preymins_mx)&(n_mx<=preymaxs_mx);
 %% If you're running the loop for the second time:
 if exist('n_old','var')==1
     %% Ensure all new lifestages have prey (some fish will accidentally have such a narrow range that they don't have any prey)
-    [~, fish_reordered]=intersect(Indx,allfish);%Find the new index of fish nodes, because you reordered them when you sorted by niche index
+    [~, fish_reordered]=intersect(Indx,givediet);%Find the new index of fish nodes, because you reordered them when you sorted by niche index
     reassign=intersect(find(sum(web_mx,2)==0),fish_reordered); %Find all fish nodes that have no prey species, need to give them food
     for i=reassign'
         n_selec=n_new;
