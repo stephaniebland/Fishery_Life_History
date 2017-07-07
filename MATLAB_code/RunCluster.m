@@ -16,6 +16,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function RunCluster(seed_0,simnum_0,simnum_f,var_fishpred,var_splitdiet)
+    %% Limit the number of computational threads so sysadmin is happy
+    maxNumCompThreads(1)
     %% Convert Bash script characters into plain numbers
     seed_0=str2num(seed_0);
     simnum_0=str2num(simnum_0);
