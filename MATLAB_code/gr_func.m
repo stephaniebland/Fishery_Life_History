@@ -24,7 +24,16 @@ B2mx = B1mx';         %% B in rows (one column=one species, rows are identical)
 
 
 %--------------------------------------------------------------------------
-%  Functional Response Matrix
+%% Functional Response Matrix
+% $$F_{ij}=\frac{{wBh}_{ij}} {{B0h}_{ij}+{cBiB0h}_{ij}+{sumwBkh}_{ij}}$$
+%
+% $${wBh}_{ij}=w_{ij}{Bpow}_j=\frac{a_{ij}}{\sum_{j=1}^S a_{ij}}B_j^h$$
+%
+% $$B0h_{ij}=Bsd_{ij}^h$$
+%
+% $$cBiB0h_{ij}=\sum_{k=1}^S \left(a_{kj}c_{kj}pik_{ik}B_k Bsd_{kj}^h \right)$$
+%
+% $$sumwBkh_{ij}=\sum_{k=1}^S w_{ik}B_k=\sum_{k=1}^S \left(\frac{a_{ik}B_k^h}{\sum_{j=1}^S a_{ij}}\right)$$
 %--------------------------------------------------------------------------
 
     % biomasses to power q+1, which regulates shape of Holling-curve
