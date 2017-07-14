@@ -92,24 +92,20 @@ end
     MetabLoss = f_m.* meta;
     
     % Harvesting vector
-    Loss_H=ca.* E; 
-
-    % This is to prevent a divide by 0 when B_i= 0.
-    [~,deadpreds_j] = find(B2mx ==0);
-    B2mx(:,deadpreds_j) = -1; %anything not 0
+    Loss_H=ca.* E;
 
     % Consumption
     gain = f_a.* meta.* sum(max_assim.*F,2);
-    loss = sum((meta*(ones(1,N_s))).*max_assim.*F.*(B1mx./(B2mx.*effic)),1);
     %metab*max.rate*functional resp.(including pref)/efficiency
     %have to divide by prey biomass because the functional response already contains
     %it, but we want to multiply by it only in biomass.m
-    loss(deadpreds_j) = 0;  % results of previous row cleared for dead
+    loss = sum((meta*(ones(1,N_s))).*max_assim.*F.*(B1mx./(B2mx.*effic)),1);
+    loss(B==0)=0; % results of previous row-cleared for dead species
     NRG = gain - loss' - fishery;     % consumption - being consumed
     
     net_growth=max(NRG,0);%biomass increase if positive, 0 if negative.
     fish_gain_timestep=net_growth;%./B;
-    fish_gain_timestep(find(B==0))=0;%Set inf values to 0.
+    fish_gain_timestep(B==0)=0;%Set inf values to 0.
     
     spent_reprod=reprod.*net_growth;%Fish Biomass Lost due to reproduction
     if cont_reprod==false
