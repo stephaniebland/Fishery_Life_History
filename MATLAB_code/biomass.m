@@ -37,9 +37,9 @@ E=x((1:b_size)+3*b_size);
     effic,Bsd,nicheweb,q,c,f_a,f_m,ca); %calculates the growth vector for B
 
 dBdt = growth_vec(1:b_size).* B;
-fish_revenue = growth_vec((1:b_size)+b_size);
+dReprod_dt = growth_vec((1:b_size)+b_size).*B;
 fish_catch = growth_vec((1:b_size)+2*b_size).* B;
 dEdt = mu.*(p.*ca.*B-co).*E;
 
-dxdt=[dBdt;fish_revenue;fish_catch;dEdt];
+dxdt=[dBdt;dReprod_dt;fish_catch;dEdt];
 

@@ -103,16 +103,17 @@ end
     loss(B==0)=0; % results of previous row-cleared for dead species
     NRG = gain - loss' - fishery;     % consumption - being consumed
     
-    net_growth=max(NRG,0);%biomass increase if positive, 0 if negative.
-    fish_gain_timestep=net_growth;%./B;
-    fish_gain_timestep(B==0)=0;%Set inf values to 0.
-    
-    spent_reprod=reprod.*net_growth;%Fish Biomass Lost due to reproduction
+    % Track the biomass shifted for reproductive effort. This looks for all
+    % the positive "growth spurts" in biomass.
+    net_growth=max(NRG,0);
+    % This growth spurt can be dedicated to somatic growth or reproductive
+    % effort. the reprod vector says how much will go towards reproduction.
+    spent_reprod=reprod.*net_growth;
     if cont_reprod==false
         spent_reprod=0;
     end
     
     % Total growth
-    growth_vec = [GPP - MetabLoss - Loss_H + NRG - spent_reprod;fish_gain_timestep;fishery];
+    growth_vec = [GPP - MetabLoss - Loss_H + NRG - spent_reprod; spent_reprod; fishery];
 
 
