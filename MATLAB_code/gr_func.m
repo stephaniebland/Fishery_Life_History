@@ -11,7 +11,7 @@
 
 function [growth_vec]= gr_func(x,b_size,K,int_growth,meta,max_assim,...
     effic,Bsd,nicheweb,q,c,f_a,f_m,ca)
-global reprod cont_reprod Effort fishing_scenario;
+global reprod Effort fishing_scenario;
 
 B=x(1:b_size);
 E=x((1:b_size)+3*b_size);
@@ -109,9 +109,6 @@ end
     % This growth spurt can be dedicated to somatic growth or reproductive
     % effort. the reprod vector says how much will go towards reproduction.
     spent_reprod=reprod.*net_growth;
-    if cont_reprod==false
-        spent_reprod=0;
-    end
     
     % Total growth
     growth_vec = [GPP - MetabLoss - Loss_H + NRG - spent_reprod; spent_reprod; fishery];
