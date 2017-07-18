@@ -45,6 +45,14 @@ net_growth=max(dBdt-B,0);
 dReprod_dt=reprod.*net_growth;
 % Subtract the biomass lost from the growth vector
 dBdt=dBdt-dReprod_dt;
+bleh5 = growth_vec((1:b_size)+b_size).* B;
+
+if max(abs(dReprod_dt-bleh5))>0
+    [dReprod_dt bleh5]
+    xk=5;
+end
+
+
 fish_catch = growth_vec((1:b_size)+2*b_size).* B;
 dEdt = mu.*(p.*ca.*B-co).*E;
 

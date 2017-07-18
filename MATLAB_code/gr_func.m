@@ -11,7 +11,7 @@
 
 function [growth_vec]= gr_func(x,b_size,K,int_growth,meta,max_assim,...
     effic,Bsd,nicheweb,q,c,f_a,f_m,ca)
-global Effort fishing_scenario;
+global reprod Effort fishing_scenario;
 
 B=x(1:b_size);
 E=x((1:b_size)+3*b_size);
@@ -103,7 +103,12 @@ end
     loss(B==0)=0; % results of previous row-cleared for dead species
     NRG = gain - loss' - fishery;     % consumption - being consumed
     
+    bleh=GPP - MetabLoss - Loss_H + NRG;
+    bleh2=bleh-1;
+    bleh3=max(bleh2,0);
+    bleh4=reprod.*bleh3;
+    
     % Total growth
-    growth_vec = [GPP - MetabLoss - Loss_H + NRG;zeros(b_size,1);fishery];
+    growth_vec = [GPP - MetabLoss - Loss_H + NRG;bleh4;fishery];
 
 
