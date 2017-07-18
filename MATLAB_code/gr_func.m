@@ -11,7 +11,7 @@
 
 function [growth_vec]= gr_func(x,b_size,K,int_growth,meta,max_assim,...
     effic,Bsd,nicheweb,q,c,f_a,f_m,ca)
-global reprod Effort fishing_scenario;
+global Effort fishing_scenario;
 
 B=x(1:b_size);
 E=x((1:b_size)+3*b_size);
@@ -103,14 +103,7 @@ end
     loss(B==0)=0; % results of previous row-cleared for dead species
     NRG = gain - loss' - fishery;     % consumption - being consumed
     
-    % Track the biomass shifted for reproductive effort. This looks for all
-    % the positive "growth spurts" in biomass.
-    net_growth=max(NRG,0);
-    % This growth spurt can be dedicated to somatic growth or reproductive
-    % effort. the reprod vector says how much will go towards reproduction.
-    spent_reprod=reprod.*net_growth;
-    
     % Total growth
-    growth_vec = [GPP - MetabLoss - Loss_H + NRG - spent_reprod; spent_reprod; fishery];
+    growth_vec = [GPP - MetabLoss - Loss_H + NRG;zeros(b_size,1);fishery];
 
 
