@@ -81,6 +81,15 @@ B2mx = B1mx';         %% B in rows (one column=one species, rows are identical)
 
 %--------------------------------------------------------------------------
 %% All Equations
+% $$GPP=r_i\left(1-\sum_{j\in{Autotrophs}}\frac{B_j}{K} \right)B_i$$
+% 
+% $$MetabLoss=f_m x_iB_i$$
+% 
+% $$LossH=$$
+% 
+% $$gain=\sum_{j\in{Prey}}f_a x_i y_{ij}F_{ij}B_i$$
+% 
+% $$loss=\sum_{j\in{Predators}}x_jy_{ji}B_j\frac{F_{ji}}{e_{ji}} $$
 %--------------------------------------------------------------------------
 
     % Gross primary production.
