@@ -64,7 +64,6 @@
     lifehis.cannibal_fish=-Inf;%-Inf=none,Inf=yes & any stage can cannibalize larger stages, -1=cannibalism on strictly smaller stages,0=cannibalism on own stages and smaller stages.% The number for cannibal_fish indicates how much younger conspecifics need to be to be cannibalized.  Of note: -1 means strictly younger, 0 means same lifestage or younger
     lifehis.fishpred=2;%Choose how to assign fish predators. 0 means only adults eaten, 1 means all stages are eaten, and 2 reassigns them according to nichevalues
     lifehis.splitdiet=false;%Choose how to split fish diet. true=split orignal diet, false=assign new diet based on new niche values
-    cont_reprod=true;%does reproductive effort account for growth on daily timesteps.
     evolv_diet=0;%Fishing evolution induced dietary shifts, so shifts diet to the left or right.  negative numbers make fish eat smaller things, positive numbers make them eat larger (to test whether it's just a matter of messing up the food web). 0 is no diet shift. if diet is already eating smallest node then untransformed.   
     
     %% DON'T WORK YET:

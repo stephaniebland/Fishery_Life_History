@@ -32,7 +32,7 @@ function RunCluster(seed_0,simnum_0,simnum_f,var_fishpred,var_splitdiet)
         %% Initial Setup
         beep off
         warning off MATLAB:divideByZero;
-        global reprod cont_reprod Effort;
+        global reprod Effort;
 
         %% Protocol Parameters
         Parameters;
