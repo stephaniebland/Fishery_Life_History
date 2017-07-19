@@ -67,28 +67,28 @@ B2mx = B1mx';         %% B in rows (one column=one species, rows are identical)
 
     % Final functional response
     F = wBh ./ (B0h + cBiB0h + sumwBkh); % because B0h nonzero, division is ok for non consumed species
-    %---------------------------
-
     
+%--------------------------------------------------------------------------
+%% Fishing Loss
+%--------------------------------------------------------------------------
+
+    switch fishing_scenario
+        case 0
+            fishery=Effort'.*B;% Constant effort scenario
+        case 1
+            fishery=Effort'.*(B.^2./(B+50000));% Negative-density dependent scenario
+    end
 
 %--------------------------------------------------------------------------
-%  Fishing Loss
-%--------------------------------------------------------------------------
-switch fishing_scenario
-    case 0
-        fishery=Effort'.*B;% Constant effort scenario
-    case 1
-        fishery=Effort'.*(B.^2./(B+50000));% Negative-density dependent scenario
-end
-
-%--------------------------------------------------------------------------
-%  Set the equations
+%% All Equations
 %--------------------------------------------------------------------------
 
     % Gross primary production.
+    % Only applies to autotrophs
     GPP = int_growth.*(1-(sum(B(basalsp))./K));  
 
     % Metabolic loss
+    % Is 0 for autotrophs
     MetabLoss = f_m.* meta;
     
     % Harvesting vector
@@ -101,7 +101,7 @@ end
     %it, but we want to multiply by it only in biomass.m
     loss = sum((meta*(ones(1,N_s))).*max_assim.*F.*(B1mx./(B2mx.*effic)),1);
     loss(B==0)=0; % results of previous row-cleared for dead species
-    NRG = gain - loss' - fishery;     % consumption - being consumed
+    NRG = gain - loss';     % consumption - being consumed
     
     %% Biomass Shifted for Reproductive Effort
     % Surplus Energy (assimilated carbon minus respiration)
@@ -112,7 +112,11 @@ end
     % effort. the reprod vector says how much will go towards reproduction.
     reprod_effort=reprod.*Surplus_energy;
     
-    % Total growth
-    growth_vec = [GPP - MetabLoss - Loss_H + NRG - reprod_effort;reprod_effort;fishery];
+    %% Group Equations
+    % Total biomass growth vector (need to multiply by B still)
+    growth_v=GPP-MetabLoss-Loss_H+NRG-reprod_effort-fishery;
+    
+% Returned Vectors
+growth_vec = [growth_v;reprod_effort;fishery];
 
 
