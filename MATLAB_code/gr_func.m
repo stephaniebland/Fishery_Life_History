@@ -11,7 +11,7 @@
 
 function [growth_vec]= gr_func(x,b_size,K,int_growth,meta,max_assim,...
     effic,Bsd,nicheweb,q,c,f_a,f_m,ca)
-global Effort fishing_scenario;
+global reprod Effort fishing_scenario;
 
 B=x(1:b_size);
 E=x((1:b_size)+3*b_size);
@@ -103,7 +103,16 @@ end
     loss(B==0)=0; % results of previous row-cleared for dead species
     NRG = gain - loss' - fishery;     % consumption - being consumed
     
+    %% Biomass Shifted for Reproductive Effort
+    % Surplus Energy (assimilated carbon minus respiration)
+    % Kuparinen et al 2016 Fishing-induced life-history changes...
+    % The positive "growth spurts" in biomass.
+    Surplus_energy=max(gain-MetabLoss,0);
+    % This growth spurt can be dedicated to somatic growth or reproductive
+    % effort. the reprod vector says how much will go towards reproduction.
+    reprod_effort=reprod.*Surplus_energy;
+    
     % Total growth
-    growth_vec = [GPP - MetabLoss - Loss_H + NRG;zeros(b_size,1);fishery];
+    growth_vec = [GPP - MetabLoss - Loss_H + NRG - reprod_effort;reprod_effort;fishery];
 
 
