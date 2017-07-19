@@ -13,7 +13,7 @@
 %--------------------------------------------------------------------------
 
 % uncomment if to use as a function
-function [Z,Mvec,isfish,W_scaled,W_scalar]= MassCalc(masscalc,nichewebsize,nicheweb,basalsp,T)
+function [Z,Mvec,isfish]= MassCalc(masscalc,nichewebsize,nicheweb,basalsp,T)
 attach(masscalc);
 %--------------------------------------------------------------------------
 %Fish or invertebrate
@@ -136,17 +136,4 @@ attach(masscalc);
     %% Combine the two calculations of Mass Z^T, where T=(T1+T2)/2.  {side note: previous calculations use Z^(T-1). That's not appropriate here, because autotrophs have mass=1, and this system takes weight of all items in it's food chain into account. The previous system assumed they all have weight of the predator in question, so the autotroph would have the same size as whatever it's being eaten by - clearly not great!}
     Mvec=sqrt(Mass1.*Mass2);
     
-%--------------------------------------------------------------------------
-%Scale mass so that von-bert function works
-%--------------------------------------------------------------------------
-switch maxweight
-    case false %Don't scale the weight if maxweight is set to false.
-        W_scaled=Mvec;
-    otherwise
-        %Calculate Life history mass for all fish species
-        W_scalar=max(Mvec)/maxweight;%Factor by which you can scale all the weights, so that the maximum fish weight is *exactly* the denominator.  So every ecosystem will always have top predator that weighs exactly that amount (unless it goes extinct)
-        %May want to consider adding some stochasticity to this scalar.
-        W_scaled=Mvec/W_scalar;%Scale the weight of all species
 end
-    
-    end
