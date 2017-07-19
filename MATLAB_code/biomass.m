@@ -37,24 +37,33 @@ E=x((1:b_size)+3*b_size);
     effic,Bsd,nicheweb,q,c,f_a,f_m,ca); %calculates the growth vector for B
 
 dBdt = growth_vec(1:b_size).* B;
+[dBdt B];
 % Track the biomass shifted for reproductive effort. This looks for all
 % the positive "growth spurts" in biomass.
-net_growth=max(dBdt-B,0);
+net_growth=max(dBdt,0);
 % This growth spurt can be dedicated to somatic growth or reproductive
 % effort. the reprod vector says how much will go towards reproduction.
 dReprod_dt=reprod.*net_growth;
 % Subtract the biomass lost from the growth vector
 dBdt=dBdt-dReprod_dt;
-bleh5 = growth_vec((1:b_size)+b_size).* B;
+bleh4 = growth_vec((1:b_size)+b_size).* B;
 
-if max(abs(dReprod_dt-bleh5))>0
-    [dReprod_dt bleh5]
+
+if max(abs(bleh4))>0
+    [dReprod_dt bleh4]
     xk=5;
+end
+
+if max(abs((dReprod_dt-bleh4)./bleh4))>1e-6
+    xk=4;
 end
 
 
 fish_catch = growth_vec((1:b_size)+2*b_size).* B;
 dEdt = mu.*(p.*ca.*B-co).*E;
+dBdt(1:20)=0.1;
 
+% This vector is the amount added per integration unit. A value of 0 means
+% biomass is stable.
 dxdt=[dBdt;dReprod_dt;fish_catch;dEdt];
 

@@ -103,12 +103,18 @@ end
     loss(B==0)=0; % results of previous row-cleared for dead species
     NRG = gain - loss' - fishery;     % consumption - being consumed
     
+    bleh=gain-MetabLoss;
     bleh=GPP - MetabLoss - Loss_H + NRG;
-    bleh2=bleh-1;
-    bleh3=max(bleh2,0);
-    bleh4=reprod.*bleh3;
+    if max(bleh)>0
+        xk=5;
+    end
+    bleh2=max(bleh,0);
+    bleh3=reprod.*bleh2;
+    
+    err=GPP - MetabLoss - Loss_H + NRG;
+    [err.*B B]
     
     % Total growth
-    growth_vec = [GPP - MetabLoss - Loss_H + NRG;bleh4;fishery];
+    growth_vec = [GPP - MetabLoss - Loss_H + NRG;bleh3;fishery];
 
 
