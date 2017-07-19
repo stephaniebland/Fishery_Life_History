@@ -119,6 +119,7 @@ B2mx = B1mx';         %% B in rows (one column=one species, rows are identical)
     Surplus_energy=max(gain-MetabLoss,0);
     % This growth spurt can be dedicated to somatic growth or reproductive
     % effort. the reprod vector says how much will go towards reproduction.
+    % reprod_effort isn't cashed in until the end of year (simulations.m)
     reprod_effort=reprod.*Surplus_energy;
     
     %% Group Equations
