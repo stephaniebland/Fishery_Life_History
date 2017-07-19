@@ -11,7 +11,7 @@
 
 function [growth_vec]= gr_func(x,b_size,K,int_growth,meta,max_assim,...
     effic,Bsd,nicheweb,q,c,f_a,f_m,ca)
-global reprod cont_reprod Effort fishing_scenario;
+global reprod Effort fishing_scenario;
 
 B=x(1:b_size);
 E=x((1:b_size)+3*b_size);
@@ -24,7 +24,16 @@ B2mx = B1mx';         %% B in rows (one column=one species, rows are identical)
 
 
 %--------------------------------------------------------------------------
-%  Functional Response Matrix
+%% Functional Response Matrix
+% $$F_{ij}=\frac{{wBh}_{ij}} {{B0h}_{ij}+{cBiB0h}_{ij}+{sumwBkh}_{ij}}$$
+%
+% $${wBh}_{ij}=w_{ij}{Bpow}_j=\frac{a_{ij}}{\sum_{j=1}^S a_{ij}}B_j^h$$
+%
+% $$B0h_{ij}=Bsd_{ij}^h$$
+%
+% $$cBiB0h_{ij}=\sum_{k=1}^S \left(a_{kj}c_{kj}pik_{ik}B_k Bsd_{kj}^h \right)$$
+%
+% $$sumwBkh_{ij}=\sum_{k=1}^S w_{ik}B_k=\sum_{k=1}^S \left(\frac{a_{ik}B_k^h}{\sum_{j=1}^S a_{ij}}\right)$$
 %--------------------------------------------------------------------------
 
     % biomasses to power q+1, which regulates shape of Holling-curve
@@ -47,30 +56,10 @@ B2mx = B1mx';         %% B in rows (one column=one species, rows are identical)
     
     % competition due to other predators
     cBiB0h=zeros(N_s);
-    xkcd=zeros(N_s);
-    xkcd2=zeros(N_s);
-    xkcd3=zeros(N_s);
-    thingy=nicheweb.*c.*B.*(Bsd.^h);%This line only works because nicheweb is binary!
     for i=1:N_s
-        for j=1:N_s
-            pred=find(nicheweb(:,j)==1);
-            val=0;
-            for k=pred'
-                val=val+c(k,j)*pik(i,k)*B(k)*Bsd(k,j)^h;
-            end
-            cBiB0h(i,j)=val;
-            %Testing an equivalent solution:
-            test=nicheweb(:,j).*c(:,j).*pik(i,:)'.*B.*(Bsd(:,j).^h);%This line only works because nicheweb is binary!
-            xkcd(i,j)=sum(test);
-        end
-        %And another equivalent solution:
-        test2=nicheweb.*c.*pik(i,:)'.*B.*B0h;%This line only works because nicheweb is binary!
-        xkcd2(i,:)=sum(test2);
-        %And finally, a third:
-        test3=thingy.*pik(i,:)';
-        xkcd3(i,:)=sum(test3);%This isn't broken, just rounding errors!
+        val=nicheweb.*c.*pik(i,:)'.*B.*B0h;%This line only works because nicheweb is binary!
+        cBiB0h(i,:)=sum(val);
     end
-    clear pred val;
     %---------------------------
     
     wBh = w.*(ones(N_s,1)*Bpow');
@@ -78,56 +67,66 @@ B2mx = B1mx';         %% B in rows (one column=one species, rows are identical)
 
     % Final functional response
     F = wBh ./ (B0h + cBiB0h + sumwBkh); % because B0h nonzero, division is ok for non consumed species
-    %---------------------------
-
     
+%--------------------------------------------------------------------------
+%% Fishing Loss
+%--------------------------------------------------------------------------
+
+    switch fishing_scenario
+        case 0
+            fishery=Effort'.*B;% Constant effort scenario
+        case 1
+            fishery=Effort'.*(B.^2./(B+50000));% Negative-density dependent scenario
+    end
 
 %--------------------------------------------------------------------------
-%  Fishing Loss
-%--------------------------------------------------------------------------
-switch fishing_scenario
-    case 0
-        fishery=Effort'.*B;% Constant effort scenario
-    case 1
-        fishery=Effort'.*(B.^2./(B+50000));% Negative-density dependent scenario
-end
-
-%--------------------------------------------------------------------------
-%  Set the equations
+%% All Equations
+% $$GPP=r_i\left(1-\sum_{j\in{Autotrophs}}\frac{B_j}{K} \right)B_i$$
+% 
+% $$MetabLoss=f_m x_iB_i$$
+% 
+% $$LossH=$$
+% 
+% $$gain=\sum_{j\in{Prey}}f_a x_i y_{ij}F_{ij}B_i$$
+% 
+% $$loss=\sum_{j\in{Predators}}x_jy_{ji}B_j\frac{F_{ji}}{e_{ji}} $$
 %--------------------------------------------------------------------------
 
     % Gross primary production.
+    % Only applies to autotrophs
     GPP = int_growth.*(1-(sum(B(basalsp))./K));  
 
     % Metabolic loss
+    % Is 0 for autotrophs
     MetabLoss = f_m.* meta;
     
     % Harvesting vector
-    Loss_H=ca.* E; 
-
-    % This is to prevent a divide by 0 when B_i= 0.
-    [deadpreds_i, deadpreds_j] = find(B2mx ==0);
-    B2mx(deadpreds_i,deadpreds_j) = -1; %anything not 0
+    Loss_H=ca.* E;
 
     % Consumption
     gain = f_a.* meta.* sum(max_assim.*F,2);
-    loss = sum((meta*(ones(1,N_s))).*max_assim.*F.*(B1mx./(B2mx.*effic)),1);
     %metab*max.rate*functional resp.(including pref)/efficiency
     %have to divide by prey biomass because the functional response already contains
     %it, but we want to multiply by it only in biomass.m
-    loss(deadpreds_j) = 0;  % results of previous row cleared for dead
-    NRG = gain - loss' - fishery;     % consumption - being consumed
+    loss = sum((meta*(ones(1,N_s))).*max_assim.*F.*(B1mx./(B2mx.*effic)),1);
+    loss(B==0)=0; % results of previous row-cleared for dead species
+    NRG = gain - loss';     % consumption - being consumed
     
-    net_growth=max(NRG,0);%biomass increase if positive, 0 if negative.
-    fish_gain_timestep=net_growth;%./B;
-    fish_gain_timestep(find(B==0))=0;%Set inf values to 0.
+    %% Biomass Shifted for Reproductive Effort
+    % Surplus Energy (assimilated carbon minus respiration)
+    % Kuparinen et al 2016 Fishing-induced life-history changes...
+    % The positive "growth spurts" in biomass.
+    Surplus_energy=max(gain-MetabLoss,0);
+    % This growth spurt can be dedicated to somatic growth or reproductive
+    % effort. the reprod vector says how much will go towards reproduction.
+    % reprod_effort isn't cashed in until the end of year (simulations.m)
+    reprod_effort=reprod.*Surplus_energy;
     
-    spent_reprod=reprod.*net_growth;%Fish Biomass Lost due to reproduction
-    if cont_reprod==false
-        spent_reprod=0;
-    end
+    %% Group Equations
+    % Total biomass growth vector (need to multiply by B still)
+    growth_v=GPP-MetabLoss-Loss_H+NRG-reprod_effort-fishery;
     
-    % Total growth
-    growth_vec = [GPP - MetabLoss - Loss_H + NRG - spent_reprod;fish_gain_timestep;fishery];
+% Returned Vectors
+growth_vec = [growth_v;reprod_effort;fishery];
 
 
