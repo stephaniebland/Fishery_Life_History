@@ -49,6 +49,12 @@ git bundle create ~/Documents/master\'s\ Backup/backup_$DATE.bundle master ACENE
 # git bundle create ~/Documents/master\'s\ Backup/backup_$DATE_all.bundle --all #Stores all branches
 
 ###############################################
+# Zip the dependencies and share with Anna
+/Applications/MATLAB_R2016b.app/bin/matlab -nodisplay -r "cd('~/GIT/MastersProject');dependencies('$script_name.m');quit"
+mv ~/GIT/MastersProject/$script_name.zip ~/Dropbox/Masters\ Backup/$script_name.zip
+open -a Dropbox
+
+###############################################
 # Compile MATLAB On Selenium to get a Linux Executable:
 ssh -T $myLinux << END
 	rm -rf masters/
