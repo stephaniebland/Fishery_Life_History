@@ -50,12 +50,12 @@ git bundle create ~/Documents/master\'s\ Backup/backup_$DATE.bundle master ACENE
 
 ###############################################
 # Zip the dependencies and share with Anna
-cp $script_name.m start_$script_name.m
-sed -i '' "/str2num/s/^/% Ignore - Cluster Command/" start_$script_name.m
-/Applications/MATLAB_R2016b.app/bin/matlab -nodisplay -r "cd('~/GIT/MastersProject');dependencies('start_$script_name.m');quit"
-mv ~/GIT/MastersProject/start_$script_name.zip ~/Dropbox/Masters\ Backup/start_$script_name.zip
+cp $script_name.m START_$script_name.m
+sed -i '' "/str2num/s/^/% Ignore - Cluster Command/" START_$script_name.m
+/Applications/MATLAB_R2016b.app/bin/matlab -nodisplay -r "cd('~/GIT/MastersProject');dependencies('START_$script_name.m');quit"
+mv ~/GIT/MastersProject/START_$script_name.zip ~/Dropbox/Masters\ Backup/START_$script_name.zip
 open -a Dropbox
-rm start_$script_name.m
+rm START_$script_name.m
 
 ###############################################
 # Compile MATLAB On Selenium to get a Linux Executable:
