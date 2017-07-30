@@ -74,7 +74,7 @@ T=eval(['matlab.codetools.requiredFilesAndProducts(fname);']);
 G=[]; m=1;
 for k=1:length(T)
   f=strfind(T{k},keyword);
-  if ~isempty(f), 
+  if ~isempty(f) 
     G{m}=T{k};
     m=m+1; 
   end
@@ -104,46 +104,3 @@ return
 % % 
 % % DBE 02/07/03
 % % DBE 04/10/26 Modified to support full range of DEPFUN inputs.
-% %
-% % To Do: Figure out a good way to include functions that sub-functions
-% % depend upon etc.
-% 
-% function G=depfun2(fname,keyword,varargin);
-% if nargin <2 & isunix
-%   [status,keyword]=unix('whoami');
-%   keyword=deblank(keyword);
-%   if status
-%     error('UNIX WHOAMI call failed.');
-%   end
-% elseif nargin<2 & ~isunix
-%   error('PACKAGE.M requires two user inputs on the PC platform');
-% elseif nargin==2
-% else
-%   error('depfun2.M requires two user inputs');
-% end
-% 
-% if nargin>2 % Concatentate the VARARGIN into a string that can be used with DEPFUN
-%   input=[];
-%   for n=1:length(varargin)
-%     input=[input,'''',varargin{n},''''];
-%     if n~=length(varargin), input=[input,',']; end
-%   end
-% else        % Default input string to DEPFUN
-%   input=['''','-quiet','''',',','''','-toponly',''''];
-% %   input=['''','-quiet','''']
-% end
-% 
-% T=eval(['depfun(fname,',input,');']);
-% 
-% G=[]; m=1;
-% for k=1:length(T)
-%   f=strfind(T{k},keyword);
-%   if ~isempty(f), 
-%     G{m}=T{k};
-%     m=m+1; 
-%   end
-% end
-% 
-% G=G';
-% 
-% return
