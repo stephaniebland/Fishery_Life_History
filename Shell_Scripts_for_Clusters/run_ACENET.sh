@@ -51,7 +51,7 @@ git bundle create ~/Documents/master\'s\ Backup/backup_$DATE.bundle master ACENE
 ###############################################
 # Zip the dependencies and share with Anna
 cp $script_name.m start_$script_name.m
-sed -i '' "/str2num/d" start_$script_name.m
+sed -i '' "/str2num/s/^/% Ignore - Cluster Command/" start_$script_name.m
 /Applications/MATLAB_R2016b.app/bin/matlab -nodisplay -r "cd('~/GIT/MastersProject');dependencies('start_$script_name.m');quit"
 mv ~/GIT/MastersProject/start_$script_name.zip ~/Dropbox/Masters\ Backup/start_$script_name.zip
 open -a Dropbox
