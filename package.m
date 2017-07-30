@@ -1,5 +1,6 @@
 % Dependencies Function by Daniel Ennis
 % From http://www.mathworks.com/matlabcentral/fileexchange/6148-package
+% (Modified to work in 2017)
 %
 % This function makes a zip file archive from an m-file and its
 % dependencies.  The zip-file is stored in the same path as the 
@@ -68,19 +69,7 @@ elseif nargin<2
   error('depfun2.M requires at least two user inputs on non-UNIX platforms');
 end
 
-if nargin>2  % VARARGIN can be used to pass standard arguments to DEPFUN
-  % Concatentate the VARARGIN into a string that can be used with DEPFUN
-  input=[];
-  for n=1:length(varargin)
-    input=[input,'''',varargin{n},''''];
-    if n~=length(varargin), input=[input,',']; end
-  end
-else  % Default input argument to DEPFUN
-%   input=['''','-quiet','''',',','''','-toponly',''''];  % This restricts tracing to first level
-  input=['''','-quiet',''''];
-end
-
-T=eval(['depfun(fname,',input,');']);
+T=eval(['matlab.codetools.requiredFilesAndProducts(fname);']);
 
 G=[]; m=1;
 for k=1:length(T)
