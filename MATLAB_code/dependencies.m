@@ -19,7 +19,7 @@
 %
 % See also DEPFUN, DEPFUN2
 
-function package(mfile,keyword);
+function dependencies(mfile,keyword);
 
 if nargin==1
   list=depfun2(mfile);
