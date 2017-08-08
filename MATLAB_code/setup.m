@@ -41,6 +41,7 @@ end
     end
     Mvec=Mass;
     basalsp = find(sum(nicheweb,2)==0);%List the autotrophs (So whatever doesn't have prey)  Hidden assumption - can't assign negative prey values (but why would you?) also important because something that used to be basal may no longer be basal
+    basal_ls=sum(nicheweb,2)==0;
     
 %%-------------------------------------------------------------------------
 %%  SET DYNAMICS PARAMETERS
@@ -60,8 +61,8 @@ end
 %-----------------------------------------------------
     int_growth = zeros(nichewebsize,1);
     int_growth(basalsp)=r_i_mean+r_i_std*randn(length(basalsp),1);
-    while max((int_growth~=0 & int_growth<r_i_min) | int_growth>r_i_max)>0%Changed to while loop so that the distribution isn't truncated and sharp at edges (original compressed the tails into little lumps at either side of the range.)
-        to_replace=((int_growth~=0 & int_growth<r_i_min) | int_growth>r_i_max);
+    while max((basal_ls & int_growth<r_i_min) | int_growth>r_i_max)>0%Changed to while loop so that the distribution isn't truncated and sharp at edges (original compressed the tails into little lumps at either side of the range.)
+        to_replace=((basal_ls & int_growth<r_i_min) | int_growth>r_i_max);
         int_growth(to_replace)=r_i_mean+r_i_std*randn(sum(to_replace),1); 
     end
 

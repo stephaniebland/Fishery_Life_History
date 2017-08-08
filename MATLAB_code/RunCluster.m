@@ -76,7 +76,6 @@ function RunCluster(seed_0,simnum_0,simnum_f,var_fishpred,var_splitdiet)
             %% Extra Web Properties
             web_properties(nicheweb,T1,TrophLevel);
             numyears=cell2mat(struct2cell(num_years));
-            basal_ls=sum(nicheweb,2)==0;
             web_connected=isConnected(nicheweb);
             %Convert Nicheweb into an adjacency list "two-column format, in which the first column lists the number of a consumer, and the second column lists the number of one of the resource species of that consumer." - Dunne 2006
             [adj_row,adj_col]=find(nicheweb);
