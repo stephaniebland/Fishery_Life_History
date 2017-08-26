@@ -40,8 +40,15 @@ for i in $(ls -a); do
 	###############################################
 	#git remote -v # Check backup locations
 	#echo ssh://pterodactyl@140.184.38.227/home/pterodactyl/GIT/$i.git
+	#git remote add origin ssh://selenium@129.173.34.107/home/selenium/GIT/$i.git
 	#git remote add backup ssh://pterodactyl@140.184.38.227/home/pterodactyl/GIT/$i.git
 	#ssh -i ~/.ssh/id_rsaPterodactyl pterodactyl@140.184.38.227 <<END
+	#cd ~/GIT
+	#mkdir $i.git
+	#cd $i.git
+	#git --bare init
+	#END
+	#ssh selenium@129.173.34.107 <<END
 	#cd ~/GIT
 	#mkdir $i.git
 	#cd $i.git
