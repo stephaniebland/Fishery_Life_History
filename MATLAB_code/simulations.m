@@ -43,6 +43,7 @@ for phase=1:4
         end
         %% ODE
         if i==120
+            dbstop in dynamic_fn at 38
             i% pause code here
         end       
         [x, t] =  dynamic_fn(K,int_growth,meta,max_assim,effic,Bsd,q,c,f_a,f_m, ...
@@ -93,7 +94,7 @@ end
 
 %% Save A Figure of the year ends
 figure(1); hold on;
-p=plot(0:N_years,log10([B0';B_year_end]),'LineWidth',1);
+p=plot(50:N_years,log10(B_year_end(50:220,:)),'LineWidth',1);
 [~,~,ind_species]=unique(isfish.*species');
 [~,~,ind_lifestage]=unique(lifestage);
 %colours=get(gca,'colororder');
