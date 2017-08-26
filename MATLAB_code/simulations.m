@@ -42,6 +42,9 @@ for phase=1:4
             [reprod]=prob_of_maturity(prob_mat,nichewebsize,is_split,N_stages,species,i);
         end
         %% ODE
+        if i==120
+            i% pause code here
+        end       
         [x, t] =  dynamic_fn(K,int_growth,meta,max_assim,effic,Bsd,q,c,f_a,f_m, ...
             ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,L_year+1,ext_thresh);
         B_end=x(L_year+1,1:nichewebsize)'; % use the final biomasses as the initial conditions

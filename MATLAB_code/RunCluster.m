@@ -19,9 +19,9 @@ function RunCluster(seed_0,simnum_0,simnum_f,var_fishpred,var_splitdiet)
     %% Limit the number of computational threads so sysadmin is happy
     maxNumCompThreads(1)
     %% Convert Bash script characters into plain numbers
-    seed_0=str2num(seed_0);
-    simnum_0=str2num(simnum_0);
-    simnum_f=str2num(simnum_f);
+%     seed_0=str2num(seed_0);
+%     simnum_0=str2num(simnum_0);
+%     simnum_f=str2num(simnum_f);
     sprintf('seed=%d, sim_0=%d, sim_f=%d',seed_0,simnum_0,simnum_f)
     DateVersion; % Import the Date And Version number so we can label output accordingly.
 
@@ -36,8 +36,8 @@ function RunCluster(seed_0,simnum_0,simnum_f,var_fishpred,var_splitdiet)
 
         %% Protocol Parameters
         Parameters;
-        lifehis.fishpred=str2num(var_fishpred);%Choose how to assign fish predators. 0 means only adults eaten, 1 means all stages are eaten, and 2 reassigns them according to nichevalues
-        lifehis.splitdiet=str2num(var_splitdiet);%Choose how to split fish diet. true=split orignal diet, false=assign new diet based on new niche values
+        lifehis.fishpred=(var_fishpred);%Choose how to assign fish predators. 0 means only adults eaten, 1 means all stages are eaten, and 2 reassigns them according to nichevalues
+        lifehis.splitdiet=(var_splitdiet);%Choose how to split fish diet. true=split orignal diet, false=assign new diet based on new niche values
 
         %% Setup
         setup;% creation of a new food web
