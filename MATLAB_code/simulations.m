@@ -82,7 +82,10 @@ end
 % E=full_sim(:,3*nichewebsize+(1:nichewebsize));
 
 %% Export Data
-import_vars={'B_year_end'};
+% Anna's feature request: Export basic web properties
+Anna_var=[(1:39)',basal_ls,lifestage',T1,T2,TrophLevel,orig.T2(species),orig.TrophLevel(species),Mass,meta,Anna_stuff,B0];
+
+import_vars={'B_year_end','Anna_var'};
 
 for i=import_vars
     dlmwrite(strcat(name,'_',char(i),'.txt'),eval(char(i)));
