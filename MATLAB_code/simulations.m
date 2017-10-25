@@ -82,6 +82,7 @@ end
 % E=full_sim(:,3*nichewebsize+(1:nichewebsize));
 
 %% Export Data
+sim_end_properties; % Recalculate properties without messing up next exper
 import_vars={'B_year_end'};
 
 for i=import_vars
