@@ -124,7 +124,7 @@ B2mx = B1mx';         %% B in rows (one column=one species, rows are identical)
     
     %% Group Equations
     % Total biomass growth vector (need to multiply by B still)
-    growth_v=GPP-MetabLoss-Loss_H+NRG-reprod_effort-fishery;
+    growth_v=GPP-MetabLoss-Loss_H+NRG-fishery;
     
 % Returned Vectors
 growth_vec = [growth_v;reprod_effort;fishery];
