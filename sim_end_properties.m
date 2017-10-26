@@ -17,6 +17,7 @@ basalsp=find(basal_ls);
 nicheweb=nicheweb(extant_logical,extant_logical);
 % Run new calculations
 [TrophLevel,T1,T2]= TrophicLevels(nichewebsize,nicheweb,basalsp);
+% Calculate Percentage herbivory
 
 %% Convert output into regular format
 
