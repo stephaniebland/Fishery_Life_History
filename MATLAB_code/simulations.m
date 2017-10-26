@@ -42,7 +42,7 @@ for phase=1:4
             [reprod]=prob_of_maturity(prob_mat,nichewebsize,is_split,N_stages,species,i);
         end
         %% ODE
-        if i==120
+        if i>50
             dbstop in dynamic_fn at 38
             i% pause code here
         end       
@@ -94,7 +94,7 @@ end
 
 %% Save A Figure of the year ends
 figure(1); hold on;
-p=plot(50:N_years,log10(B_year_end(50:220,:)),'LineWidth',1);
+p=plot(1:N_years,log10(B_year_end(1:220,:)),'LineWidth',1);
 [~,~,ind_species]=unique(isfish.*species');
 [~,~,ind_lifestage]=unique(lifestage);
 %colours=get(gca,'colororder');
