@@ -44,7 +44,7 @@ function RunCluster(seed_0,simnum_0,simnum_f,var_fishpred,var_splitdiet)
         
         %% Experimental Parameters
         for Exper=1
-            for xkcd=26:27
+            for xkcd=26
             switch Exper
                 case 1
                     %% 1st Simulation: Extended_nicheweb + Lifehistory: B_orig & linked
@@ -67,7 +67,7 @@ function RunCluster(seed_0,simnum_0,simnum_f,var_fishpred,var_splitdiet)
                     B0=B_orig.*orig.nodes';%Start with adults only. %CAUTION - changes total biomass, consider normalizing so all experiments have same total biomass. Or maybe sum juvenile stages to adult instead.
                     nicheweb=clumped_web;
             end
-            B0(species==xkcd)=0
+            %B0(species==xkcd)=0
             %% Name for Exporting Data
             name=sprintf('%s_seed%d_sim%d_Exper%d_pred%d_prey%d',run_name,seed_0,simnum,Exper,lifehis.fishpred,lifehis.splitdiet)
 

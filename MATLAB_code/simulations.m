@@ -46,6 +46,10 @@ for phase=1:4
             %dbstop in dynamic_fn at 38
             %i% pause code here
         end       
+        
+        B0(species<26)=0;
+        B0(species>27)=0;
+        
         [x, t] =  dynamic_fn(K,int_growth,meta,max_assim,effic,Bsd,q,c,f_a,f_m, ...
             ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,L_year+1,ext_thresh);
         B_end=x(L_year+1,1:nichewebsize)'; % use the final biomasses as the initial conditions
