@@ -43,8 +43,8 @@ for phase=1:4
         end
         %% ODE
         if i>50
-            dbstop in dynamic_fn at 38
-            i% pause code here
+            %dbstop in dynamic_fn at 38
+            %i% pause code here
         end       
         [x, t] =  dynamic_fn(K,int_growth,meta,max_assim,effic,Bsd,q,c,f_a,f_m, ...
             ca,co,mu,p_a,p_b,nicheweb,B0,E0,t_init,L_year+1,ext_thresh);
@@ -86,15 +86,15 @@ end
 % E=full_sim(:,3*nichewebsize+(1:nichewebsize));
 
 %% Export Data
-import_vars={'B_year_end'};
-
-for i=import_vars
-    dlmwrite(strcat(name,'_',char(i),'.txt'),eval(char(i)));
-end
+% import_vars={'B_year_end'};
+% 
+% for i=import_vars
+%     dlmwrite(strcat(name,'_',char(i),'.txt'),eval(char(i)));
+% end
 
 %% Save A Figure of the year ends
 figure(1); hold on;
-p=plot(1:N_years,log10(B_year_end(1:220,:)),'LineWidth',1);
+p=plot(1:N_years,log10(B_year_end),'LineWidth',1);
 [~,~,ind_species]=unique(isfish.*species');
 [~,~,ind_lifestage]=unique(lifestage);
 %colours=get(gca,'colororder');
@@ -109,7 +109,7 @@ end
 xlabel('time (years)','FontSize',18); ylabel('log10 biomass','FontSize',18)
 title('Fish Species by colour (invertebrates are all same colour), and lifestage by line type','FontSize', 12)
 grid on;
-saveas(gcf,strcat(name,'_yr_ends'),'png')
+saveas(gcf,strcat(num2str(xkcd),'_',name,'_yr_ends'),'png')
 
 %% Save A Figure of the whole simulation
 % figure(1); hold on;

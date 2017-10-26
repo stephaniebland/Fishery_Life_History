@@ -43,7 +43,8 @@ function RunCluster(seed_0,simnum_0,simnum_f,var_fishpred,var_splitdiet)
         setup;% creation of a new food web
         
         %% Experimental Parameters
-        for Exper=1:4
+        for Exper=1
+            for xkcd=26:27
             switch Exper
                 case 1
                     %% 1st Simulation: Extended_nicheweb + Lifehistory: B_orig & linked
@@ -66,13 +67,15 @@ function RunCluster(seed_0,simnum_0,simnum_f,var_fishpred,var_splitdiet)
                     B0=B_orig.*orig.nodes';%Start with adults only. %CAUTION - changes total biomass, consider normalizing so all experiments have same total biomass. Or maybe sum juvenile stages to adult instead.
                     nicheweb=clumped_web;
             end
-
+            B0(species==xkcd)=0
             %% Name for Exporting Data
             name=sprintf('%s_seed%d_sim%d_Exper%d_pred%d_prey%d',run_name,seed_0,simnum,Exper,lifehis.fishpred,lifehis.splitdiet)
 
             %% Time Series Simulation (& Export TS dependent Properties)
             simulations;
+            close all;
 
+            end
             %% Extra Web Properties
             web_properties(nicheweb,T1,TrophLevel);
             numyears=cell2mat(struct2cell(num_years));
@@ -82,11 +85,11 @@ function RunCluster(seed_0,simnum_0,simnum_f,var_fishpred,var_splitdiet)
             adj_list=[adj_row, adj_col];%indexed from 1 and up, so if you want first node to be 0, you need to subtract 1.
 
             %% Export Web Properties
-            import_vars={'isfish','basalsp','basal_ls','species','numyears','nichewebsize','ext_thresh','N_stages','lifestage','L_year','Mass','adj_list','lifehis.fishpred','lifehis.splitdiet'};
-            
-            for i=import_vars
-                dlmwrite(strcat(name,'_',char(i),'.txt'),eval(char(i)));
-            end
+%             import_vars={'isfish','basalsp','basal_ls','species','numyears','nichewebsize','ext_thresh','N_stages','lifestage','L_year','Mass','adj_list','lifehis.fishpred','lifehis.splitdiet'};
+%             
+%             for i=import_vars
+%                 dlmwrite(strcat(name,'_',char(i),'.txt'),eval(char(i)));
+%             end
 
             %% Close the windows so simulation ends
             close all;

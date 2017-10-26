@@ -35,7 +35,7 @@ x0=[B0;zeros(b_size*2,1);E0];%Initial Biomass, initial Effort
     xout  = x0';
 
     while t_init<t_final-1 %integration stops at t_final
-        t_init
+        %t_init
         [t,x,te,xe,~] = ode45(@biomass,t_init:t_final,x0,options,b_size,K,int_growth,meta, ...
                     max_assim,effic,Bsd,nicheweb,q,c,f_a,f_m,ca,co,mu,p_a,p_b,ext_thresh);
         % Set the new initial conditions
