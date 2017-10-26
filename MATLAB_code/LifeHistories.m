@@ -21,7 +21,7 @@
 %old nicheweb, so as to not mess up the entire model.  (So you are
 %basically just adding rows and columns for your new life stages).
 
-function [nicheweb_new,Mass,orig_nodes,species,N_stages,is_split,aging_table,fecund_table,n,clumped_web]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance)
+function [nicheweb_new,Mass,orig_nodes,species,N_stages,is_split,aging_table,fecund_table,n,clumped_web,Anna_stuff]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance)
 attach(orig); attach(lifehis);
 %%-------------------------------------------------------------------------
 %% SELECT FISH SPECIES TO BE SPLIT
@@ -128,6 +128,9 @@ for i=1:nichewebsize
 end
 orig_species=orig_nodes.*species;%Enumerates the original species
 orig_index=find(orig_nodes');%index of original species
+% Anna's Parameter Request:
+Anna_stuff=[W_inf,K,t_0];
+Anna_stuff=Anna_stuff(species,:);
 
 %%-------------------------------------------------------------------------
 %%  LIFE HISTORY MATRIX - LESLIE MATRIX
