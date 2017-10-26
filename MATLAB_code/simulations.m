@@ -96,6 +96,12 @@ end
 %     dlmwrite(strcat(name,'_',char(i),'.txt'),eval(char(i)));
 % end
 
+%% More Hints:
+[(1:39)' B0>0 lifestage' species']
+nicheweb((species==26 | species==27),(species==26 | species==27))
+aging_table((species==26 | species==27),(species==26 | species==27))
+fecund_table((species==26 | species==27),(species==26 | species==27))
+
 %% Save A Figure of the year ends
 figure(1); hold on;
 p=plot(1:N_years,log10(B_year_end),'LineWidth',1);
