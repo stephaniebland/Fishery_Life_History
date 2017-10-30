@@ -62,7 +62,7 @@ rm START_$script_name.m
 # Compile MATLAB On Selenium to get a Linux Executable:
 ssh -T $myLinux << END
 	rm -rf masters/
-	git clone -b ACENET-RUNS ~/GIT/masters.git/
+	git clone -b master ~/GIT/masters.git/
 	/usr/local/MATLAB/R2017a/bin/matlab -nodisplay -r "cd('~/masters/');mcc -m $script_name.m -o $exe_name;quit"
 END
 # To compile it on my mac instead to get a mac executable use:
