@@ -29,7 +29,7 @@ end
 %%-------------------------------------------------------------------------
 %%  LIFE HISTORY
 %%-------------------------------------------------------------------------
-    [nicheweb,Mass,orig.nodes,species,N_stages,is_split,aging_table,fecund_table,extended_n,clumped_web,Anna_stuff]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance);
+    [nicheweb,Mass,orig.nodes,species,N_stages,is_split,aging_table,fecund_table,extended_n,clumped_web,VB_par]= LifeHistories(lifehis,leslie,orig,nichewebsize,connectance);
     %Update all the output to reflect new web
     nichewebsize = length(nicheweb);
     extended_web=nicheweb;%Save backup of extended web before dietary shift
