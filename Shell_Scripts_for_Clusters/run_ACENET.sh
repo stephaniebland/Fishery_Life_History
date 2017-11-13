@@ -272,19 +272,29 @@ echo "run_name='BLAND';" > DateVersion.m
 #       ssh -T -i ~/.ssh/id_rsa$cluster_name $URL <<- END
 #       echo "1. CLEAR CRONTAB-------------------------------"
 #       crontab -l
+#       #crontab -r
 #       echo "2. CLEAR QUEUE---------------------------------"
 #       ( (qstat | grep r$JobID) | cut -d' ' -f1 ) 
+#       #qdel \$( (qstat | grep r$JobID) | cut -d' ' -f1 )
 #       qstat
 #       echo "2. CLEAN BAD FILES-----------------------------"
 #       ls
+#       #rm -r $run_name
+#       #rm $JobID$cluster_name.zip
+#       #rm task_$JobID\_done.sh
 #       END
 #       done # FINISH LOOPING THROUGH CLUSTERS
 #       
 #       # And clean up local computer
 #       echo "1. CLEAR CRONTAB-------------------------------"
 #       crontab -l
+#       #crontab -l > tmp_cron2.sh
+#       #sed -i '' "/$JobID/d" tmp_cron2.sh
+#       #crontab tmp_cron2.sh
+#       #rm tmp_cron2.sh  
 #       echo "2. CLEAN BAD FILES-----------------------------"
 #       cd ~; ls
+#       #rm progress_$JobID*.txt $JobID*.sh
 #       cd ~/GIT/Analysis; ls
 
 
