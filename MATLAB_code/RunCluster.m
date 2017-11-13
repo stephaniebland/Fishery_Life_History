@@ -81,9 +81,12 @@ function RunCluster(seed_0,simnum_0,simnum_f,var_fishpred,var_splitdiet)
             [adj_row,adj_col]=find(nicheweb);
             adj_list=[adj_row, adj_col];%indexed from 1 and up, so if you want first node to be 0, you need to subtract 1.
             orig_T=orig.TrophLevel(species);
+            VB_W_inf=VB_par(:,1);
+            VB_K=VB_par(:,2);
+            VB_t_0=VB_par(:,3);
 
             %% Export Web Properties
-            import_vars={'isfish','basalsp','basal_ls','species','numyears','nichewebsize','ext_thresh','N_stages','lifestage','L_year','Mass','adj_list','lifehis.fishpred','lifehis.splitdiet','Z','meta','TrophLevel','orig_T'};
+            import_vars={'isfish','basalsp','basal_ls','species','numyears','nichewebsize','ext_thresh','N_stages','lifestage','L_year','Mass','adj_list','lifehis.fishpred','lifehis.splitdiet','Z','meta','TrophLevel','orig_T','VB_W_inf','VB_K','VB_t_0'};
             
             for i=import_vars
                 dlmwrite(strcat(name,'_',char(i),'.txt'),eval(char(i)));
