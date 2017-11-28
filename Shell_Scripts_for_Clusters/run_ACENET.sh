@@ -243,6 +243,9 @@ echo "run_name='BLAND';" > DateVersion.m
 # And once the job is done running:
 #for job in $joblist; do (qacct -j $job | grep maxvmem); done
 
+# Find the files with errors so I can redo them:
+# grep CTF $(ls r11280_*)
+# grep Error $(ls r11280_*)
 
 # Short little script to clean up messes you made on every cluster
 # WARNING THIS SCRIPT IS VERY POWERFUL AND DANGEROUS
