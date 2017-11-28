@@ -41,8 +41,10 @@ for i=find(is_split')%Only change values for fish with life histories.
         %% Split lifehistory_table into two matrices, where aging_table+fecund_table=lifehistory_table. This way you can multiply fecund_table by additional factors.
         %NOTE!  The order of the following lines IS important!!!
         fecund_table(fish_index(1),fish_index)=1;%First row is just ones, because will calculate reproductive investment later separately
-        aging_table(fish_index,fish_index)=diag(aging,-1)+diag(non_mature);%Set the subdiagonal to the probability of maturing to the next stage %Set the diagonal to the probability of not maturing to the next stage, but staying the same age.
-        aging_table(fish_index(1),fish_index(end))=forced;%forced are the adults that reproduce in their final year.
+        %aging_table(fish_index,fish_index)=diag(aging,-1)+diag(non_mature);%Set the subdiagonal to the probability of maturing to the next stage %Set the diagonal to the probability of not maturing to the next stage, but staying the same age.
+        %aging_table(fish_index(1),fish_index(end))=forced;%forced are the adults that reproduce in their final year.
+        aging_table(fish_index,fish_index)=diag(0.1*ones(1,stages))+diag(0.9*ones(1,stages-1),-1);
+        aging_table(fish_index(1),fish_index(end))=0.9;
     end
 end
 
