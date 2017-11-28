@@ -22,7 +22,7 @@
 version=0 # Version
 declare -i seed_0=0
 simsize=1
-sims_per_cluster=100
+sims_per_cluster=1000
 
 ###############################################
 # Setup
@@ -108,8 +108,8 @@ for cluster_num in `seq 0 3`; do
 		for simnum in \`seq $job_0 $job_f\`; do
 			declare -i simnum_0=$simsize*\$simnum+1
 			declare -i simnum_f=$simsize+\$simnum_0-1
-			for fishpred in 0 1 2; do
-			for splitdiet in 0 1; do
+			for fishpred in 2; do
+			for splitdiet in 0; do
 			job_name=r$JobID\_\$simnum_0\_\$fishpred\_\$splitdiet.job
 			###############################################
 			# The contents of the job script
