@@ -48,7 +48,7 @@ for phase=1:4
         B0=B_end;
         if lifestages_linked==true
             %% Move biomass from one life history to the next
-            fish_gain_tot=sum(x(1:L_year,(1:nichewebsize)+nichewebsize),1)';
+            % fish_gain_tot=sum(x(1:L_year,(1:nichewebsize)+nichewebsize),1)';
             % aging_table moves the biomass to the next year
             % fecund_table directs all reproductive efforts to offspring
             % fish_gain_tot is the annual cumulative biomass dedicated to
@@ -56,7 +56,7 @@ for phase=1:4
             % only aging_table is multiplied by B_end since that is a
             % direct shift of biomass; fecund is multiplied in biomass to
             % reflect daily biomass.
-            B0=aging_table*B_end+fecund_table*fish_gain_tot;
+            B0=aging_table*B_end;
         end
         %% Concatenate Data for all years
 %         full_sim((1:L_year)+t_days,:)=x(1:L_year,:);
