@@ -246,6 +246,7 @@ echo "run_name='BLAND';" > DateVersion.m
 # Find the files with errors so I can redo them:
 # grep CTF $(ls r11280_*)
 # grep Error $(ls r11280_*)
+# grep -L Exper4 $(ls r11280_*job.o*)
 
 # Short little script to clean up messes you made on every cluster
 # WARNING THIS SCRIPT IS VERY POWERFUL AND DANGEROUS
