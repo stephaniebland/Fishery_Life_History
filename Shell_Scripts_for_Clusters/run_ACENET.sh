@@ -247,6 +247,7 @@ echo "run_name='BLAND';" > DateVersion.m
 # grep CTF $(ls r11280_*)
 # grep Error $(ls r11280_*)
 # grep -L Exper4 $(ls r11280_*job.o*)
+# grep -L CompletedAllRuns $(ls r11280_*job.o*)
 
 # Short little script to clean up messes you made on every cluster
 # WARNING THIS SCRIPT IS VERY POWERFUL AND DANGEROUS
