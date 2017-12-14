@@ -120,7 +120,36 @@ for cluster_num in `seq 0 3`; do
 				#$ -l h_rt=48:0:0
 				#$ -l h_vmem=10G
 				./run_$exe_name.sh $MCR $seed_0 \$simnum_0 \$simnum_f \$fishpred \$splitdiet
+
+				#######################################################
+				# Bundle results together into a tar file to reduce number of files
+				for tarfile in \`seq \$simnum_0 \$simnum_f\`
+					files=\$(ls \$run_name\_seed$seed_0\_sim\$tarfile\_\*)
+					tar rfW results_\$simnum.tar $files    # creates an archive file. r appends, W verifies
+					if [[ $? == 0 ]]   # safety check, don't delete .txts unless tar worked
+					then
+						rm $files
+					else
+						echo "Error: tar failed, intermediate files retained"
+					fi
+				done
 			EOF
+			#######################################################
+			# Bundle results together into a tar file to reduce number of files 
+			for tarfile in \`seq \$simnum_0 \$simnum_f\`
+				cat > \$job_name <<- EOF
+
+					files=\$(ls \$run_name\_seed$seed_0\_sim\$tarfile\_\*)
+					tar rfW results_\$simnum.tar $files    # creates an archive file. r appends, W verifies
+					if [[ $? == 0 ]]   # safety check, don't delete .txts unless tar worked
+					then
+						rm $files
+					else
+						echo "Error: tar failed, intermediate files retained"
+					fi
+				EOF
+			done
+			#######################################################
 			#######################################################
 			# And finally Run ACENET Cluster
 			qsub \$job_name
