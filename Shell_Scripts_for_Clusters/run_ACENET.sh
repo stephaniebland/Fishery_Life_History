@@ -107,7 +107,8 @@ for cluster_num in `seq 0 0`; do
 			cat > \$job_name <<- EOF
 				#$ -cwd
 				#$ -j yes
-				#$ -l h_rt=48:0:0
+				#$ -l test=true
+				#$ -l h_rt=00:09:00
 				#$ -l h_vmem=10G
 				./run_$exe_name.sh $MCR $seed_0 \$simnum_0 \$simnum_f \$fishpred \$splitdiet
 
