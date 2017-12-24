@@ -114,19 +114,35 @@ for cluster_num in `seq 0 0`; do
 
 				#######################################################
 				# Bundle results together into a tar file to reduce number of files
-				for tarfile in \`seq \$simnum_0 \$simnum_f\`
+				for tarfile in \`seq \$simnum_0 \$simnum_f\`; do
+					files=\$(ls \$run_name\_seed$seed_0\_sim\$tarfile\_\*)
+					tar rfW results_\$simnum.tar $files    # creates an archive file. r appends, W verifies
+					if [[ $? == 0 ]]   # safety check, don't delete .txts unless tar worked
+					then
+						rm $files
+					else
+						echo "Error: tar failed, intermediate files retained"
+					fi
+				done
 			EOF
-			cat >> \$job_name <<- \EOF
-					files=\$(ls $run_name\ _*_sim\$tarfile\ _*)
-					tar rfW results_$simnum.tar \$files    # creates an archive file. r appends, W verifies
+				
+			# Bundle results together into a tar file to reduce number of files 
+			for tarfile in \`seq 0 5\`; do
+			#for tarfile in \`seq $simnum_0 $simnum_f\`
+				echo HI THERE \$tarfile SURE
+				cat >> \$job_name <<- EOF
+					files=\$(ls $run_name\_*_sim$tarfile\_*)
+					tar rfW results_$tarfile.tar \$files    # creates an archive file. r appends, W verifies
 					echo \$files
 					if [[ \$? == 0 ]]; then   # safety check, don't delete .txts unless tar worked
 						rm \$files
 					else
 						echo "Error: tar failed, intermediate files retained"
 					fi
-				done
-			EOF
+				EOF
+			done
+			#######################################################
+
 			#######################################################
 			#######################################################
 			# And finally Run ACENET Cluster
