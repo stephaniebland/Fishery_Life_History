@@ -118,7 +118,7 @@ for cluster_num in `seq 0 0`; do
 			sed -i '$ a for tarfile in \`seq '"\$simnum_0 \$simnum_f"'\`; do' \$job_name 
 			cat >> \$job_name <<- \EOF
 					files=\$(ls $run_name\_*_sim\$tarfile\_*)
-					tar rfW results_\$simnum.tar $files    # creates an archive file. r appends, W verifies
+					tar rfW results_\$tarfile.tar \$files    # creates an archive file. r appends, W verifies
 					if [[ \$? == 0 ]]   # safety check, don't delete .txts unless tar worked
 					then
 						rm \$files
