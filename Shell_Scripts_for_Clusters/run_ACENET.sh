@@ -112,14 +112,33 @@ for cluster_num in `seq 0 0`; do
 				#$ -l h_vmem=10G
 				./run_$exe_name.sh $MCR $seed_0 \$simnum_0 \$simnum_f \$fishpred \$splitdiet
 
+				#kay
+				#1
+				"seq"
+				#2
+				'seq'
+				#3
+				\s\e\q 1 5
+				#4 
+				`seq`
+				#sdfjsjflsd
+				for tarfile in \`"seq" $simnum_0 $simnum_f\`; do
+				#meh
+				for tarfile in \`'seq' \$simnum_0 \$simnum_f\`; do
+				#sure
+			EOF
+			sed -i '$ a for tarfile in \`seq '"\$simnum_0 \$simnum_f"'\`; do' \$job_name 
+
+			#sdklfl ewbrlaf
+			cat >> \$job_name <<- \EOF
 				#######################################################
 				# Bundle results together into a tar file to reduce number of files
-				for tarfile in \`seq \$simnum_0 \$simnum_f\`; do
-					files=\$(ls \$run_name\_seed$seed_0\_sim\$tarfile\_\*)
+				\for tarfile in \`seq $simnum_0 $simnum_f\`; do
+					files=\$(ls $run_name\_*_sim\$tarfile\_*)
 					tar rfW results_\$simnum.tar $files    # creates an archive file. r appends, W verifies
-					if [[ $? == 0 ]]   # safety check, don't delete .txts unless tar worked
+					if [[ \$? == 0 ]]   # safety check, don't delete .txts unless tar worked
 					then
-						rm $files
+						rm \$files
 					else
 						echo "Error: tar failed, intermediate files retained"
 					fi
