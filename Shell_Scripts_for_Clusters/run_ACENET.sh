@@ -161,9 +161,25 @@ for cluster_num in `seq 0 0`; do
 			# IMPORTANT: First load bashrc so crontab can see qstat:
 			source /usr/local/lib/bashrc 
 			# Keep track of progress through acenet runs:
-			declare -i progress=100-100*\$(qstat | grep -c r$JobID)/\$totaljobs
+			declare -i jobs_left=\$(qstat | grep -c r$JobID) # Track number of remaining jobs early so that experiments all have a chance to compress. 
+			declare -i progress=100-100*\$jobs_left/\$totaljobs
 			echo \$progress"% through" > $run_name/progress_$JobID$cluster_name.txt
-			if [ \$(qstat | grep -c r$JobID) -eq 0 ]; then
+			# Concatenate all the tar files together.
+			cd $run_name
+			files=\$(ls results_*.tar)
+			for addfile in \$files; do 
+				#tar -A allTars.tar \$addfile # This version will be too slow for many large data sets.
+				cat \$addfile >> allTars.tar # https://superuser.com/a/941552 Need to use -i option to ignore these nulls between headers while extracting.
+				if [[ \$? == 0 ]]   # safety check, don't delete .txts unless tar worked
+				then
+					rm \$addfile
+				else
+					echo "Error: Tar concatenation failed on file" \$addfile >> concatenation_failures.txt
+				fi
+			done
+			cd ~
+			# If all the jobs are finished we can cotinue.
+			if [ \$jobs_left -eq 0 ]; then
 				# If the job is done we can:
 				# a) Remove the crontab task first, so that we only execute script once:
 				crontab -l > tmp_cron2.sh
@@ -176,15 +192,19 @@ for cluster_num in `seq 0 0`; do
 				for job in "\${alljobs[@]}"; do 
 					echo \$job \$(qacct -j \$job | grep -E 'ru_wallclock|maxvmem') \$(ls *\$job | cut -d'.' -f1) >> maxvmem_$JobID$cluster_name.txt
 				done
-				cd ~
 				# b.2) Store time it took to complete all jobs:
 				START=$(date +%s);
 				END=\$(date +%s);
-				echo \$((\$END-START)) | awk '{printf "%d days and %02d:%02d", \$1/86400, (\$1/3600)%24, (\$1/60)%60}' > $run_name/progress_$JobID$cluster_name.txt
+				echo \$((\$END-START)) | awk '{printf "%d days and %02d:%02d", \$1/86400, (\$1/3600)%24, (\$1/60)%60}' > progress_$JobID$cluster_name.txt
 				# c) Compress the file in Zip form
-				zip -r -T temp.zip $run_name
+				#cat results_* >> allTars.tar # This would join all tar files once at end of all runs.
+				files=\$(ls -I "*.tar")
+				tar rfW extra_data.tar \$files 
+				cat extra_data.tar >> allTars.tar
+				tar cJfW temp.tar.xz allTars.tar
+				cd ~
 				# d) Rename the zip file. (Two steps so it's not transferred until fully compressed.)
-				mv temp.zip $JobID$cluster_name.zip
+				mv $run_name/temp.tar.xz ~/$run_name$cluster_name.tar.xz
 				# e) And remove itself - no need for clutter!
 				rm task_$JobID\_done.sh
 			fi
@@ -204,7 +224,7 @@ for cluster_num in `seq 0 0`; do
 	#######################################################
 	cat > ~/$JobID$cluster_name.sh <<- EOF
 		# Bring them over to my mac
-		if ssh -i .ssh/id_rsa$cluster_name $URL test -e $JobID$cluster_name.zip; then
+		if ssh -i .ssh/id_rsa$cluster_name $URL test -e $run_name$cluster_name.tar.xz; then
 			# a) Remove the crontab task first, so that we only execute script once:
 			crontab -l > tmp_cron2.sh
 			sed -i '' "/$JobID$cluster_name/d" tmp_cron2.sh
@@ -212,11 +232,12 @@ for cluster_num in `seq 0 0`; do
 			rm tmp_cron2.sh
 			# b) Retrieve the file:
 			sftp -i .ssh/id_rsa$cluster_name $dtnURL <<- END
-				get $JobID$cluster_name.zip
+				get $run_name$cluster_name.tar.xz
 			END
 			# c) And uncompress them 
-			mv $JobID$cluster_name.zip ~/GIT/Analysis/$JobID$cluster_name.zip
-			unzip -q -j ~/GIT/Analysis/$JobID$cluster_name.zip -d ~/GIT/Analysis/$run_name			
+			mv $run_name$cluster_name.tar.xz ~/GIT/Analysis/$run_name$cluster_name.tar.xz
+			mkdir ~/GIT/Analysis/$run_name
+			tar ixf ~/GIT/Analysis/$run_name$cluster_name.tar.xz -C ~/GIT/Analysis/$run_name			
 			# d) And remove itself - no need for clutter!
 			rm $JobID$cluster_name.sh
 			rm progress_$JobID$cluster_name.txt
