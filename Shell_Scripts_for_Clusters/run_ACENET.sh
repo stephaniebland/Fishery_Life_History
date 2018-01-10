@@ -188,20 +188,20 @@ for cluster_num in `seq 0 0`; do
 				rm tmp_cron2.sh
 				# b.1) Store memory usage stats (This step is slow)
 				cd $run_name
-				declare -a alljobs=(\$(cat joblist_$JobID.txt))
-				for job in "\${alljobs[@]}"; do 
-					echo \$job \$(qacct -j \$job | grep -E 'ru_wallclock|maxvmem') \$(ls *\$job | cut -d'.' -f1) >> maxvmem_$JobID$cluster_name.txt
-				done
-				# b.2) Store time it took to complete all jobs:
-				START=$(date +%s);
-				END=\$(date +%s);
-				echo \$((\$END-START)) | awk '{printf "%d days and %02d:%02d", \$1/86400, (\$1/3600)%24, (\$1/60)%60}' > progress_$JobID$cluster_name.txt
-				# c) Compress the file in Zip form
-				#cat results_* >> allTars.tar # This would join all tar files once at end of all runs.
-				files=\$(ls -I "*.tar")
-				tar rfW extra_data.tar \$files 
-				cat extra_data.tar >> allTars.tar
-				tar cJfW temp.tar.xz allTars.tar
+					declare -a alljobs=(\$(cat joblist_$JobID.txt))
+					for job in "\${alljobs[@]}"; do 
+						echo \$job \$(qacct -j \$job | grep -E 'ru_wallclock|maxvmem') \$(ls *\$job | cut -d'.' -f1) >> maxvmem_$JobID$cluster_name.txt
+					done
+					# b.2) Store time it took to complete all jobs:
+					START=$(date +%s);
+					END=\$(date +%s);
+					echo \$((\$END-START)) | awk '{printf "%d days and %02d:%02d", \$1/86400, (\$1/3600)%24, (\$1/60)%60}' > progress_$JobID$cluster_name.txt
+					# c) Compress the file in Zip form
+					#cat results_* >> allTars.tar # This would join all tar files once at end of all runs.
+					files=\$(ls -I "*.tar")
+					tar rfW extra_data.tar \$files 
+					cat extra_data.tar >> allTars.tar
+					tar cJfW temp.tar.xz allTars.tar
 				cd ~
 				# d) Rename the zip file. (Two steps so it's not transferred until fully compressed.)
 				mv $run_name/temp.tar.xz ~/$run_name$cluster_name.tar.xz
