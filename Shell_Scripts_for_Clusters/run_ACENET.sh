@@ -237,8 +237,12 @@ for cluster_num in `seq 0 0`; do
 			# c) And uncompress them 
 			mv $run_name\_$cluster_name.tar.xz ~/GIT/Analysis/$run_name\_$cluster_name.tar.xz
 			mkdir ~/GIT/Analysis/$run_name
-			gtar ixf ~/GIT/Analysis/$run_name\_$cluster_name.tar.xz -C ~/GIT/Analysis/$run_name
-			gtar ixf ~/GIT/Analysis/$run_name/allTars_$cluster_name.tar
+			# I need to use gtar (gnu-tar) to access -i option
+			PATH="/usr/local/opt/gnu-tar/libexec/gnubin:$PATH"
+			PATH="/usr/local/Cellar/xz/5.2.3/bin:$PATH"
+			tar ixf ~/GIT/Analysis/$run_name\_$cluster_name.tar.xz -C ~/GIT/Analysis/$run_name
+			tar ixf ~/GIT/Analysis/$run_name/allTars_$cluster_name.tar -C ~/GIT/Analysis/$run_name
+			rm ~/GIT/Analysis/$run_name/allTars_$cluster_name.tar 
 			# d) And remove itself - no need for clutter!
 			rm $JobID$cluster_name.sh
 			rm progress_$JobID$cluster_name.txt
