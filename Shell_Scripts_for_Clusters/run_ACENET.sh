@@ -201,10 +201,10 @@ for cluster_num in `seq 0 0`; do
 					files=\$(ls -I "*.tar")
 					tar rfW extra_data.tar \$files 
 					cat extra_data.tar >> allTars.tar
-					tar cJfW temp.tar.xz allTars.tar
+					tar cJf temp.tar.xz allTars.tar
 				cd ~
 				# d) Rename the zip file. (Two steps so it's not transferred until fully compressed.)
-				mv $run_name/temp.tar.xz ~/$run_name$cluster_name.tar.xz
+				mv $run_name/temp.tar.xz ~/$run_name\_$cluster_name.tar.xz
 				# e) And remove itself - no need for clutter!
 				rm task_$JobID\_done.sh
 			fi
@@ -224,7 +224,7 @@ for cluster_num in `seq 0 0`; do
 	#######################################################
 	cat > ~/$JobID$cluster_name.sh <<- EOF
 		# Bring them over to my mac
-		if ssh -i .ssh/id_rsa$cluster_name $URL test -e $run_name$cluster_name.tar.xz; then
+		if ssh -i .ssh/id_rsa$cluster_name $URL test -e $run_name\_$cluster_name.tar.xz; then
 			# a) Remove the crontab task first, so that we only execute script once:
 			crontab -l > tmp_cron2.sh
 			sed -i '' "/$JobID$cluster_name/d" tmp_cron2.sh
@@ -232,12 +232,12 @@ for cluster_num in `seq 0 0`; do
 			rm tmp_cron2.sh
 			# b) Retrieve the file:
 			sftp -i .ssh/id_rsa$cluster_name $dtnURL <<- END
-				get $run_name$cluster_name.tar.xz
+				get $run_name\_$cluster_name.tar.xz
 			END
 			# c) And uncompress them 
-			mv $run_name$cluster_name.tar.xz ~/GIT/Analysis/$run_name$cluster_name.tar.xz
+			mv $run_name\_$cluster_name.tar.xz ~/GIT/Analysis/$run_name\_$cluster_name.tar.xz
 			mkdir ~/GIT/Analysis/$run_name
-			tar ixf ~/GIT/Analysis/$run_name$cluster_name.tar.xz -C ~/GIT/Analysis/$run_name			
+			tar ixf ~/GIT/Analysis/$run_name\_$cluster_name.tar.xz -C ~/GIT/Analysis/$run_name			
 			# d) And remove itself - no need for clutter!
 			rm $JobID$cluster_name.sh
 			rm progress_$JobID$cluster_name.txt
