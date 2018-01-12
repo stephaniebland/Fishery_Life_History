@@ -168,8 +168,8 @@ for cluster_num in `seq 0 0`; do
 			cd $run_name
 			files=\$(ls results_*.tar)
 			for addfile in \$files; do 
-				#tar -A allTars.tar \$addfile # This version will be too slow for many large data sets.
-				cat \$addfile >> allTars.tar # https://superuser.com/a/941552 Need to use -i option to ignore these nulls between headers while extracting.
+				#tar -A allTars_$cluster_name.tar \$addfile # This version will be too slow for many large data sets.
+				cat \$addfile >> allTars_$cluster_name.tar # https://superuser.com/a/941552 Need to use -i option to ignore these nulls between headers while extracting.
 				if [[ \$? == 0 ]]   # safety check, don't delete .txts unless tar worked
 				then
 					rm \$addfile
@@ -197,11 +197,11 @@ for cluster_num in `seq 0 0`; do
 					END=\$(date +%s);
 					echo \$((\$END-START)) | awk '{printf "%d days and %02d:%02d", \$1/86400, (\$1/3600)%24, (\$1/60)%60}' > progress_$JobID$cluster_name.txt
 					# c) Compress the file in Zip form
-					#cat results_* >> allTars.tar # This would join all tar files once at end of all runs.
+					#cat results_* >> allTars_$cluster_name.tar # This would join all tar files once at end of all runs.
 					files=\$(ls -I "*.tar")
 					tar rfW extra_data.tar \$files 
-					cat extra_data.tar >> allTars.tar
-					tar cJf temp.tar.xz allTars.tar
+					cat extra_data.tar >> allTars_$cluster_name.tar
+					tar cJf temp.tar.xz allTars_$cluster_name.tar
 				cd ~
 				# d) Rename the zip file. (Two steps so it's not transferred until fully compressed.)
 				mv $run_name/temp.tar.xz ~/$run_name\_$cluster_name.tar.xz
@@ -238,7 +238,7 @@ for cluster_num in `seq 0 0`; do
 			mv $run_name\_$cluster_name.tar.xz ~/GIT/Analysis/$run_name\_$cluster_name.tar.xz
 			mkdir ~/GIT/Analysis/$run_name
 			gtar ixf ~/GIT/Analysis/$run_name\_$cluster_name.tar.xz -C ~/GIT/Analysis/$run_name
-			gtar ixf ~/GIT/Analysis/$run_name/allTars.tar
+			gtar ixf ~/GIT/Analysis/$run_name/allTars_$cluster_name.tar
 			# d) And remove itself - no need for clutter!
 			rm $JobID$cluster_name.sh
 			rm progress_$JobID$cluster_name.txt
