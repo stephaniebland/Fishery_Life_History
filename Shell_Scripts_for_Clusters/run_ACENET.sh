@@ -237,7 +237,8 @@ for cluster_num in `seq 0 0`; do
 			# c) And uncompress them 
 			mv $run_name\_$cluster_name.tar.xz ~/GIT/Analysis/$run_name\_$cluster_name.tar.xz
 			mkdir ~/GIT/Analysis/$run_name
-			tar ixf ~/GIT/Analysis/$run_name\_$cluster_name.tar.xz -C ~/GIT/Analysis/$run_name			
+			gtar ixf ~/GIT/Analysis/$run_name\_$cluster_name.tar.xz -C ~/GIT/Analysis/$run_name
+			gtar ixf ~/GIT/Analysis/$run_name/allTars.tar
 			# d) And remove itself - no need for clutter!
 			rm $JobID$cluster_name.sh
 			rm progress_$JobID$cluster_name.txt
