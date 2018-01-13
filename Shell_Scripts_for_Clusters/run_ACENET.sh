@@ -61,7 +61,7 @@ END
 ###############################################
 ########### LOOP THROUGH CLUSTERS #############
 ###############################################
-for cluster_num in `seq 0 0`; do
+for cluster_num in `seq 0 3`; do
 	cluster_name=${avail_clusters[$cluster_num]}
 	URL=titanium@$cluster_name.ace-net.ca
 	dtnURL="$URL"
@@ -224,19 +224,19 @@ for cluster_num in `seq 0 0`; do
 	#######################################################
 	cat > ~/$JobID$cluster_name.sh <<- EOF
 		# Bring them over to my mac
-		if ssh -i .ssh/id_rsa$cluster_name $URL test -e $run_name\_$cluster_name.tar.xz; then
+		if ssh -qi .ssh/id_rsa$cluster_name $URL test -e $run_name\_$cluster_name.tar.xz; then
 			# a) Remove the crontab task first, so that we only execute script once:
 			crontab -l > tmp_cron2.sh
 			sed -i '' "/$JobID$cluster_name/d" tmp_cron2.sh
 			crontab tmp_cron2.sh
 			rm tmp_cron2.sh
 			# b) Retrieve the file:
-			sftp -i .ssh/id_rsa$cluster_name $dtnURL > /dev/null <<- END
+			sftp -qi .ssh/id_rsa$cluster_name $dtnURL > /dev/null <<- END
 				get $run_name\_$cluster_name.tar.xz
 			END
 			# c) And uncompress them 
 			mv $run_name\_$cluster_name.tar.xz ~/GIT/Analysis/$run_name\_$cluster_name.tar.xz
-			mkdir ~/GIT/Analysis/$run_name
+			mkdir -p ~/GIT/Analysis/$run_name
 			# I need to use gtar (gnu-tar) to access -i option
 			PATH="/usr/local/opt/gnu-tar/libexec/gnubin:\$PATH"
 			PATH="/usr/local/Cellar/xz/5.2.3/bin:\$PATH"
@@ -247,7 +247,7 @@ for cluster_num in `seq 0 0`; do
 			rm $JobID$cluster_name.sh
 			rm progress_$JobID$cluster_name.txt
 		else
-			sftp -i .ssh/id_rsa$cluster_name $dtnURL > /dev/null <<- END
+			sftp -qi .ssh/id_rsa$cluster_name $dtnURL > /dev/null <<- END
 				get $run_name/progress_$JobID$cluster_name.txt
 			END
 		fi
