@@ -21,8 +21,8 @@
 # Variable Names:
 version=0 # Version
 declare -i seed_0=0
-simsize=2
-sims_per_cluster=4
+simsize=1
+sims_per_cluster=1000
 
 ###############################################
 # Setup
@@ -43,16 +43,26 @@ MCR=/usr/local/matlab-runtime/r2017a/v92 # Run on ACENET
 # This runs on my mac
 echo "run_name='$run_name';" > DateVersion.m
 git commit -m "$run_name" DateVersion.m
-git push origin master ACENET-compress-Tar-files ACENET-RUNS # Push MATLAB code to Selenium Server 
+git push origin master ACENET-RUNS # Push MATLAB code to Selenium Server 
 ssh-agent sh -c 'ssh-add ~/.ssh/id_rsaPterodactyl; git push backup --all -u' # Push all MATLAB code to Shadow Server
 git bundle create ~/Documents/master\'s\ Backup/backup_$DATE.bundle master ACENET-RUNS # Save a local backup of your work
 # git bundle create ~/Documents/master\'s\ Backup/backup_$DATE_all.bundle --all #Stores all branches
 
 ###############################################
+# Zip the dependencies and share with Anna
+cp $script_name.m START_$script_name.m
+sed -i '' "/str2num/s/^/% Ignore - Cluster Command/" START_$script_name.m
+sed -i '' "s/$script_name/START_$script_name/" START_$script_name.m
+/Applications/MATLAB_R2016b.app/bin/matlab -nodisplay -r "cd('~/GIT/MastersProject');dependencies('START_$script_name.m');quit"
+mv ~/GIT/MastersProject/START_$script_name.zip ~/Dropbox/Masters\ Backup/START_$script_name.zip
+open -a Dropbox
+rm START_$script_name.m
+
+###############################################
 # Compile MATLAB On Selenium to get a Linux Executable:
 ssh -T $myLinux << END
 	rm -rf masters/
-	git clone -b ACENET-compress-Tar-files ~/GIT/masters.git/
+	git clone -b master ~/GIT/masters.git/
 	/usr/local/MATLAB/R2017a/bin/matlab -nodisplay -r "cd('~/masters/');mcc -m $script_name.m -o $exe_name;quit"
 END
 # To compile it on my mac instead to get a mac executable use:
@@ -107,8 +117,7 @@ for cluster_num in `seq 0 3`; do
 			cat > \$job_name <<- EOF
 				#$ -cwd
 				#$ -j yes
-				#$ -l test=true
-				#$ -l h_rt=00:09:00
+				#$ -l h_rt=48:0:0
 				#$ -l h_vmem=10G
 				./run_$exe_name.sh $MCR $seed_0 \$simnum_0 \$simnum_f \$fishpred \$splitdiet
 
