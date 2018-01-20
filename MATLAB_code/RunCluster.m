@@ -96,6 +96,8 @@ function RunCluster(seed_0,simnum_0,simnum_f,var_fishpred,var_splitdiet)
             close all;
         end
     end
+    % Error Check - if this line is missing, we messed up!
+    sprintf('CompletedAllRuns')
 end
 
 

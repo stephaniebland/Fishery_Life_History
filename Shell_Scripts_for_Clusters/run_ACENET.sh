@@ -120,7 +120,25 @@ for cluster_num in `seq 0 3`; do
 				#$ -l h_rt=48:0:0
 				#$ -l h_vmem=10G
 				./run_$exe_name.sh $MCR $seed_0 \$simnum_0 \$simnum_f \$fishpred \$splitdiet
+
+				#######################################################
+				# Bundle results together into a tar file to reduce number of files
 			EOF
+			sed -i '$ a for tarfile in \`seq '"\$simnum_0 \$simnum_f"'\`; do' \$job_name 
+			cat >> \$job_name <<- \EOF
+					files=\$(ls $run_name\_*_sim\$tarfile\_*)
+					tar rfW results_\$tarfile.tar \$files    # creates an archive file. r appends, W verifies
+					if [[ \$? == 0 ]]   # safety check, don't delete .txts unless tar worked
+					then
+						rm \$files
+					else
+						echo "Error: tar failed, intermediate files retained"
+					fi
+				done
+			EOF
+			#######################################################
+
+			#######################################################
 			#######################################################
 			# And finally Run ACENET Cluster
 			qsub \$job_name
@@ -152,9 +170,25 @@ for cluster_num in `seq 0 3`; do
 			# IMPORTANT: First load bashrc so crontab can see qstat:
 			source /usr/local/lib/bashrc 
 			# Keep track of progress through acenet runs:
-			declare -i progress=100-100*\$(qstat | grep -c r$JobID)/\$totaljobs
+			declare -i jobs_left=\$(qstat | grep -c r$JobID) # Track number of remaining jobs early so that experiments all have a chance to compress. 
+			declare -i progress=100-100*\$jobs_left/\$totaljobs
 			echo \$progress"% through" > $run_name/progress_$JobID$cluster_name.txt
-			if [ \$(qstat | grep -c r$JobID) -eq 0 ]; then
+			# Concatenate all the tar files together.
+			cd $run_name
+			files=\$(ls results_*.tar)
+			for addfile in \$files; do 
+				#tar -A allTars_$cluster_name.tar \$addfile # This version will be too slow for many large data sets.
+				cat \$addfile >> allTars_$cluster_name.tar # https://superuser.com/a/941552 Need to use -i option to ignore these nulls between headers while extracting.
+				if [[ \$? == 0 ]]   # safety check, don't delete .txts unless tar worked
+				then
+					rm \$addfile
+				else
+					echo "Error: Tar concatenation failed on file" \$addfile >> concatenation_failures.txt
+				fi
+			done
+			cd ~
+			# If all the jobs are finished we can cotinue.
+			if [ \$jobs_left -eq 0 ]; then
 				# If the job is done we can:
 				# a) Remove the crontab task first, so that we only execute script once:
 				crontab -l > tmp_cron2.sh
@@ -163,19 +197,23 @@ for cluster_num in `seq 0 3`; do
 				rm tmp_cron2.sh
 				# b.1) Store memory usage stats (This step is slow)
 				cd $run_name
-				declare -a alljobs=(\$(cat joblist_$JobID.txt))
-				for job in "\${alljobs[@]}"; do 
-					echo \$job \$(qacct -j \$job | grep -E 'ru_wallclock|maxvmem') \$(ls *\$job | cut -d'.' -f1) >> maxvmem_$JobID$cluster_name.txt
-				done
+					declare -a alljobs=(\$(cat joblist_$JobID.txt))
+					for job in "\${alljobs[@]}"; do 
+						echo \$job \$(qacct -j \$job | grep -E 'ru_wallclock|maxvmem') \$(ls *\$job | cut -d'.' -f1) >> maxvmem_$JobID$cluster_name.txt
+					done
+					# b.2) Store time it took to complete all jobs:
+					START=$(date +%s);
+					END=\$(date +%s);
+					echo \$((\$END-START)) | awk '{printf "%d days and %02d:%02d", \$1/86400, (\$1/3600)%24, (\$1/60)%60}' > progress_$JobID$cluster_name.txt
+					# c) Compress the file in Zip form
+					#cat results_* >> allTars_$cluster_name.tar # This would join all tar files once at end of all runs.
+					files=\$(ls -I "*.tar")
+					tar rfW extra_data.tar \$files 
+					cat extra_data.tar >> allTars_$cluster_name.tar
+					tar cJf temp.tar.xz allTars_$cluster_name.tar
 				cd ~
-				# b.2) Store time it took to complete all jobs:
-				START=$(date +%s);
-				END=\$(date +%s);
-				echo \$((\$END-START)) | awk '{printf "%d days and %02d:%02d", \$1/86400, (\$1/3600)%24, (\$1/60)%60}' > $run_name/progress_$JobID$cluster_name.txt
-				# c) Compress the file in Zip form
-				zip -r -T temp.zip $run_name
 				# d) Rename the zip file. (Two steps so it's not transferred until fully compressed.)
-				mv temp.zip $JobID$cluster_name.zip
+				mv $run_name/temp.tar.xz ~/$run_name\_$cluster_name.tar.xz
 				# e) And remove itself - no need for clutter!
 				rm task_$JobID\_done.sh
 			fi
@@ -195,24 +233,30 @@ for cluster_num in `seq 0 3`; do
 	#######################################################
 	cat > ~/$JobID$cluster_name.sh <<- EOF
 		# Bring them over to my mac
-		if ssh -i .ssh/id_rsa$cluster_name $URL test -e $JobID$cluster_name.zip; then
+		if ssh -qi .ssh/id_rsa$cluster_name $URL test -e $run_name\_$cluster_name.tar.xz; then
 			# a) Remove the crontab task first, so that we only execute script once:
 			crontab -l > tmp_cron2.sh
 			sed -i '' "/$JobID$cluster_name/d" tmp_cron2.sh
 			crontab tmp_cron2.sh
 			rm tmp_cron2.sh
 			# b) Retrieve the file:
-			sftp -i .ssh/id_rsa$cluster_name $dtnURL <<- END
-				get $JobID$cluster_name.zip
+			sftp -qi .ssh/id_rsa$cluster_name $dtnURL > /dev/null <<- END
+				get $run_name\_$cluster_name.tar.xz
 			END
 			# c) And uncompress them 
-			mv $JobID$cluster_name.zip ~/GIT/Analysis/$JobID$cluster_name.zip
-			unzip -q -j ~/GIT/Analysis/$JobID$cluster_name.zip -d ~/GIT/Analysis/$run_name			
+			mv $run_name\_$cluster_name.tar.xz ~/GIT/Analysis/$run_name\_$cluster_name.tar.xz
+			mkdir -p ~/GIT/Analysis/$run_name
+			# I need to use gtar (gnu-tar) to access -i option
+			PATH="/usr/local/opt/gnu-tar/libexec/gnubin:\$PATH"
+			PATH="/usr/local/Cellar/xz/5.2.3/bin:\$PATH"
+			tar ixf ~/GIT/Analysis/$run_name\_$cluster_name.tar.xz -C ~/GIT/Analysis/$run_name
+			tar ixf ~/GIT/Analysis/$run_name/allTars_$cluster_name.tar -C ~/GIT/Analysis/$run_name
+			rm ~/GIT/Analysis/$run_name/allTars_$cluster_name.tar 
 			# d) And remove itself - no need for clutter!
 			rm $JobID$cluster_name.sh
 			rm progress_$JobID$cluster_name.txt
 		else
-			sftp -i .ssh/id_rsa$cluster_name $dtnURL <<- END
+			sftp -qi .ssh/id_rsa$cluster_name $dtnURL > /dev/null <<- END
 				get $run_name/progress_$JobID$cluster_name.txt
 			END
 		fi
@@ -243,6 +287,11 @@ echo "run_name='BLAND';" > DateVersion.m
 # And once the job is done running:
 #for job in $joblist; do (qacct -j $job | grep maxvmem); done
 
+# Find the files with errors so I can redo them:
+# grep CTF $(ls r11280_*)
+# grep Error $(ls r11280_*)
+# grep -L Exper4 $(ls r11280_*job.o*)
+# grep -L CompletedAllRuns $(ls r11280_*job.o*)
 
 # Short little script to clean up messes you made on every cluster
 # WARNING THIS SCRIPT IS VERY POWERFUL AND DANGEROUS
