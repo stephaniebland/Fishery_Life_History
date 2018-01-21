@@ -83,7 +83,7 @@ end
 
 %% Export Data
 % Anna's feature request: Export basic web properties
-Anna_var=[(1:39)',basal_ls,isfish,lifestage',nicheweb.*(1:39),int_growth,T1,T2,TrophLevel,orig.T2(species),orig.TrophLevel(species),Mass,meta,VB_par,B0];
+Anna_var=[(1:nichewebsize)',basal_ls,isfish,lifestage',nicheweb.*(1:nichewebsize),int_growth,T1,T2,TrophLevel,orig.T2(species),orig.TrophLevel(species),Mass,meta,VB_par,B0];
 
 import_vars={'B_year_end','Anna_var'};
 
