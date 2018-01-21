@@ -73,7 +73,7 @@
     connectance=0.15;% initial connectance
 
 %% MassCalc
-    masscalc.num_orig_fish=3; %Max number of fish species allowed in original model.  If NaN is used, you choose 60% of species with species with TL>=3 (trophic level)
+    masscalc.num_orig_fish=5; %Max number of fish species allowed in original model.  If NaN is used, you choose 60% of species with species with TL>=3 (trophic level)
     masscalc.m_fish   =5000;  % mean for fishes
     masscalc.v_fish   =100;   % standard deviation for fishes
     masscalc.m_invert =100;   % mean for invertebrates
