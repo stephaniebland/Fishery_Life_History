@@ -52,7 +52,7 @@
     L_year=100;% Number of (days?) in a year (check units!!!)
     %Number of years for each phase%IMPORTANT: IF YOU ADD ANOTHER PHASE YOU NEED TO FIX THE PHASE LOOPS
     num_years.stabilize=200;%Give model some time to stabilize
-    num_years.pre_fish=20;%Years of normal pre-fishing simulation
+    num_years.pre_fish=200;%Years of normal pre-fishing simulation
     num_years.fishing=0;%Years of fishing simulation
     num_years.post_fish=0;%Years of post-fishing simulation
 
@@ -73,7 +73,7 @@
     connectance=0.15;% initial connectance
 
 %% MassCalc
-    masscalc.num_orig_fish=10; %Max number of fish species allowed in original model.  If NaN is used, you choose 60% of species with species with TL>=3 (trophic level)
+    masscalc.num_orig_fish=3; %Max number of fish species allowed in original model.  If NaN is used, you choose 60% of species with species with TL>=3 (trophic level)
     masscalc.m_fish   =5000;  % mean for fishes
     masscalc.v_fish   =100;   % standard deviation for fishes
     masscalc.m_invert =100;   % mean for invertebrates
