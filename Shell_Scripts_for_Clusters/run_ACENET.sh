@@ -44,15 +44,13 @@ MCR=/usr/local/matlab-runtime/r2017a/v92 # Run on ACENET
 echo "run_name='$run_name';" > DateVersion.m
 git commit -m "$run_name" DateVersion.m
 git push origin master ACENET-RUNS Fix-Cluster # Push MATLAB code to Selenium Server 
-ssh-agent sh -c 'ssh-add ~/.ssh/id_rsaPterodactyl; git push backup --all -u' # Push all MATLAB code to Shadow Server
-git bundle create ~/Documents/master\'s\ Backup/backup_$DATE.bundle master ACENET-RUNS # Save a local backup of your work
 # git bundle create ~/Documents/master\'s\ Backup/backup_$DATE_all.bundle --all #Stores all branches
 
 ###############################################
 # Compile MATLAB On Selenium to get a Linux Executable:
 ssh -T $myLinux << END
 	rm -rf masters/
-	git clone -b master ~/GIT/masters.git/
+	git clone -b Fix-Cluster ~/GIT/masters.git/
 	/usr/local/MATLAB/R2017a/bin/matlab -nodisplay -r "cd('~/masters/');mcc -m $script_name.m -o $exe_name;quit"
 END
 # To compile it on my mac instead to get a mac executable use:
