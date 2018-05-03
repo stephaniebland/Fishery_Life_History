@@ -22,7 +22,7 @@
 version=0 # Version
 declare -i seed_0=0
 simsize=1
-sims_per_cluster=1000
+sims_per_cluster=1
 
 ###############################################
 # Setup
@@ -43,20 +43,10 @@ MCR=/usr/local/matlab-runtime/r2017a/v92 # Run on ACENET
 # This runs on my mac
 echo "run_name='$run_name';" > DateVersion.m
 git commit -m "$run_name" DateVersion.m
-git push origin master ACENET-RUNS # Push MATLAB code to Selenium Server 
+git push origin master ACENET-RUNS Fix-Cluster # Push MATLAB code to Selenium Server 
 ssh-agent sh -c 'ssh-add ~/.ssh/id_rsaPterodactyl; git push backup --all -u' # Push all MATLAB code to Shadow Server
 git bundle create ~/Documents/master\'s\ Backup/backup_$DATE.bundle master ACENET-RUNS # Save a local backup of your work
 # git bundle create ~/Documents/master\'s\ Backup/backup_$DATE_all.bundle --all #Stores all branches
-
-###############################################
-# Zip the dependencies and share with Anna
-cp $script_name.m START_$script_name.m
-sed -i '' "/str2num/s/^/% Ignore - Cluster Command/" START_$script_name.m
-sed -i '' "s/$script_name/START_$script_name/" START_$script_name.m
-/Applications/MATLAB_R2016b.app/bin/matlab -nodisplay -r "cd('~/GIT/MastersProject');dependencies('START_$script_name.m');quit"
-mv ~/GIT/MastersProject/START_$script_name.zip ~/Dropbox/Masters\ Backup/START_$script_name.zip
-open -a Dropbox
-rm START_$script_name.m
 
 ###############################################
 # Compile MATLAB On Selenium to get a Linux Executable:
@@ -71,7 +61,7 @@ END
 ###############################################
 ########### LOOP THROUGH CLUSTERS #############
 ###############################################
-for cluster_num in `seq 0 1`; do
+for cluster_num in `seq 0`; do
 	cluster_name=${avail_clusters[$cluster_num]}
 	URL=titanium@$cluster_name.computecanada.ca
 	dtnURL="$URL"
