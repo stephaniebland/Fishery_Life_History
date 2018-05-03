@@ -28,7 +28,7 @@ sims_per_cluster=1000
 # Setup
 script_name=RunCluster # Name of the file we will be compressing
 myLinux=selenium@129.173.34.107
-declare -a avail_clusters=("fundy" "glooscap" "placentia" "mahone")
+declare -a avail_clusters=("cedar" "graham")
 DATE=`date +%Y%b%d`
 JobID=`date +%m%d`$version
 run_name=$DATE\_$version # Name of the Run, where we store the ACENET file
@@ -71,9 +71,9 @@ END
 ###############################################
 ########### LOOP THROUGH CLUSTERS #############
 ###############################################
-for cluster_num in `seq 0 3`; do
+for cluster_num in `seq 0 1`; do
 	cluster_name=${avail_clusters[$cluster_num]}
-	URL=titanium@$cluster_name.ace-net.ca
+	URL=titanium@$cluster_name.computecanada.ca
 	dtnURL="$URL"
 	if [ "$cluster_name" = "glooscap" ]; then
 		dtnURL=titanium@dtn.$cluster_name.ace-net.ca
@@ -85,7 +85,6 @@ for cluster_num in `seq 0 3`; do
 			mkdir /home/titanium/$run_name
 			cd $run_name
 			put $exe_name
-			put run_$exe_name.sh
 		ENDsftp
 	END
 
@@ -94,43 +93,41 @@ for cluster_num in `seq 0 3`; do
 	declare -i job_0=$cluster_num*$jobs_per_cluster
 	declare -i job_f=$job_0+$jobs_per_cluster-1
 
-
 	###############################################
 	######### LOOP THROUGH JOB SCRIPTS ############
 	###############################################
 	# These loops happen within the cluster loops
 	ssh -T -i ~/.ssh/id_rsa$cluster_name $URL <<- END
 		cd $run_name
-		chmod +x $exe_name run_$exe_name.sh
+		chmod +x $exe_name
 		###############################################
 		# Loop through job scripts
 		###############################################
-		for simnum in \`seq $job_0 $job_f\`; do
-			declare -i simnum_0=$simsize*\$simnum+1
-			declare -i simnum_f=$simsize+\$simnum_0-1
 			for fishpred in 2; do
 			for splitdiet in 0; do
-			job_name=r$JobID\_\$simnum_0\_\$fishpred\_\$splitdiet.job
+			job_name=r$JobID\_\$fishpred\_\$splitdiet.job
 			###############################################
 			# The contents of the job script
 			#######################################################
 			cat > \$job_name <<- EOF
-				#$ -cwd
-				#$ -j yes
-				#$ -l h_rt=48:0:0
-				#$ -l h_vmem=10G
-				./run_$exe_name.sh $MCR $seed_0 \$simnum_0 \$simnum_f \$fishpred \$splitdiet
+				#!/bin/bash
+				#SBATCH --time=48:00:00
+				#SBATCH --job-name=\$job_name
+				#SBATCH --account=def-akuparin
+				#SBATCH --output=%x-%j.out
+				#SBATCH --array=$job_0-$job_f
+				module load mcr/R2017a
+				setrpaths.sh --path $exe_name
+				run_mcr_binary.sh $exe_name $seed_0 \\\$SLURM_ARRAY_TASK_ID \\\$SLURM_ARRAY_TASK_ID \$fishpred \$splitdiet
 
 				#######################################################
 				# Bundle results together into a tar file to reduce number of files
-			EOF
-			sed -i '$ a for tarfile in \`seq '"\$simnum_0 \$simnum_f"'\`; do' \$job_name 
-			cat >> \$job_name <<- \EOF
-					files=\$(ls $run_name\_*_sim\$tarfile\_*)
-					tar rfW results_\$tarfile.tar \$files    # creates an archive file. r appends, W verifies
-					if [[ \$? == 0 ]]   # safety check, don't delete .txts unless tar worked
+				for tarfile in \\\`seq \\\$SLURM_ARRAY_TASK_ID \\\$SLURM_ARRAY_TASK_ID\\\`; do
+					files=\\\$(ls $run_name\_*_sim\\\$tarfile\_*)
+					tar cfW results_\\\$tarfile.tar \\\$files    # creates an archive file. r appends, W verifies
+					if [[ \\\$? == 0 ]]   # safety check, don't delete .txts unless tar worked
 					then
-						rm \$files
+						rm \\\$files
 					else
 						echo "Error: tar failed, intermediate files retained"
 					fi
@@ -141,16 +138,15 @@ for cluster_num in `seq 0 3`; do
 			#######################################################
 			#######################################################
 			# And finally Run ACENET Cluster
-			qsub \$job_name
+			sbatch \$job_name
 			done
 			done
 		# Finish job script loop
-		done
 		# Save the Job-ID associated with this run (for maxvmem)
 		#######################################################
-		echo \$(qstat | grep r$JobID) > qstat_$JobID.txt
+		echo \$(squeue  -u titanium | grep r$JobID) > qstat_$JobID.txt
 		# And just the list of jobs
-		echo \$( (qstat | grep r$JobID) | cut -d' ' -f1 ) > joblist_$JobID.txt
+		echo \$( (squeue  -u titanium | grep r$JobID) | cut -d' ' -f1 ) > joblist_$JobID.txt
 		#######################################################
 		# Run script every few minutes to check if the job is done:
 		#######################################################
@@ -164,13 +160,13 @@ for cluster_num in `seq 0 3`; do
 		# Crontab script for linux:
 		#######################################################
 		cat > ~/task_$JobID\_done.sh <<- EOF
-			totaljobs=\$(qstat | grep -c r$JobID)
+			totaljobs=\$(squeue  -u titanium | grep -c r$JobID)
 		EOF
 		cat >> ~/task_$JobID\_done.sh <<- \EOF
 			# IMPORTANT: First load bashrc so crontab can see qstat:
 			source /usr/local/lib/bashrc 
 			# Keep track of progress through acenet runs:
-			declare -i jobs_left=\$(qstat | grep -c r$JobID) # Track number of remaining jobs early so that experiments all have a chance to compress. 
+			declare -i jobs_left=\$(squeue  -u titanium | grep -c r$JobID) # Track number of remaining jobs early so that experiments all have a chance to compress. 
 			declare -i progress=100-100*\$jobs_left/\$totaljobs
 			echo \$progress"% through" > $run_name/progress_$JobID$cluster_name.txt
 			# Concatenate all the tar files together.
