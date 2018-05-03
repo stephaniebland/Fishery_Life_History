@@ -148,13 +148,13 @@ for cluster_num in `seq 0`; do
 		# Crontab script for linux:
 		#######################################################
 		cat > ~/task_$JobID\_done.sh <<- EOF
-			totaljobs=\$(qstat | grep -c r$JobID)
+			totaljobs=\$(squeue  -u titanium | grep -c r$JobID)
 		EOF
 		cat >> ~/task_$JobID\_done.sh <<- \EOF
 			# IMPORTANT: First load bashrc so crontab can see qstat:
 			source /usr/local/lib/bashrc 
 			# Keep track of progress through acenet runs:
-			declare -i jobs_left=\$(qstat | grep -c r$JobID) # Track number of remaining jobs early so that experiments all have a chance to compress. 
+			declare -i jobs_left=\$(squeue  -u titanium | grep -c r$JobID) # Track number of remaining jobs early so that experiments all have a chance to compress. 
 			declare -i progress=100-100*\$jobs_left/\$totaljobs
 			echo \$progress"% through" > $run_name/progress_$JobID$cluster_name.txt
 			# Concatenate all the tar files together.
