@@ -52,7 +52,7 @@
     L_year=100;% Number of (days?) in a year (check units!!!)
     %Number of years for each phase%IMPORTANT: IF YOU ADD ANOTHER PHASE YOU NEED TO FIX THE PHASE LOOPS
     num_years.stabilize=200;%Give model some time to stabilize
-    num_years.pre_fish=200;%Years of normal pre-fishing simulation
+    num_years.pre_fish=100;%Years of normal pre-fishing simulation
     num_years.fishing=0;%Years of fishing simulation
     num_years.post_fish=0;%Years of post-fishing simulation
 
@@ -74,10 +74,10 @@
 
 %% MassCalc
     masscalc.num_orig_fish=3; %Max number of fish species allowed in original model.  If NaN is used, you choose 60% of species with species with TL>=3 (trophic level)
-    masscalc.m_fish   =5000;  % mean for fishes
-    masscalc.v_fish   =100;   % standard deviation for fishes
+    masscalc.m_fish   =100;   % mean for fishes
+    masscalc.v_fish   =0;     % standard deviation for fishes
     masscalc.m_invert =100;   % mean for invertebrates
-    masscalc.v_invert =100;   % standard deviation for invertebrates
+    masscalc.v_invert =0;     % standard deviation for invertebrates
     
 %% LifeHistories
     lifehis.agerange=[4, 4]; %WARNING!!!: only works right now for [4 4] (fix LeslieMatrix). %Range of total number of fish lifestages to add.  You can choose any number within that range. %Jeff said most fish are within 2-6 [2 6] years for age at maturity.
