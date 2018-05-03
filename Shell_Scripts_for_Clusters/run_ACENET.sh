@@ -22,7 +22,7 @@
 version=0 # Version
 declare -i seed_0=0
 simsize=1
-sims_per_cluster=1000
+sims_per_cluster=2000
 
 ###############################################
 # Setup
