@@ -116,6 +116,7 @@ for cluster_num in `seq 0 1`; do
 				#SBATCH --account=def-akuparin
 				#SBATCH --output=%x-%j.out
 				#SBATCH --array=$job_0-$job_f
+				#SBATCH --mem-per-cpu=10G
 				module load mcr/R2017a
 				setrpaths.sh --path $exe_name
 				run_mcr_binary.sh $exe_name $seed_0 \\\$SLURM_ARRAY_TASK_ID \\\$SLURM_ARRAY_TASK_ID \$fishpred \$splitdiet
