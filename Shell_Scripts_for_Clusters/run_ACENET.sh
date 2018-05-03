@@ -75,7 +75,6 @@ for cluster_num in `seq 0`; do
 			mkdir /home/titanium/$run_name
 			cd $run_name
 			put $exe_name
-			put run_$exe_name.sh
 		ENDsftp
 	END
 
@@ -83,7 +82,6 @@ for cluster_num in `seq 0`; do
 	declare -i jobs_per_cluster=$sims_per_cluster/$simsize
 	declare -i job_0=$cluster_num*$jobs_per_cluster
 	declare -i job_f=$job_0+$jobs_per_cluster-1
-
 
 	###############################################
 	######### LOOP THROUGH JOB SCRIPTS ############
@@ -105,11 +103,15 @@ for cluster_num in `seq 0`; do
 			# The contents of the job script
 			#######################################################
 			cat > \$job_name <<- EOF
-				#$ -cwd
-				#$ -j yes
-				#$ -l h_rt=48:0:0
-				#$ -l h_vmem=10G
-				./run_$exe_name.sh $MCR $seed_0 \$simnum_0 \$simnum_f \$fishpred \$splitdiet
+				#!/bin/bash
+				#SBATCH --time=48:00:00
+				#SBATCH --job-name=\$job_name
+				#SBATCH --account=def-akuparin
+				#SBATCH --output=%x-%j.out
+				#SBATCH --array=0-7
+				module load mcr/R2017a
+				setrpaths.sh --path $exe_name
+				run_mcr_binary.sh $exe_name $seed_0 \\\$SLURM_ARRAY_TASK_ID \\\$SLURM_ARRAY_TASK_ID \$fishpred \$splitdiet
 
 				#######################################################
 				# Bundle results together into a tar file to reduce number of files
@@ -131,16 +133,16 @@ for cluster_num in `seq 0`; do
 			#######################################################
 			#######################################################
 			# And finally Run ACENET Cluster
-			qsub \$job_name
+			sbatch \$job_name
 			done
 			done
 		# Finish job script loop
 		done
 		# Save the Job-ID associated with this run (for maxvmem)
 		#######################################################
-		echo \$(qstat | grep r$JobID) > qstat_$JobID.txt
+		echo \$(squeue  -u titanium | grep r$JobID) > qstat_$JobID.txt
 		# And just the list of jobs
-		echo \$( (qstat | grep r$JobID) | cut -d' ' -f1 ) > joblist_$JobID.txt
+		echo \$( (squeue  -u titanium | grep r$JobID) | cut -d' ' -f1 ) > joblist_$JobID.txt
 		#######################################################
 		# Run script every few minutes to check if the job is done:
 		#######################################################
