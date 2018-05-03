@@ -22,7 +22,7 @@
 version=0 # Version
 declare -i seed_0=0
 simsize=1
-sims_per_cluster=1
+sims_per_cluster=3
 
 ###############################################
 # Setup
@@ -87,16 +87,13 @@ for cluster_num in `seq 0`; do
 	# These loops happen within the cluster loops
 	ssh -T -i ~/.ssh/id_rsa$cluster_name $URL <<- END
 		cd $run_name
-		chmod +x $exe_name run_$exe_name.sh
+		chmod +x $exe_name
 		###############################################
 		# Loop through job scripts
 		###############################################
-		for simnum in \`seq $job_0 $job_f\`; do
-			declare -i simnum_0=$simsize*\$simnum+1
-			declare -i simnum_f=$simsize+\$simnum_0-1
 			for fishpred in 2; do
 			for splitdiet in 0; do
-			job_name=r$JobID\_\$simnum_0\_\$fishpred\_\$splitdiet.job
+			job_name=r$JobID\_\$fishpred\_\$splitdiet.job
 			###############################################
 			# The contents of the job script
 			#######################################################
@@ -106,15 +103,15 @@ for cluster_num in `seq 0`; do
 				#SBATCH --job-name=\$job_name
 				#SBATCH --account=def-akuparin
 				#SBATCH --output=%x-%j.out
-				#SBATCH --array=0-7
+				#SBATCH --array=$job_0-$job_f
 				module load mcr/R2017a
 				setrpaths.sh --path $exe_name
 				run_mcr_binary.sh $exe_name $seed_0 \\\$SLURM_ARRAY_TASK_ID \\\$SLURM_ARRAY_TASK_ID \$fishpred \$splitdiet
 
 				#######################################################
 				# Bundle results together into a tar file to reduce number of files
+				for tarfile in \\\`seq \\\$SLURM_ARRAY_TASK_ID \\\$SLURM_ARRAY_TASK_ID\\\`; do
 			EOF
-			sed -i '$ a for tarfile in \`seq '"\$simnum_0 \$simnum_f"'\`; do' \$job_name 
 			cat >> \$job_name <<- \EOF
 					files=\$(ls $run_name\_*_sim\$tarfile\_*)
 					tar rfW results_\$tarfile.tar \$files    # creates an archive file. r appends, W verifies
@@ -135,7 +132,6 @@ for cluster_num in `seq 0`; do
 			done
 			done
 		# Finish job script loop
-		done
 		# Save the Job-ID associated with this run (for maxvmem)
 		#######################################################
 		echo \$(squeue  -u titanium | grep r$JobID) > qstat_$JobID.txt
