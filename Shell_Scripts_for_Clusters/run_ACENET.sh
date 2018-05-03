@@ -133,6 +133,7 @@ for cluster_num in `seq 0 1`; do
 						echo "Error: tar failed, intermediate files retained"
 					fi
 				done
+				echo "SUCCESS: ALL TASKS COMPLETED SUCCESSDONE"
 			EOF
 			#######################################################
 
