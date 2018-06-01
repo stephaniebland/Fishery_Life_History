@@ -70,7 +70,7 @@ attach(masscalc);
     % info find file "Shortest_Path.m" on branch
     % "Prepare-to-Merge-(shortest-path)" in the git repository for this
     % code. In short, this method is an amalgamation of Dijkstra's and
-    % Floyd-Marshall, it's not as powerful or fast as either, but it's
+    % Floyd-Warshall, it's not as powerful or fast as either, but it's
     % easiest (for me) to understand. The steps below are as follows:
     % * This loops until distance is constant. This method guarantees that we
     % will find the shortest distance $d_{i}$. Proof by induction: If there is
