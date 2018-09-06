@@ -97,12 +97,12 @@
 > determines whether the graph is connected (no isolated species, no
 > partitioning into several isolated sub-webs).
 >
-> - web properties function that takes the food web matrix as input and
+> - web\_properties function that takes the food web matrix as input and
 > calculates the 17 structural properties of a web.
 
 ***Deleted Functions***
 
-> - local properties function that tales the food web matrix and some
+> - local\_properties function that tales the food web matrix and some
 > selected species and calculates the structural properties of the web
 > around those species (vulnerability, generality, of their prey, of
 > their predators…)
