@@ -14,7 +14,7 @@ used – they will default to those in “Parameter.m” instead. seed\_0,
 simnum\_0, and simnum\_f are used. seed\_0 makes the simulation
 reproducible. simnum\_0 and simnum\_f set how many simulations to run
 each time we call the model. ***So to call the model all you need is the
-first three***, ex: START\_RunCluster(0,2,2).\
+first three parameters***, ex: START\_RunCluster(0,2,2).\
 I suggest setting simnum\_0=simnum\_f. The simulation is reproducible,
 meaning the output will be identical if you don’t change these numbers.
 
