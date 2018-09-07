@@ -8,19 +8,20 @@ START\_RunCluster(0,2,2).***\
 ***A note about input parameters: str2num converts shell script
 parameters to parameters MATLAB can use. It is necessary for running the
 model in the cluster. However, it breaks when you run the model from
-MATLAB, so I automatically comment out all the str2num lines before
-sharing it with you. TAKE AWAY POINT: Not all input parameters will be
-used – they will default to those in “Parameter.m” instead. seed\_0,
-simnum\_0, and simnum\_f are used. seed\_0 makes the simulation
-reproducible. simnum\_0 and simnum\_f set how many simulations to run
-each time we call the model. ***So to call the model all you need is the
+MATLAB, so I commented out all the str2num lines. TAKE AWAY POINT: Not
+all input parameters will be used – they will default to those in
+“Parameter.m” instead. seed\_0, simnum\_0, and simnum\_f are used.
+seed\_0 makes the simulation reproducible. simnum\_0 and simnum\_f are
+the simulation numbers to run, so the model will run all simulations
+simnum\_0 through simnum\_f. ***So to call the model all you need is the
 first three parameters***, ex: START\_RunCluster(0,2,2).\
 I suggest setting simnum\_0=simnum\_f. The simulation is reproducible,
-meaning the output will be identical if you don’t change these numbers.
+meaning the output will be identical for any given simnum (simulation
+number).
 
 - DateVersion Labels output with version number
 
-- Parameters Sets parameters
+- Parameters Sets the parameters for the model.
 
 - simulations Solves the ODEs, runs the simulations, and plots graphs.
 Saves all simulation relevant results. This is the computationally
