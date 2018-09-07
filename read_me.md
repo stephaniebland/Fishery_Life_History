@@ -66,9 +66,10 @@ rates.
 parameters values for the functional response: half saturation density
 and predator interference.
 
-- attach Function from internet that allows parameters to be packaged as
-structures to get pushed through functions cleanly, without super long
-function calls.
+- attach Function from:\
+https://www.mathworks.com/matlabcentral/fileexchange/35436-attach/content/attach.m\
+that allows parameters to be packaged as fields to get pushed through
+functions cleanly, without long function calls.
 
 ***Dynamics***
 
