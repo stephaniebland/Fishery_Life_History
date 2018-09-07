@@ -31,7 +31,7 @@ expensive part of the model.
 
 ***Initializing***
 
-- setup creates the food web, sets all the web-dependent parameter
+- setup Creates the food web, sets all the web-dependent parameter
 values and the initial conditions for biomasses and efforts.
 
 - NicheModel Calls “CreateWeb.m” and then tests whether it satisfies the
@@ -43,7 +43,7 @@ of feeding links (rows eat columns). This function is called twice, so
 it has the restrictions that we want any web to meet (ex: all new life
 stages have some prey).
 
-- TrophicLevels function called by “setup.m” that calculates the trophic
+- TrophicLevels Function called by “setup.m” that calculates the trophic
 levels of every species. Called a second time for the new life stages.
 
 - MassCalc Called by “setup.m” to calculate their body-size
@@ -62,7 +62,7 @@ matrix.
 - metabolic\_scaling Called by “setup.m” to calculate their metabolic
 rates.
 
-- func\_resp\_scaling function called by “setup.m” that calculates the
+- func\_resp\_scaling Function called by “setup.m” that calculates the
 parameters values for the functional response: half saturation density
 and predator interference.
 
@@ -84,21 +84,21 @@ of each life stage maturing.
 
 ***Dynamics***
 
-- dynamic\_fn function that takes all the web parameters as inputs and
+- dynamic\_fn Function that takes all the web parameters as inputs and
 solves the differential equations using the “ode45” function. It takes
 into account the extinction threshold.
 
-- biomass function called by the “ode45” function that calculates the
+- biomass Function called by the “ode45” function that calculates the
 derivatives of the biomasses and the efforts as a unique array dx/dt.
 
-- gr\_func function called by “biomass.m” to calculate the growth vector
+- gr\_func Function called by “biomass.m” to calculate the growth vector
 for the biomasses, using the ATN equations.
 
 ***Analysis***
 
-- isConnected function that takes the food web matrix as input and
+- isConnected Function that takes the food web matrix as input and
 determines whether the graph is connected (no isolated species, no
 partitioning into several isolated sub-webs).
 
-- web\_properties function that takes the food web matrix as input and
+- web\_properties Function that takes the food web matrix as input and
 calculates the 17 structural properties of a web.
