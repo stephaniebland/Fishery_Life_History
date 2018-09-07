@@ -3,8 +3,10 @@
 ***Simulations***
 
 - START\_RunCluster Runs the model with appropriate parameters and saves
-results. ***Launch this one first with command***
-START\_RunCluster(0,2,2).***\
+results. ***Launch this one first with command:* *\
+***START\_RunCluster(0,x,x)\
+where x is a positive integer.\
+***\
 ***A note about input parameters: str2num converts shell script
 parameters to parameters MATLAB can use. It is necessary for running the
 model in the cluster. However, it breaks when you run the model from
