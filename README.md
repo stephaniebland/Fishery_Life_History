@@ -10,7 +10,7 @@ First Author Paper: https://www.researchgate.net/publication/331280117_The_role_
 
 ***Simulations***
 
-- START\_RunCluster Runs the model with appropriate parameters and saves
+- [START\_RunCluster](MATLAB_code/RunCluster.m) Runs the model with appropriate parameters and saves
 results. ***Launch this one first with command:* *\
 ***START\_RunCluster(0,x,x)\
 where x is a positive integer.\
