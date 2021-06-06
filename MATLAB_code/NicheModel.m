@@ -5,7 +5,7 @@
 % Coralie Picoche and Perrine Tonin changed the 'removing part' in
 % order not to change the connectance
 % Ref: Williams and Martinez, Nature, 2000.
-% Last modification : June 2011
+% Modified by Stephanie Bland
 %--------------------------------------------------------------------------
 % This function produces a niche model food web with .
 % Input: number of species, connectance

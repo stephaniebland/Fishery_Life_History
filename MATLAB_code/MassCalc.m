@@ -1,10 +1,11 @@
 %--------------------------------------------------------------------------
-% Rosalyn Rael
+%  Rosalyn Rael
 %  Modified Apr 2011 Barbara Bauer, changed metabolic rates of basals
 %  to zero (Brose et al. 2006) and rewrote some comments
 %  Modified March 2012 Perrine Tonin, added distinction bewteen
 %  invertebrates and fishes, stochasticity in the consumer-resource
 %  body size constants Z and rewrote some comments
+%  Modified by Stephanie Bland
 %--------------------------------------------------------------------------
 %  Computes metabolic rates allometrically
 %  Reference: Brose et al. PNAS 2009

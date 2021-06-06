@@ -1,7 +1,7 @@
 %--------------------------------------------------------------------------
 % Program by:  Rosalyn Rael
 % Modified by Barbara Bauer & Perrine Tonin
-% Last modifications March, 2012
+% Modified by Stephanie Bland
 %--------------------------------------------------------------------------
 % This file runs the niche model to generate a web then runs dynamics
 % (or you can enter a custom web and its parameters)

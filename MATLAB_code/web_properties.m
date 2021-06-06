@@ -1,5 +1,6 @@
 %--------------------------------------------------------------------------
 % Program by: Perrine Tonin and Coralie Picoche
+%  Modified by Stephanie Bland
 % Ref: Dunne et al., PLOS Biology, 2008.
 %      Williams and Martinez, Journal of Animal Ecology, 2008.
 %      Williams and Martinez, Nature, 2000.

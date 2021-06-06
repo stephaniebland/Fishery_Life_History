@@ -1,6 +1,6 @@
 %--------------------------------------------------------------------------
 % Code by Perrine Tonin
-% March 2012
+% modified by Stephanie Bland
 %--------------------------------------------------------------------------
 % This function calculates the half saturation densities
 % "Bsd" matrix and the predator interference "c" matrix

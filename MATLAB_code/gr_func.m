@@ -3,7 +3,7 @@
 % Growth function
 % Modified by Barbara Bauer (simplification of equations)
 % Mofified by Perrine Tonin (f_a, f_m and functional response)
-% Last modification in March 2012
+% modified by Stephanie Bland
 %--------------------------------------------------------------------------
 %=========called by biomass.m; 
 % Takes parameters, Bvec, returns growth rate vector for all species

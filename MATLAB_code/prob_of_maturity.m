@@ -1,4 +1,5 @@
 %% Calculate Prob of Maturity and invest
+%  Created by Stephanie Bland
 
 function [reprod]=prob_of_maturity(prob_mat,nichewebsize,is_split,N_stages,species,year)
 attach(prob_mat);

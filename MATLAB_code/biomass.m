@@ -2,7 +2,7 @@
 % Program by:R Rael
 % modified by Barbara Bauer to include the economic equation
 % modified by Perrine Tonin to include  the three price scenarios
-% last modification March 2011
+% modified by Stephanie Bland
 %--------------------------------------------------------------------------
 %============called by dynamic_fn; calls Gr_func.m
 % this script calculates the derivatives dB/dt and dE/dt

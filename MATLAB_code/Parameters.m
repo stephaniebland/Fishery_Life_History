@@ -1,5 +1,6 @@
 %%-------------------------------------------------------------------------
 %%  PARAMETERS
+%%  Modified by Stephanie Bland
 %%-------------------------------------------------------------------------
 % These are most of the parameters that I would want to tweak.
 

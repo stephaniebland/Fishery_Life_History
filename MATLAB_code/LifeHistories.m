@@ -1,12 +1,6 @@
 %--------------------------------------------------------------------------
-%  Program by: Rosalyn Rael
-%  Modified Apr 2011 Barbara Bauer, changed metabolic rates of basals
-%  to zero (Brose et al. 2006) and rewrote some comments
-%  Modified March 2012 Perrine Tonin, added distinction bewteen
-%  invertebrates and fishes, stochasticity in the consumer-resource
-%  body size constants Z and rewrote some comments
-%  Modified May 2016 Stephanie Bland, added life history stages and rewrote
-%  some comments
+%  Created by Stephanie Bland
+%  Added life history stages
 %--------------------------------------------------------------------------
 %  Assigns Life History Stages
 %  Reference:

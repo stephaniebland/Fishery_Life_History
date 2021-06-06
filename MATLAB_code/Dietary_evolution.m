@@ -2,6 +2,8 @@
 % This function preserves total number of prey, so if evolv_diet is too
 % extreme it will ignore it and just choose the smallest/largest prey, and
 % enough to keep total number of prey constant.
+% created by Stephanie Bland
+
 
 function [shifted_web]=Dietary_evolution(nicheweb,isfish,evolv_diet,n)
 [~, Indx] = sort(n);

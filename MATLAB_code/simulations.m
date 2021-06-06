@@ -1,3 +1,6 @@
+%--------------------------------------------------------------------------
+%  Modified by Stephanie Bland
+%--------------------------------------------------------------------------
 % full_sim=nan(N_years*L_year,4*nichewebsize);
 % full_t=nan(N_years*L_year,1);
 % year_index=nan(N_years*L_year,1);

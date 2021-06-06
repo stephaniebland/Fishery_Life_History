@@ -2,6 +2,7 @@
 % Program by Rosalyn Rael
 % modified by Barbara Bauer to include the economic nodes Apr, 2011
 % modified by Perrine Tonin to include the extinction threshold March, 2012
+% modified by Stephanie Bland
 %
 %--------------------------------------------------------------------------
 %  Dynamic food webs model
