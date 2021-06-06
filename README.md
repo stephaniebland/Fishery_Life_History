@@ -2,7 +2,9 @@
 Masters Project
 Code used to run simulations in Bland S, Valdovinos FS, Hutchings JA, Kuparinen A. The role of fish life histories in allometrically scaled food‐web dynamics. Ecol Evol. 2019;00:1–10.
 
-Thesis: https://dalspace.library.dal.ca/handle/10222/76695
+[My presentation on this topic provides a good overview.](Thesis/Thesis_defence.pdf)
+
+Thesis (more detailed): https://dalspace.library.dal.ca/handle/10222/76695
 
 First Author Paper: https://www.researchgate.net/publication/331280117_The_role_of_fish_life_histories_in_allometrically_scaled_food-web_dynamics
 
